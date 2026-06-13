@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#00695C" />
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle — Finding the Unknown Angle —</text>
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explore: explore isosceles triangle</text>
+  <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLORE</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#a5f3fc" stroke-width="1.5" />
+  <rect x="80" y="65" width="58" height="16" rx="3" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" />
+  <text x="109" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#083344" text-anchor="middle">EXAMPLE</text>
+  <polygon points="240.0,290.0 400.0,130.0 560.0,290.0" fill="none" stroke="#334155" stroke-width="2" />
+  <text x="226.7" y="298.4" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">A</text>
+  <text x="400.0" y="120.0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">B</text>
+  <text x="573.3" y="298.4" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">C</text>
+  <text x="307.3" y="201.3" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#15803d" text-anchor="end">5 cm</text>
+  <text x="492.7" y="201.3" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#15803d" text-anchor="start">5 cm</text>
+  <path d="M 256.0,290.0 A 16,16 0 0,0 251.3,278.7" fill="none" stroke="#eab308" stroke-width="1.5" />
+  <text x="267.7" y="282.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">45°</text>
+  <path d="M 391.5,138.5 L 400.0,147.0 L 408.5,138.5" fill="none" stroke="#eab308" stroke-width="1.5" />
+  <text x="400.0" y="164.0" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">90°</text>
+  <path d="M 548.7,278.7 A 16,16 0 0,0 544.0,290.0" fill="none" stroke="#eab308" stroke-width="1.5" />
+  <text x="532.3" y="282.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">45°</text>
+</svg>

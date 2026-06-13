@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#1565C0" />
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Adaptive Remediation Demo: Catching the Misconception —</text>
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: visual number line comparison</text>
+  <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#fde047" stroke-width="1.5" />
+  <rect x="80" y="65" width="52" height="16" rx="3" fill="#fef3c7" stroke="#fde047" stroke-width="1.2" />
+  <text x="106" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#78350f" text-anchor="middle">ANCHOR</text>
+  <line x1="120" y1="135" x2="680" y2="135" stroke="#334155" stroke-width="1.5" />
+  <line x1="120.0" y1="130" x2="120.0" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="120.0" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-12</text>
+  <line x1="166.7" y1="130" x2="166.7" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="166.7" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-11</text>
+  <line x1="213.3" y1="130" x2="213.3" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="213.3" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-10</text>
+  <line x1="260.0" y1="130" x2="260.0" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="260.0" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-9</text>
+  <line x1="306.7" y1="130" x2="306.7" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="306.7" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-8</text>
+  <line x1="353.3" y1="130" x2="353.3" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="353.3" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-7</text>
+  <line x1="400.0" y1="130" x2="400.0" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="400.0" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-6</text>
+  <line x1="446.7" y1="130" x2="446.7" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="446.7" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-5</text>
+  <line x1="493.3" y1="130" x2="493.3" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="493.3" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-4</text>
+  <line x1="540.0" y1="130" x2="540.0" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="540.0" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-3</text>
+  <line x1="586.7" y1="130" x2="586.7" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="586.7" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-2</text>
+  <line x1="633.3" y1="130" x2="633.3" y2="140" stroke="#334155" stroke-width="1.5" />
+  <text x="633.3" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">-1</text>
+  <line x1="680.0" y1="130" x2="680.0" y2="140" stroke="#0f172a" stroke-width="1.5" />
+  <text x="680.0" y="153" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#0f172a" text-anchor="middle">0</text>
+  <text x="120" y="121" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">Smaller</text>
+  <text x="680" y="121" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">Larger</text>
+  <rect x="213.3" y="129" width="373.4" height="12" rx="3" fill="#FFFFFF" opacity="0.12" />
+  <line x1="213.3" y1="107" x2="213.3" y2="135" stroke="#ef4444" stroke-width="2.5" />
+  <text x="213.3" y="101" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#b91c1c" text-anchor="middle">-10
+(further left,
+smaller value)</text>
+  <line x1="586.7" y1="107" x2="586.7" y2="135" stroke="#22c55e" stroke-width="2.5" />
+  <text x="586.7" y="101" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#15803d" text-anchor="middle">-2
+(further right,
+larger value)</text>
+</svg>

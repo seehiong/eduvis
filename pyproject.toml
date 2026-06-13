@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eduvis"
+version = "0.1.0"
+description = "An open, curriculum-aware schema for educational content"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "seehiong", email = "seehiong@gmail.com"},
+]
+keywords = ["education", "schema", "pedagogy", "lesson", "curriculum", "yaml"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Education",
+    "Topic :: Text Processing :: Markup",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/seehiong/eduvis"
+Repository = "https://github.com/seehiong/eduvis"
+Issues = "https://github.com/seehiong/eduvis/issues"
+
+[project.scripts]
+eduvis = "eduvis.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["eduvis*"]
+
+[tool.setuptools.package-data]
+eduvis = ["schemas/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

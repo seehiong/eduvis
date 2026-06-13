@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/placement.schema.json",
+  "title": "EduVis Placement",
+  "description": "Where an element lives in the lesson and in long-term memory.",
+  "type": "object",
+  "required": [
+    "lesson_phase",
+    "memory_role"
+  ],
+  "properties": {
+    "lesson_phase": {
+      "type": "string",
+      "enum": [
+        "challenge",
+        "explain",
+        "explore",
+        "guided_practice",
+        "hook",
+        "independent_practice",
+        "recall",
+        "reflect"
+      ],
+      "description": "Where in the instructional sequence this element sits."
+    },
+    "memory_role": {
+      "type": "string",
+      "enum": [
+        "anchor",
+        "example",
+        "misconception_fix",
+        "practice",
+        "retrieval",
+        "review"
+      ],
+      "description": "What role this element plays in long-term retention."
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "challenge",
+        "routine",
+        "starter"
+      ],
+      "description": "Difficulty level; meaningful in practice and challenge phases."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "comparison",
+        "conceptual_model",
+        "procedure",
+        "summary",
+        "worked_example"
+      ],
+      "description": "Instructional purpose within the phase."
+    },
+    "layout_zone": {
+      "type": "string",
+      "enum": [
+        "bottom",
+        "center",
+        "full",
+        "left",
+        "right"
+      ],
+      "description": "Where on the rendered slide this element appears."
+    },
+    "visual_weight": {
+      "type": "string",
+      "enum": [
+        "primary",
+        "supporting"
+      ],
+      "description": "Whether this element is the primary focal point."
+    }
+  },
+  "additionalProperties": false
+}

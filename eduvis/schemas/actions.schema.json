@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/actions.schema.json",
+  "title": "EduVis Actions",
+  "description": "What the element asks the student to do.",
+  "type": "object",
+  "properties": {
+    "conceptual": {
+      "type": "array",
+      "description": "Cognitive actions (compare, predict, identify, retrieve, apply).",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Bare action name (e.g. 'simplify')."
+          },
+          {
+            "type": "object",
+            "description": "Action with a parameter (e.g. {substitute: {from: x, to: 3}}).",
+            "minProperties": 1,
+            "maxProperties": 1
+          }
+        ]
+      }
+    },
+    "procedural": {
+      "type": "array",
+      "description": "Step-by-step transformation actions (substitute, simplify, calculate, round).",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Bare action name (e.g. 'simplify')."
+          },
+          {
+            "type": "object",
+            "description": "Action with a parameter (e.g. {substitute: {from: x, to: 3}}).",
+            "minProperties": 1,
+            "maxProperties": 1
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$comment": "Valid conceptual actions: apply, compare, identify, predict, retrieve. Valid procedural actions: calculate, round, simplify, substitute."
+}

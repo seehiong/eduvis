@@ -1,0 +1,262 @@
+# EduVis Showcase: Geometry Triangles — Full Lesson
+# Pattern: confidence_ladder
+# Topic: Angle Sum of a Triangle (finding the unknown angle)
+# Demonstrates: hook→explore→explain→guided→starter→routine→challenge→recall
+
+lesson:
+  syllabus: showcase
+  topic: geometry-triangles
+  title: Angle Sum of a Triangle — Finding the Unknown Angle
+
+progression:
+  pattern: confidence_ladder
+  pedagogy:
+    confidence_first: true
+    explain_why: true
+    no_skipped_steps: true
+  phases:
+    - phase: hook
+    - phase: explore
+    - phase: explain
+      purpose: conceptual_model
+    - phase: explain
+      purpose: procedure
+    - phase: guided_practice
+      count: 1
+    - phase: independent_practice
+      difficulty: starter
+      count: 2
+    - phase: independent_practice
+      difficulty: routine
+      count: 2
+    - phase: challenge
+      count: 1
+    - phase: recall
+      count: 1
+
+content:
+
+  # ── HOOK ──────────────────────────────────────────────────────────────────
+  # Real-world scenario to introduce triangles without math formulas yet.
+  - id: hook_roof_truss
+    type: fact_boxes
+    placement:
+      lesson_phase: hook
+      layout_zone: center
+      visual_weight: primary
+      memory_role: anchor
+    items:
+      - text: "Roof Truss: Triangles distribute weight evenly and resist deformation."
+        border_color: green
+      - text: "Stability: A triangle's shape is rigid and cannot change without changing its side lengths."
+        border_color: cyan
+
+  # ── EXPLORE ───────────────────────────────────────────────────────────────
+  # Students observe a right-angled isosceles triangle.
+  - id: explore_isosceles_triangle
+    type: geometry_shape
+    placement:
+      lesson_phase: explore
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+      difficulty: starter
+    actions:
+      conceptual:
+        - compare: ["A", "C"]
+    vertices: [[150, 350], [350, 150], [550, 350]]
+    labels: ["A", "B", "C"]
+    side_labels:
+      - edge: "AB"
+        label: "5 cm"
+      - edge: "BC"
+        label: "5 cm"
+    angles:
+      - vertex: "A"
+        label: "45°"
+      - vertex: "B"
+        label: "90°"
+        arc: "square"
+      - vertex: "C"
+        label: "45°"
+
+  # ── EXPLAIN (conceptual model) ─────────────────────────────────────────────
+  # Introduce the primary concept: Sum of angles equals 180 degrees.
+  - id: explain_concept_angle_sum
+    type: geometry_shape
+    placement:
+      lesson_phase: explain
+      purpose: conceptual_model
+      layout_zone: center
+      visual_weight: primary
+      memory_role: anchor
+    actions:
+      conceptual:
+        - identify: pattern
+    vertices: [[150, 320], [300, 120], [500, 320]]
+    labels: ["P", "Q", "R"]
+    angles:
+      - vertex: "P"
+        label: "53°"
+      - vertex: "Q"
+        label: "87°"
+      - vertex: "R"
+        label: "40°"
+
+  # ── EXPLAIN (procedure) ───────────────────────────────────────────────────
+  # State the formal rule and calculation steps.
+  - id: explain_rule_angle_sum
+    type: text_list
+    placement:
+      lesson_phase: explain
+      purpose: procedure
+      layout_zone: center
+      visual_weight: primary
+      memory_role: anchor
+    items:
+      - "The interior angles of any triangle always add up to exactly 180°."
+      - "Formula: Angle A + Angle B + Angle C = 180°"
+      - "To find an unknown angle, subtract the two known angles from 180°."
+      - "Example: Unknown Angle = 180° - (Known Angle 1 + Known Angle 2)"
+
+  # ── GUIDED PRACTICE ───────────────────────────────────────────────────────
+  # Walkthrough example with a clear procedure.
+  - id: guided_example_triangle
+    type: example_panel
+    placement:
+      lesson_phase: guided_practice
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    actions:
+      procedural:
+        - calculate: "x"
+    items:
+      - heading: "Question: Find the unknown angle 'x' in triangle ABC where ∠A = 60° and ∠B = 70°."
+        body: |
+          Step 1: Write down the angle sum equation:
+                  60° + 70° + x = 180°
+          Step 2: Add the two known angles:
+                  130° + x = 180°
+          Step 3: Subtract 130° from 180° to isolate x:
+                  x = 180° - 130°
+          Step 4: Solve for x:
+                  x = 50°
+          Answer: x = 50°
+
+  # ── INDEPENDENT PRACTICE (STARTER) ────────────────────────────────────────
+  # Simple confidence-building questions.
+  - id: practice_starter_triangle_1
+    type: multiple_choice
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      visual_weight: primary
+      memory_role: practice
+    actions:
+      conceptual:
+        - apply: angle-sum-calculation
+    question: "If a triangle has angles of 90° and 30°, what is the third angle?"
+    options:
+      A: "60°"
+      B: "90°"
+      C: "45°"
+      D: "30°"
+
+  - id: practice_starter_triangle_2
+    type: multiple_choice
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      visual_weight: primary
+      memory_role: practice
+    actions:
+      conceptual:
+        - apply: angle-sum-calculation
+    question: "If a triangle has three equal angles, what is the measure of each angle?"
+    options:
+      A: "60°"
+      B: "90°"
+      C: "45°"
+      D: "180°"
+
+  # ── INDEPENDENT PRACTICE (ROUTINE) ────────────────────────────────────────
+  # Regular, standard geometry problems.
+  - id: practice_routine_triangle_1
+    type: multiple_choice
+    placement:
+      lesson_phase: independent_practice
+      difficulty: routine
+      layout_zone: center
+      visual_weight: primary
+      memory_role: practice
+    actions:
+      conceptual:
+        - apply: angle-sum-calculation
+    question: "In triangle PQR, ∠P = 42° and ∠Q = 115°. Find the value of ∠R."
+    options:
+      A: "23°"
+      B: "33°"
+      C: "65°"
+      D: "13°"
+
+  - id: practice_routine_triangle_2
+    type: multiple_choice
+    placement:
+      lesson_phase: independent_practice
+      difficulty: routine
+      layout_zone: center
+      visual_weight: primary
+      memory_role: practice
+    actions:
+      conceptual:
+        - apply: angle-sum-calculation
+    question: "An isosceles triangle has one vertex angle of 40°. What is the measure of each of the other two equal base angles?"
+    options:
+      A: "70°"
+      B: "40°"
+      C: "80°"
+      D: "140°"
+
+  # ── CHALLENGE ─────────────────────────────────────────────────────────────
+  # Advanced algebraic angle sum problem.
+  - id: challenge_triangle
+    type: multiple_choice
+    placement:
+      lesson_phase: challenge
+      difficulty: challenge
+      layout_zone: center
+      visual_weight: primary
+      memory_role: practice
+    actions:
+      conceptual:
+        - apply: algebraic-geometry
+    question: |
+      The angles of a triangle are x, 2x, and 3x.
+      What is the value of the largest angle?
+    options:
+      A: "90°"
+      B: "60°"
+      C: "30°"
+      D: "120°"
+
+  # ── RECALL ────────────────────────────────────────────────────────────────
+  # Simple retrieval check.
+  - id: recall_triangle_1
+    type: multiple_choice
+    placement:
+      lesson_phase: recall
+      layout_zone: center
+      visual_weight: supporting
+      memory_role: retrieval
+    actions:
+      conceptual:
+        - retrieve: angle-sum-rule
+    question: "WITHOUT LOOKING BACK — What do the interior angles of a triangle add up to?"
+    options:
+      A: "180°"
+      B: "360°"
+      C: "90°"
+      D: "It depends on the triangle"

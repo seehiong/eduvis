@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/lesson.schema.json",
+  "title": "EduVis Lesson",
+  "description": "A complete EduVis lesson document.",
+  "type": "object",
+  "required": [
+    "lesson",
+    "progression",
+    "content"
+  ],
+  "properties": {
+    "lesson": {
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "syllabus": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "progression": {
+      "$ref": "progression.schema.json"
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "placement"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier within the lesson."
+          },
+          "type": {
+            "type": "string",
+            "description": "EduVis element type (e.g. number_line)."
+          },
+          "placement": {
+            "$ref": "placement.schema.json"
+          },
+          "actions": {
+            "$ref": "actions.schema.json"
+          },
+          "relationships": {
+            "$ref": "relationships.schema.json"
+          }
+        },
+        "additionalProperties": true
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false
+}

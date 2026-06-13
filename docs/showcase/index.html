@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVis Schema — Interactive Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .pitch {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .pitch h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .pitch-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .pitch-text h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .pitch-text ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .pitch-text li {
+            margin-bottom: 10px;
+        }
+
+        .five-pillars {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .pillar {
+            background: #f0f4ff;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .pillar strong {
+            display: block;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-bottom: 4px solid #667eea;
+        }
+
+        .lesson-header h3 {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+
+        .lesson-header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .lesson-body {
+            padding: 20px;
+        }
+
+        .spec-info {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .spec-info strong {
+            display: inline-block;
+            width: 80px;
+            color: #667eea;
+        }
+
+        .svg-gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .svg-item {
+            background: #f5f5f5;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .svg-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .svg-thumbnail {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: white;
+            padding: 8px;
+        }
+
+        .svg-label {
+            padding: 8px;
+            background: #f9f9f9;
+            font-size: 0.8em;
+            color: #666;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view-yaml {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .view-yaml:hover {
+            background: #764ba2;
+        }
+
+        .remediation-card {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .remediation-card h3 {
+            color: #e53e3e;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .remediation-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .remediation-box {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 2px solid #e53e3e;
+            text-align: center;
+        }
+
+        .remediation-box strong {
+            display: block;
+            color: #e53e3e;
+            margin-bottom: 8px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #e53e3e;
+            text-align: center;
+        }
+
+        .learn-more {
+            background: #f0f4ff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .learn-more h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .learn-more p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .learn-more-links a {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: background 0.3s;
+        }
+
+        .learn-more-links a:hover {
+            background: #764ba2;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+            border-left: 4px solid #667eea;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 900px) {
+            .svg-gallery { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .pitch-content { grid-template-columns: 1fr; }
+            .five-pillars { grid-template-columns: repeat(2, 1fr); }
+            .svg-gallery { grid-template-columns: repeat(2, 1fr); }
+            header h1 { font-size: 1.8em; }
+        }
+
+        @media (max-width: 480px) {
+            .svg-gallery { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>EduVis Schema</h1>
+        <p>An open, curriculum-aware schema for educational content. Separate educational meaning from rendering.</p>
+    </header>
+
+    <div class="container">
+
+        <!-- THE PITCH -->
+        <div class="pitch">
+            <h2>What is EduVis?</h2>
+            <div class="pitch-content">
+                <div class="pitch-text">
+                    <h3>The Problem</h3>
+                    <p>Most diagram libraries describe <strong>visuals</strong>. EduVis describes <strong>learning experiences</strong>.</p>
+                    <p>A number line used to introduce a concept, one used to discover a rule, and one shown during recall are <strong>pedagogically different objects</strong>. Today's tools treat them identically.</p>
+                    <h3>The Solution</h3>
+                    <p>EduVis captures the <strong>teaching pattern</strong> — the same structure that makes great human tutors effective:</p>
+                    <ul>
+                        <li>No skipped steps</li>
+                        <li>Visual intuition before abstraction</li>
+                        <li>Confidence-building before challenge</li>
+                        <li>Retrieval to lock it in long-term memory</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>The Five Pillars</h3>
+                    <div class="five-pillars">
+                        <div class="pillar">
+                            <strong>Elements</strong>
+                            <span>What content type is this?</span>
+                        </div>
+                        <div class="pillar">
+                            <strong>Actions</strong>
+                            <span>What does this ask the student to do?</span>
+                        </div>
+                        <div class="pillar">
+                            <strong>Relationships</strong>
+                            <span>How does it connect to others in the lesson?</span>
+                        </div>
+                        <div class="pillar">
+                            <strong>Placement</strong>
+                            <span>Where does it live in the lesson and memory?</span>
+                        </div>
+                        <div class="pillar">
+                            <strong>Progression</strong>
+                            <span>What is the instructional flow?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOWCASE HEADING -->
+        <h2 style="font-size: 1.8em; margin-bottom: 30px; color: #333;">Interactive Showcase</h2>
+
+        <!-- LESSON: Negative Numbers -->
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <h3>Full Lesson: Negative Numbers</h3>
+                <p>Understanding values below zero — from concrete scenarios (temperature, money) to abstract rules</p>
+            </div>
+            <div class="lesson-body">
+                <div class="spec-info">
+                    <strong>Pattern:</strong> confidence_ladder &nbsp;&nbsp;
+                    <strong>Slides:</strong> 14 &nbsp;&nbsp;
+                    <strong>Phases:</strong> hook → explore → explain → guided → starter × 3 → routine × 2 → challenge → recall × 2
+                </div>
+                <p style="margin-bottom: 15px; font-size: 0.95em;">
+                    Demonstrates the full <strong>confidence_ladder</strong> pattern end-to-end: concrete hook before the rule is named,
+                    misconception identified and addressed <em>before</em> independent practice, difficulty ramped from starter to
+                    challenge, closed with retrieval practice for long-term retention.
+                </p>
+                <h4 style="margin-bottom: 12px; font-size: 1em;">All 14 rendered slides:</h4>
+                <div class="svg-gallery">
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/hook_real_world.svg" alt="Hook">
+                        <div class="svg-label">hook — real world</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/explore_temperature_scale.svg" alt="Explore">
+                        <div class="svg-label">explore — temperature scale</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/explain_concept_negative.svg" alt="Explain concept">
+                        <div class="svg-label">explain — conceptual model</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/explain_rule_negative.svg" alt="Explain rule">
+                        <div class="svg-label">explain — rule</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/misconception_comparing_negatives.svg" alt="Misconception">
+                        <div class="svg-label">misconception fix</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/guided_example_negative.svg" alt="Guided example">
+                        <div class="svg-label">guided practice</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/practice_starter_negative_1.svg" alt="Starter 1">
+                        <div class="svg-label">starter 1</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/practice_starter_negative_2.svg" alt="Starter 2">
+                        <div class="svg-label">starter 2</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/practice_starter_negative_3.svg" alt="Starter 3">
+                        <div class="svg-label">starter 3</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/practice_routine_negative_1.svg" alt="Routine 1">
+                        <div class="svg-label">routine 1</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/practice_routine_negative_2.svg" alt="Routine 2">
+                        <div class="svg-label">routine 2</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/challenge_negative.svg" alt="Challenge">
+                        <div class="svg-label">challenge</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/recall_negative_1.svg" alt="Recall 1">
+                        <div class="svg-label">recall 1</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/negative-numbers/recall_negative_2.svg" alt="Recall 2">
+                        <div class="svg-label">recall 2</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="lesson-negative-numbers.yaml" class="view-yaml">View YAML Spec</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADAPTIVE REMEDIATION DEMO -->
+        <div class="remediation-card">
+            <h3>Adaptive Tutoring Pattern: Misconception + Remediation</h3>
+            <p>EduVis encodes intelligent tutoring system (ITS) branching <strong>without explicit if/then logic</strong>.
+            The <code>remediation_for</code> relationship tells the runtime: "If student gets this CHECK wrong, show this HINT."</p>
+
+            <h4 style="margin-top: 20px; margin-bottom: 15px;">The Pattern</h4>
+            <div class="remediation-flow">
+                <div class="remediation-box">
+                    <strong>CHECK</strong>
+                    <p>"Which is larger: -10 or -2?"</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="remediation-box">
+                    <strong style="color: #e53e3e;">Student answers -10</strong>
+                    <p>(confusing digit size with value)</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="remediation-box">
+                    <strong>HINT</strong>
+                    <p>Step-by-step scaffold to correct the misconception</p>
+                </div>
+            </div>
+
+            <p style="margin-top: 10px; color: #666;">
+                <strong>Why this matters for pedagogy engines:</strong> The progression declares "explain first, then check",
+                but the <code>remediation_for</code> relationship encodes the runtime behavior. AI lesson generators can
+                branch intelligently without hardcoding the flow.
+            </p>
+
+            <h4 style="margin-top: 20px; margin-bottom: 15px;">All 6 rendered slides:</h4>
+            <div class="svg-gallery">
+                <div class="svg-item">
+                    <img class="svg-thumbnail" src="assets/adaptive-remediation/setup_concept.svg" alt="Setup concept">
+                    <div class="svg-label">setup — concept</div>
+                </div>
+                <div class="svg-item">
+                    <img class="svg-thumbnail" src="assets/adaptive-remediation/guided_worked_example.svg" alt="Guided example">
+                    <div class="svg-label">guided — worked example</div>
+                </div>
+                <div class="svg-item">
+                    <img class="svg-thumbnail" src="assets/adaptive-remediation/check_misconception.svg" alt="Check question">
+                    <div class="svg-label">check — misconception</div>
+                </div>
+                <div class="svg-item">
+                    <img class="svg-thumbnail" src="assets/adaptive-remediation/hint_remediation.svg" alt="Hint scaffold">
+                    <div class="svg-label">hint — remediation</div>
+                </div>
+                <div class="svg-item">
+                    <img class="svg-thumbnail" src="assets/adaptive-remediation/misconception_explanation.svg" alt="Explanation">
+                    <div class="svg-label">misconception — explanation</div>
+                </div>
+                <div class="svg-item">
+                    <img class="svg-thumbnail" src="assets/adaptive-remediation/visual_number_line_comparison.svg" alt="Visual">
+                    <div class="svg-label">visual — number line</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="demo-adaptive-remediation.yaml" class="view-yaml" style="background: #e53e3e;">View YAML Spec</a>
+            </div>
+        </div>
+
+        <!-- LESSON: Geometry Triangles -->
+        <div class="lesson-card">
+            <div class="lesson-header" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); border-bottom: 4px solid #48bb78;">
+                <h3>Full Lesson: Angle Sum of a Triangle</h3>
+                <p>Calculating unknown angles inside a triangle — featuring custom geometry polygon rendering</p>
+            </div>
+            <div class="lesson-body">
+                <div class="spec-info">
+                    <strong style="color: #48bb78;">Pattern:</strong> confidence_ladder &nbsp;&nbsp;
+                    <strong style="color: #48bb78;">Slides:</strong> 11 &nbsp;&nbsp;
+                    <strong style="color: #48bb78;">Phases:</strong> hook → explore → explain × 2 → guided → starter × 2 → routine × 2 → challenge → recall
+                </div>
+                <p style="margin-bottom: 15px; font-size: 0.95em;">
+                    Demonstrates how complex vector shapes like triangles with vertex labels, side labels, and angle measures (using <code>geometry_shape</code>) are seamlessly aligned and laid out inside a pedagogical progression flow.
+                </p>
+                <h4 style="margin-bottom: 12px; font-size: 1em;">All 11 rendered slides:</h4>
+                <div class="svg-gallery">
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/hook_roof_truss.svg" alt="Hook">
+                        <div class="svg-label">hook — roof truss</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/explore_isosceles_triangle.svg" alt="Explore">
+                        <div class="svg-label">explore — isosceles</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/explain_concept_angle_sum.svg" alt="Explain concept">
+                        <div class="svg-label">explain — conceptual</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/explain_rule_angle_sum.svg" alt="Explain rule">
+                        <div class="svg-label">explain — rule</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/guided_example_triangle.svg" alt="Guided practice">
+                        <div class="svg-label">guided practice</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/practice_starter_triangle_1.svg" alt="Starter 1">
+                        <div class="svg-label">starter 1</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/practice_starter_triangle_2.svg" alt="Starter 2">
+                        <div class="svg-label">starter 2</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/practice_routine_triangle_1.svg" alt="Routine 1">
+                        <div class="svg-label">routine 1</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/practice_routine_triangle_2.svg" alt="Routine 2">
+                        <div class="svg-label">routine 2</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/challenge_triangle.svg" alt="Challenge">
+                        <div class="svg-label">challenge</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/geometry-triangles/recall_triangle_1.svg" alt="Recall 1">
+                        <div class="svg-label">recall</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="lesson-geometry-triangles.yaml" class="view-yaml" style="background: #48bb78;">View YAML Spec</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEARN MORE -->
+
+        <div class="learn-more">
+            <h3>What You're Seeing</h3>
+            <p>
+                <strong>The YAML specs above are the "instructional meaning."</strong><br/>
+                The SVG slides are just one rendering of that meaning.
+            </p>
+            <p>The same lesson YAML could be rendered as:</p>
+            <div class="code-block">
+EduVis YAML
+    ↓
+SVG (rendered above) | React Component | Flutter Widget | PDF | Animated Video
+            </div>
+            <p style="margin-top: 20px; color: #666;">
+                The educational structure — elements, actions, placement, progression, relationships — remains constant.
+                Only the presentation format changes.
+            </p>
+            <div class="learn-more-links" style="margin-top: 30px;">
+                <a href="https://github.com/seehiong/eduvis" target="_blank">GitHub Repository</a>
+                <a href="https://github.com/seehiong/eduvis#readme" target="_blank">Full Documentation</a>
+            </div>
+        </div>
+
+    </div>
+
+    <footer style="background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px;">
+        <p>EduVis v0.1 — Educational content schema. <strong>Separation of meaning from rendering.</strong></p>
+        <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">
+            Early design. Reference implementation under development for Singapore Secondary Mathematics.
+        </p>
+    </footer>
+</body>
+</html>

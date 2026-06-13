@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#BF360C" />
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle — Finding the Unknown Angle — Hook:</text>
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">hook roof truss</text>
+  <rect x="672" y="23" width="48" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="696" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HOOK</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#fde047" stroke-width="1.5" />
+  <rect x="80" y="65" width="52" height="16" rx="3" fill="#fef3c7" stroke="#fde047" stroke-width="1.2" />
+  <text x="106" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#78350f" text-anchor="middle">ANCHOR</text>
+  <rect x="80" y="90" width="640" height="90" rx="8" fill="#22c55e" opacity="0.07" />
+  <rect x="80" y="90" width="640" height="90" rx="8" fill="none" stroke="#22c55e" stroke-width="1" opacity="0.3" />
+  <rect x="80" y="98" width="5" height="74" rx="2" fill="#22c55e" />
+  <text x="99" y="137" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#15803d" text-anchor="start">Roof Truss: Triangles distribute weight evenly and resist deformation.</text>
+  <rect x="80" y="192" width="640" height="90" rx="8" fill="#06b6d4" opacity="0.07" />
+  <rect x="80" y="192" width="640" height="90" rx="8" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3" />
+  <rect x="80" y="200" width="5" height="74" rx="2" fill="#06b6d4" />
+  <text x="99" y="239" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0e7490" text-anchor="start">Stability: A triangle&#x27;s shape is rigid and cannot change without changing its side lengths.</text>
+</svg>

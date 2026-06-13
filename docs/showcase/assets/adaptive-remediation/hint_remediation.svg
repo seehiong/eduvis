@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#4A148C" />
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Adaptive Remediation Demo: Catching the Misconception —</text>
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Guided Practice: hint remediation</text>
+  <rect x="658" y="23" width="62" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="689" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GUIDED</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#fecaca" stroke-width="1.5" />
+  <rect x="80" y="65" width="118" height="16" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="1.2" />
+  <text x="139" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#7f1d1d" text-anchor="middle">MISCONCEPTION FIX</text>
+  <rect x="80" y="90" width="640" height="246" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+  <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 328 A 7 7 0 0 0 88 335 L 105 335 Z" fill="#ffedd5" />
+  <line x1="105" y1="91" x2="105" y2="335" stroke="#fdba74" stroke-width="1" />
+  <text x="93" y="213.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 93, 213.0)">SOLVE</text>
+  <circle cx="131" cy="117" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="131" cy="117" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="131" y="121" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
+  <text x="154" y="118" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: The DIGIT size (10 vs 2) does NOT determine the value of negative numbers.</text>
+  <line x1="131" y1="128" x2="131" y2="138" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="131" cy="149" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="131" cy="149" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="131" y="153" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
+  <text x="154" y="150" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: Draw both numbers on a number line: mark -10 and -2.</text>
+  <line x1="131" y1="160" x2="131" y2="170" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="131" cy="181" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="131" cy="181" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="131" y="185" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">3</text>
+  <text x="154" y="182" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 3: See that -10 is to the LEFT of -2.</text>
+  <line x1="131" y1="192" x2="131" y2="202" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="131" cy="213" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="131" cy="213" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="131" y="217" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">4</text>
+  <text x="154" y="214" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 4: Numbers further LEFT are always SMALLER.</text>
+  <line x1="131" y1="224" x2="131" y2="234" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="131" cy="245" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="131" cy="245" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="131" y="249" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">5</text>
+  <text x="154" y="246" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 5: Therefore -10 &lt; -2 (negative ten is less than negative two).</text>
+  <rect x="116" y="276" width="588" height="48" rx="6" fill="#f97316" opacity="0.08" />
+  <rect x="116" y="276" width="588" height="48" rx="6" fill="none" stroke="#f97316" stroke-width="1.2" opacity="0.4" />
+  <text x="130" y="295" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="start">Now try the question again: which is larger, -10 or -2?</text>
+</svg>

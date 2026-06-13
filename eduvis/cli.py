@@ -1,0 +1,302 @@
+"""
+EduVis CLI — validate and render EduVis lesson YAML files.
+
+Usage:
+  python -m eduvis validate lesson.yaml
+  python -m eduvis render lesson.yaml -o slides/
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import json
+
+import click
+import yaml
+
+# ── EduVis Core import ────────────────────────────────────────────────────────
+# Allow running from any directory: resolve the eduvis package root.
+_PACKAGE_ROOT = Path(__file__).resolve().parent.parent   # project root
+if str(_PACKAGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PACKAGE_ROOT))
+
+from eduvis.core import validate_lesson, format_prompt_docs, get_all_schemas  # noqa: E402
+
+# ── EduVis SVG renderer ──────────────────────────────────────────────────────
+
+# ── Constants ─────────────────────────────────────────────────────────────────
+_EDUVIS_META = frozenset({"id", "placement", "actions", "relationships"})
+
+# Layout zone mapping: EduVis layout_zone → svg_spec zone key.
+_ZONE_MAP = {
+    "center": "center",
+    "left":   "left",
+    "right":  "right",
+    "full":   "full",
+    "bottom": "bottom",
+}
+
+_LAYOUT_FOR_ZONE = {
+    "left":   "two-column",
+    "right":  "two-column",
+    "center": "visual + full-width",
+    "full":   "header + full-width",
+    "bottom": "header + full-width",
+}
+
+# Phase → header background color + badge label.
+# Colors are dark enough for white title text.
+_PHASE_STYLE: dict[str, dict] = {
+    "hook":                 {"color": "#BF360C", "label": "HOOK"},
+    "explore":              {"color": "#00695C", "label": "EXPLORE"},
+    "explain":              {"color": "#1565C0", "label": "EXPLAIN"},
+    "guided_practice":      {"color": "#4A148C", "label": "GUIDED"},
+    "independent_practice": {"color": "#1B5E20", "label": "PRACTICE"},
+    "challenge":            {"color": "#B71C1C", "label": "CHALLENGE"},
+    "reflect":              {"color": "#37474F", "label": "REFLECT"},
+    "recall":               {"color": "#4E342E", "label": "RECALL"},
+}
+
+# Difficulty overrides for independent_practice (color + label).
+_DIFFICULTY_STYLE: dict[str, dict] = {
+    "starter":   {"color": "#1B5E20", "label": "STARTER"},
+    "routine":   {"color": "#004D40", "label": "ROUTINE"},
+    "challenge": {"color": "#B71C1C", "label": "CHALLENGE"},
+}
+
+# Memory role → accent color for the divider line and dot.
+_ROLE_COLOR: dict[str, str] = {
+    "anchor":           "#FFD700",
+    "example":          "#00BCD4",
+    "practice":         "#66BB6A",
+    "misconception_fix":"#EF5350",
+    "retrieval":        "#FFA726",
+    "review":           "#9E9E9E",
+}
+
+
+# ── Bridge helpers ────────────────────────────────────────────────────────────
+
+def _element_to_spec(element: dict) -> dict:
+    """Strip EduVis meta-fields; return only fields the SVG renderer needs."""
+    return {k: v for k, v in element.items() if k not in _EDUVIS_META}
+
+
+def _element_title(element: dict) -> str:
+    """Build a human-readable slide title from an element's id and lesson_phase."""
+    eid = element.get("id", "")
+    placement = element.get("placement") or {}
+    phase = placement.get("lesson_phase", "")
+    if phase and eid:
+        return f"{phase.replace('_', ' ').title()}: {eid.replace('_', ' ')}"
+    return (eid or "slide").replace("_", " ").title()
+
+
+def _build_svg_spec_yaml(element: dict) -> str:
+    """Convert one EduVis element dict to an svg_spec YAML string for rendering."""
+    placement = element.get("placement") or {}
+    zone = _ZONE_MAP.get(placement.get("layout_zone", "full"), "full")
+    layout = _LAYOUT_FOR_ZONE.get(zone, "header + full-width")
+
+    phase = placement.get("lesson_phase", "")
+    difficulty = placement.get("difficulty", "")
+    memory_role = placement.get("memory_role", "")
+
+    phase_style = _PHASE_STYLE.get(phase, {})
+    header_color = phase_style.get("color", "#111111")
+    phase_label = phase_style.get("label", "")
+
+    # Differentiate starter / routine within independent_practice
+    if phase == "independent_practice" and difficulty in _DIFFICULTY_STYLE:
+        diff_style = _DIFFICULTY_STYLE[difficulty]
+        header_color = diff_style["color"]
+        phase_label = diff_style["label"]
+
+    role_color = _ROLE_COLOR.get(memory_role, "")
+
+    spec_dict = {
+        "layout": layout,
+        "header_color": header_color,
+        "phase_label": phase_label,
+        "role_color": role_color,
+        "memory_role": memory_role,
+        "zones": {zone: [_element_to_spec(element)]},
+    }
+    return yaml.dump(spec_dict, allow_unicode=True, default_flow_style=False)
+
+
+def _load_renderer():
+    """Load the standalone EduVis SVG renderer."""
+    try:
+        from .renderers.svg import SVGSpecRenderer  # noqa: PLC0415
+        return SVGSpecRenderer()
+    except ImportError as exc:
+        raise click.ClickException(
+            f"Cannot import EduVis SVG renderer: {exc}"
+        ) from exc
+
+
+# ── CLI ───────────────────────────────────────────────────────────────────────
+
+@click.group()
+def cli() -> None:
+    """EduVis - educational content schema tools."""
+
+
+@cli.command()
+@click.option(
+    "--subjects",
+    default="math",
+    show_default=True,
+    help="Comma-separated subject tags to include (e.g. math,science). Use '*' for all.",
+)
+@click.option(
+    "--output", "-o",
+    default=None,
+    help="Write vocabulary to this file instead of stdout.",
+)
+def docs(subjects: str, output: str | None) -> None:
+    """Print the full EduVis vocabulary for use in an LLM system prompt."""
+    subject_list = [s.strip() for s in subjects.split(",")]
+    vocab = format_prompt_docs(subject_list)
+    if output:
+        Path(output).write_text(vocab, encoding="utf-8")
+        click.echo(f"Vocabulary written to {output}")
+    else:
+        click.echo(vocab)
+
+
+@cli.command()
+@click.option(
+    "-o", "--output",
+    default="schemas",
+    show_default=True,
+    help="Directory to write JSON Schema files into.",
+)
+def schema(output: str) -> None:
+    """Export all EduVis JSON Schemas to a directory."""
+    out_dir = Path(output)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    schemas = get_all_schemas()
+    for name, schema_dict in schemas.items():
+        out_path = out_dir / f"{name}.schema.json"
+        out_path.write_text(json.dumps(schema_dict, indent=2), encoding="utf-8")
+        click.echo(f"   OK {out_path}")
+
+    click.secho(f"\nDone -- {len(schemas)} schema(s) written to {out_dir}/", fg="green")
+
+
+@cli.command()
+@click.argument("lesson_file", type=click.Path(exists=True, dir_okay=False))
+def validate(lesson_file: str) -> None:
+    """Validate an EduVis lesson YAML file against all five pillars."""
+    with open(lesson_file, encoding="utf-8") as f:
+        try:
+            doc = yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            raise click.ClickException(f"YAML parse error: {exc}") from exc
+
+    if not isinstance(doc, dict):
+        raise click.ClickException("Lesson file must be a YAML mapping at the top level.")
+
+    warnings = validate_lesson(doc)
+
+    if not warnings:
+        click.secho(f"OK  {lesson_file} -- valid, no warnings", fg="green")
+    else:
+        click.secho(f"WARN  {lesson_file} -- {len(warnings)} warning(s):", fg="yellow")
+        for w in warnings:
+            click.echo(f"   {w}")
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("lesson_file", type=click.Path(exists=True, dir_okay=False))
+@click.option(
+    "-o", "--output",
+    default="output",
+    show_default=True,
+    help="Directory to write SVG files into.",
+)
+@click.option(
+    "--posting-group",
+    default="G1",
+    show_default=True,
+    help="Grade level for font sizing (G1, G2, or G3).",
+)
+@click.option(
+    "--skip-validation",
+    is_flag=True,
+    default=False,
+    help="Skip EduVis validation before rendering.",
+)
+def render(lesson_file: str, output: str, posting_group: str, skip_validation: bool) -> None:
+    """Render an EduVis lesson YAML to one SVG per element."""
+    with open(lesson_file, encoding="utf-8") as f:
+        try:
+            doc = yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            raise click.ClickException(f"YAML parse error: {exc}") from exc
+
+    if not isinstance(doc, dict):
+        raise click.ClickException("Lesson file must be a YAML mapping at the top level.")
+
+    # ── Validate first ────────────────────────────────────────────────────────
+    if not skip_validation:
+        warnings = validate_lesson(doc)
+        if warnings:
+            click.secho(f"WARN  {len(warnings)} validation warning(s):", fg="yellow")
+            for w in warnings:
+                click.echo(f"   {w}")
+            click.echo()
+
+    # ── Load renderer ─────────────────────────────────────────────────────────
+    renderer = _load_renderer()
+
+    # ── Render ────────────────────────────────────────────────────────────────
+    content = doc.get("content")
+    if not isinstance(content, list) or not content:
+        raise click.ClickException("No 'content' list found in the lesson file.")
+
+    out_dir = Path(output)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    lesson_title = (doc.get("lesson") or {}).get("title", "")
+    rendered = 0
+    skipped = 0
+
+    for element in content:
+        if not isinstance(element, dict):
+            continue
+
+        element_id = element.get("id", f"element_{rendered + skipped + 1}")
+        title = f"{lesson_title} — {_element_title(element)}" if lesson_title else _element_title(element)
+
+        svg_spec_yaml = _build_svg_spec_yaml(element)
+
+        try:
+            svg_text = renderer.render(
+                svg_spec_yaml,
+                title=title,
+                posting_group=posting_group,
+            )
+        except Exception as exc:
+            click.secho(f"   FAIL {element_id}: render error -- {exc}", fg="red")
+            skipped += 1
+            continue
+
+        out_path = out_dir / f"{element_id}.svg"
+        out_path.write_text(svg_text, encoding="utf-8")
+        click.echo(f"   OK {out_path}")
+        rendered += 1
+
+    click.echo()
+    click.secho(
+        f"Done -- {rendered} SVG(s) written to {out_dir}/",
+        fg="green" if not skipped else "yellow",
+    )
+    if skipped:
+        click.secho(f"       {skipped} element(s) skipped due to render errors.", fg="yellow")

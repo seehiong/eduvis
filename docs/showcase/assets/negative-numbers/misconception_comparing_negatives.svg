@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#1565C0" />
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Negative Numbers — Understanding Values Below Zero —</text>
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: misconception comparing negatives</text>
+  <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#fecaca" stroke-width="1.5" />
+  <rect x="80" y="65" width="118" height="16" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="1.2" />
+  <text x="139" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#7f1d1d" text-anchor="middle">MISCONCEPTION FIX</text>
+  <rect x="80" y="90" width="312" height="198" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+  <path d="M 81 94 A 3 3 0 0 1 84 91 L 388 91 A 3 3 0 0 1 388 91 A 3 3 0 0 1 391 94 L 391 96 L 81 96 Z" fill="#ef4444" />
+  <text x="96" y="116" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="start">Common Mistake</text>
+  <text x="96" y="136" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Some students think: &quot;-10 is LARGER than -2</text>
+  <text x="96" y="152" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">because 10 is bigger than 2.&quot;</text>
+  <text x="96" y="176" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">WHY THIS IS WRONG: The digit size does NOT</text>
+  <text x="96" y="192" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">determine negative number size.</text>
+  <text x="96" y="216" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">On the number line, -10 is further LEFT</text>
+  <text x="96" y="232" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">than -2, so -10 is SMALLER.</text>
+  <text x="96" y="256" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start"></text>
+  <rect x="408" y="90" width="312" height="198" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+  <path d="M 409 94 A 3 3 0 0 1 412 91 L 716 91 A 3 3 0 0 1 716 91 A 3 3 0 0 1 719 94 L 719 96 L 409 96 Z" fill="#22c55e" />
+  <text x="424" y="116" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="start">Correct Thinking</text>
+  <text x="424" y="136" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">-10 &lt; -2 (negative ten is less than</text>
+  <text x="424" y="152" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">negative two)</text>
+  <text x="424" y="176" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Because -10 is further left on the number</text>
+  <text x="424" y="192" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">line, it is smaller.</text>
+  <text x="424" y="216" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start"></text>
+</svg>

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/progression.schema.json",
+  "title": "EduVis Progression",
+  "description": "The named instructional flow of the whole lesson.",
+  "type": "object",
+  "required": [
+    "pattern"
+  ],
+  "properties": {
+    "pattern": {
+      "type": "string",
+      "enum": [
+        "confidence_ladder",
+        "direct_instruction",
+        "flipped_recall"
+      ],
+      "description": "Named teaching pattern governing phase sequence."
+    },
+    "pedagogy": {
+      "type": "object",
+      "description": "Pedagogy flags that the validator enforces.",
+      "properties": {
+        "confidence_first": {
+          "type": "boolean"
+        },
+        "explain_why": {
+          "type": "boolean"
+        },
+        "no_skipped_steps": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "phases": {
+      "type": "array",
+      "description": "Ordered sequence of instructional phases.",
+      "items": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "challenge",
+              "explain",
+              "explore",
+              "guided_practice",
+              "hook",
+              "independent_practice",
+              "recall",
+              "reflect"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "challenge",
+              "routine",
+              "starter"
+            ]
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "comparison",
+              "conceptual_model",
+              "procedure",
+              "summary",
+              "worked_example"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#4A148C" />
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Adaptive Remediation Demo: Catching the Misconception —</text>
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Guided Practice: guided worked example</text>
+  <rect x="658" y="23" width="62" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="689" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GUIDED</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#a5f3fc" stroke-width="1.5" />
+  <rect x="80" y="65" width="58" height="16" rx="3" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" />
+  <text x="109" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#083344" text-anchor="middle">EXAMPLE</text>
+  <rect x="80" y="90" width="640" height="270" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+  <path d="M 81 94 A 3 3 0 0 1 84 91 L 716 91 A 3 3 0 0 1 716 91 A 3 3 0 0 1 719 94 L 719 96 L 81 96 Z" fill="#3b82f6" />
+  <text x="96" y="116" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="start">Worked Example: Which is larger, -10 or -2?</text>
+  <text x="96" y="136" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: Locate both numbers on the number line.</text>
+  <text x="96" y="160" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: Look at their POSITION, not the digit size.</text>
+  <text x="96" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 3: -10 is to the LEFT of -2.</text>
+  <text x="96" y="208" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 4: The number to the RIGHT is larger.</text>
+  <text x="96" y="232" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 5: Therefore, -2 &gt; -10.</text>
+  <text x="96" y="256" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start"></text>
+  <text x="96" y="280" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">REMEMBER: A bigger digit (-10 vs -2) does NOT mean a bigger value!</text>
+  <text x="96" y="304" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Position on the line is what matters.</text>
+  <text x="96" y="328" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start"></text>
+</svg>

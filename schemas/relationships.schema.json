@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/relationships.schema.json",
+  "title": "EduVis Relationships",
+  "description": "How an element relates to other elements within a lesson.",
+  "type": "object",
+  "properties": {
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Element IDs."
+    },
+    "contradicts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Element IDs."
+    },
+    "parallels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Element IDs."
+    },
+    "precedes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Element IDs."
+    },
+    "reinforces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Element IDs."
+    },
+    "remediation_for": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Element IDs."
+    }
+  },
+  "additionalProperties": false
+}

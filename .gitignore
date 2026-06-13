@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+output/
+.idea/
+.vscode/
+.pytest_cache/
+# uv.lock is intentionally committed — un-negate the root *.lock rule
+!uv.lock
+
