@@ -176,6 +176,7 @@ def lesson_schema() -> dict:
             "placement": {"$ref": "placement.schema.json"},
             "actions": {"$ref": "actions.schema.json"},
             "relationships": {"$ref": "relationships.schema.json"},
+            "concepts": {"type": "array", "items": {"type": "string"}, "description": "Concepts taught by this element."},
         },
         "additionalProperties": True,
     }
@@ -194,6 +195,7 @@ def lesson_schema() -> dict:
                     "syllabus": {"type": "string"},
                     "topic": {"type": "string"},
                     "title": {"type": "string"},
+                    "concepts": {"type": "array", "items": {"type": "string"}, "description": "Target concepts for the lesson."},
                 },
                 "additionalProperties": True,
             },

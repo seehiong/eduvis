@@ -33,6 +33,16 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
         warnings.append("[lesson] missing required top-level 'lesson' block")
     elif not isinstance(lesson, dict):
         warnings.append("[lesson] must be a mapping")
+    else:
+        # Validate lesson-level concepts
+        concepts = lesson.get("concepts")
+        if concepts is not None:
+            if not isinstance(concepts, list):
+                warnings.append("[lesson] 'concepts' must be a list of strings")
+            else:
+                for c in concepts:
+                    if not isinstance(c, str):
+                        warnings.append(f"[lesson] 'concepts' entry must be a string, got {type(c).__name__}")
 
     # ── progression block ─────────────────────────────────────────────────────
     progression = lesson_doc.get("progression")
@@ -100,9 +110,22 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
             ref_ids = known_ids - {element_id}
             warnings.extend(relationships_schema.validate(element_id, rels, ref_ids))
 
+        # Concepts (optional)
+        element_concepts = item.get("concepts")
+        if element_concepts is not None:
+            if not isinstance(element_concepts, list):
+                warnings.append(f"[{element_id}] 'concepts' must be a list of strings")
+            else:
+                for c in element_concepts:
+                    if not isinstance(c, str):
+                        warnings.append(f"[{element_id}] 'concepts' entry must be a string, got {type(c).__name__}")
+
     # ── pedagogy coherence checks ─────────────────────────────────────────────
     if progression:
         warnings.extend(_check_pedagogy_coherence(progression, content))
+
+    # ── concept coherence checks ──────────────────────────────────────────────
+    warnings.extend(_check_concept_coherence(lesson_doc))
 
     return warnings
 
@@ -253,4 +276,127 @@ def _check_no_skipped_steps(content: list[dict]) -> list[str]:
                 f"(use procedural for computation steps, conceptual for reasoning steps)"
             )
 
+    return warnings
+
+
+# ── Concept coherence ─────────────────────────────────────────────────────────
+
+def _check_concept_coherence(lesson_doc: dict) -> list[str]:
+    """Check that elements tag valid concepts and do not contain unrelated concept clusters."""
+    warnings: list[str] = []
+    
+    lesson = lesson_doc.get("lesson") or {}
+    content = lesson_doc.get("content") or []
+    
+    lesson_concepts = set(lesson.get("concepts", []))
+    
+    # 1. Collect all concepts tagged on elements
+    element_to_concepts: dict[str, set[str]] = {}
+    all_element_concepts: set[str] = set()
+    
+    for item in content:
+        if not isinstance(item, dict):
+            continue
+        eid = item.get("id")
+        if not eid:
+            continue
+        el_concepts = item.get("concepts")
+        if el_concepts is not None and isinstance(el_concepts, list):
+            valid_concepts = [c for c in el_concepts if isinstance(c, str)]
+            if valid_concepts:
+                element_to_concepts[eid] = set(valid_concepts)
+                all_element_concepts.update(valid_concepts)
+                
+                # Check 1: Warning if element concept is not declared in lesson-level concepts
+                if lesson_concepts:
+                    for c in valid_concepts:
+                        if c not in lesson_concepts:
+                            warnings.append(
+                                f"[content:concept] element '{eid}' tags concept '{c}' "
+                                f"which is not declared in the lesson-level 'lesson.concepts'"
+                            )
+                            
+    # Check 2: Warning if a lesson-declared concept is completely unused by any element
+    if lesson_concepts:
+        unused_concepts = lesson_concepts - all_element_concepts
+        if unused_concepts:
+            warnings.append(
+                f"[lesson:concept] the following declared concepts are not tagged on any content elements: "
+                f"{', '.join(sorted(unused_concepts))}"
+            )
+            
+    # Check 3: Check for disjoint concept clusters (unrelated concepts in the same lesson)
+    if len(all_element_concepts) > 1:
+        # Build relationship adjacency graph (ignoring direction)
+        adj: dict[str, set[str]] = {
+            item.get("id"): set() 
+            for item in content 
+            if isinstance(item, dict) and item.get("id")
+        }
+        for item in content:
+            if not isinstance(item, dict):
+                continue
+            eid = item.get("id")
+            if not eid:
+                continue
+            rels = item.get("relationships") or {}
+            if isinstance(rels, dict):
+                for rel_type, targets in rels.items():
+                    if isinstance(targets, list):
+                        for t in targets:
+                            if isinstance(t, str) and t in adj:
+                                adj[eid].add(t)
+                                adj[t].add(eid)
+                                
+        # For each concept, find the elements that tag it
+        concept_elements = {c: set() for c in all_element_concepts}
+        for eid, concepts in element_to_concepts.items():
+            for c in concepts:
+                concept_elements[c].add(eid)
+                
+        # Find connected components in the element graph
+        visited = set()
+        components = []
+        for eid in adj:
+            if eid not in visited:
+                comp = set()
+                q = [eid]
+                visited.add(eid)
+                while q:
+                    curr = q.pop(0)
+                    comp.add(curr)
+                    for neighbor in adj[curr]:
+                        if neighbor not in visited:
+                            visited.add(neighbor)
+                            q.append(neighbor)
+                components.append(comp)
+                
+        # Find unrelated pairs of concepts
+        unrelated_pairs = []
+        concepts_list = list(all_element_concepts)
+        for i in range(len(concepts_list)):
+            for j in range(i + 1, len(concepts_list)):
+                c1, c2 = concepts_list[i], concepts_list[j]
+                
+                # Check 1: Are there any elements tagging both?
+                sharing_elements = concept_elements[c1] & concept_elements[c2]
+                if sharing_elements:
+                    continue  # they share elements, so they are related
+                    
+                # Check 2: Is there any path between any element of c1 and any element of c2?
+                connected = False
+                for comp in components:
+                    if (concept_elements[c1] & comp) and (concept_elements[c2] & comp):
+                        connected = True
+                        break
+                        
+                if not connected:
+                    unrelated_pairs.append((c1, c2))
+                    
+        for c1, c2 in unrelated_pairs:
+            warnings.append(
+                f"[coherence:concept] lesson contains two unrelated concept clusters: "
+                f"'{c1}' and '{c2}' are taught in disjoint sections of the lesson with no bridging relationships"
+            )
+            
     return warnings

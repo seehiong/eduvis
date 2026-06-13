@@ -7,6 +7,8 @@ lesson:
   syllabus: string        # curriculum code e.g. "SEC-math-2027"
   topic: string           # topic code e.g. "N1.6"
   title: string           # human-readable lesson title
+  concepts:               # optional list of target concepts
+    - string
 
 progression:
   pattern: confidence_ladder | direct_instruction | flipped_recall
@@ -23,6 +25,8 @@ progression:
 content:
   - id: string             # unique identifier within the lesson
     type: <element_type>   # see Element Types below
+    concepts:              # optional list of concepts taught by this element
+      - string
     placement:
       lesson_phase: <lesson_phase>
       memory_role: <memory_role>

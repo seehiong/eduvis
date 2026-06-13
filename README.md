@@ -116,11 +116,12 @@ But more importantly, EduVis describes where this element sits inside a proven t
 
 ---
 
-## Specification Status
+## Specification Status & Tooling
 
 This is not a theoretical schema. The placement model, element types, and LLM prompt vocabulary have been validated in real educational pipelines and are designed for production use.
 
-See the [interactive showcase](docs/showcase/) for working examples of complete lessons rendered to SVG.
+* **[Interactive Showcase](docs/showcase/)**: View complete, production-grade lessons rendered to SVG.
+* **[Live Schema Editor](docs/showcase/editor.html)**: Write and preview your own EduVis YAML specifications in real-time. It runs the full Python rendering library entirely client-side in the browser using WebAssembly (Pyodide).
 
 ---
 
@@ -399,6 +400,8 @@ A single element from the Negative Numbers lesson — `explore` phase, number li
 ```yaml
 - id: explore_number_line
   type: number_line
+  concepts:
+    - negative_numbers
   placement:
     lesson_phase: explore
     memory_role: anchor
@@ -485,6 +488,8 @@ lesson:
   syllabus: string        # curriculum code e.g. "SEC-math-2027"
   topic: string           # topic code e.g. "N1.6"
   title: string           # human-readable lesson title
+  concepts:               # optional list of target concepts
+    - string
 
 progression:
   pattern: confidence_ladder | direct_instruction | flipped_recall
@@ -492,10 +497,17 @@ progression:
     confidence_first: true | false
     explain_why: true | false
     no_skipped_steps: true | false
+  phases:
+    - phase: <lesson_phase>
+      purpose: <purpose>       # optional, use in explain phase
+      difficulty: <difficulty> # optional, use in practice phases
+      count: <integer>         # optional, number of elements in this phase
 
 content:
-  - id: string
-    type: <element_type>
+  - id: string             # unique identifier within the lesson
+    type: <element_type>   # see Element Types below
+    concepts:              # optional list of concepts taught by this element
+      - string
     placement:
       lesson_phase: hook | explore | explain | guided_practice |
                     independent_practice | challenge | reflect | recall
