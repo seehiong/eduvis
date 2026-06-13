@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVis Schema — Live Editor</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Pyodide WASM Python -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
+    
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs/loader.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131a26;
+            --bg-editor: #1e2530;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #262f3f;
+            --font-sans: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-main);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(99, 102, 241, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loading-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        #loading-subtext {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        select, button {
+            background-color: var(--bg-editor);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        select:hover, select:focus {
+            border-color: var(--primary);
+        }
+
+        button.btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 600;
+            padding: 6px 16px;
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: calc(100vh - 60px);
+            background-color: var(--bg-main);
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+
+        .panel:last-child {
+            border-right: none;
+        }
+
+        .panel-header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 40px;
+        }
+
+        .panel-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        /* Editor Section */
+        #editor-container {
+            flex-grow: 1;
+            width: 100%;
+            background-color: var(--bg-editor);
+        }
+
+        .slide-selector-wrapper {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .slide-selector-header {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .slide-tab {
+            background-color: var(--bg-editor);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .slide-tab:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .slide-tab.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Preview Section */
+        .preview-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .preview-tab {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preview-tab.active {
+            background-color: var(--bg-editor);
+            color: var(--text-main);
+        }
+
+        .preview-body {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: auto;
+            position: relative;
+            background-image: radial-gradient(var(--border) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        #svg-render-area {
+            background-color: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        #svg-render-area svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Raw XML Textarea */
+        #xml-output-area {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-editor);
+            border: none;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 16px;
+            resize: none;
+            outline: none;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+        }
+
+        /* Error Banner */
+        #error-banner {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(239, 68, 68, 0.95);
+            color: white;
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            max-height: 120px;
+            overflow-y: auto;
+            border-top: 1px solid var(--accent-red);
+            display: none;
+            z-index: 10;
+        }
+
+        /* Responsive Utilities */
+        @media (max-width: 800px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+                height: calc(100vh - 60px);
+            }
+            .panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text">Loading WebAssembly Environment</div>
+        <div id="loading-subtext">Fetching Pyodide Python core...</div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header>
+        <div class="logo-section">
+            <div class="logo-icon">EV</div>
+            <h1>EduVis Live Editor</h1>
+        </div>
+        <div class="controls">
+            <div class="control-group">
+                <label for="preset-select">Preset:</label>
+                <select id="preset-select" onchange="onPresetChange(this.value)">
+                    <option value="lesson-geometry-triangles.yaml">Angle Sum of a Triangle (Full Lesson)</option>
+                    <option value="lesson-negative-numbers.yaml">Negative Numbers (Full Lesson)</option>
+                    <option value="demo-adaptive-remediation.yaml">Adaptive Remediation Demo</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="group-select">Grade Sizing:</label>
+                <select id="group-select" onchange="triggerRender()">
+                    <option value="G1">G1 (Primary)</option>
+                    <option value="G2">G2 (Middle)</option>
+                    <option value="G3">G3 (High)</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="triggerRender()">Render</button>
+            <div class="status-badge" id="status-container">
+                <div class="status-dot"></div>
+                <span id="status-text">Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Core Workspace Split Screen -->
+    <div class="workspace">
+        
+        <!-- Left Panel: Editor & Slide selector -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">YAML Specification</div>
+            </div>
+            <!-- Monaco Editor Container -->
+            <div id="editor-container"></div>
+            
+            <!-- Slide selector for full lessons -->
+            <div class="slide-selector-wrapper" id="slide-selector-section" style="display: none;">
+                <div class="slide-selector-header">
+                    <span>SELECT SLIDE TO PREVIEW</span>
+                    <span id="slide-count-indicator">1 of 1</span>
+                </div>
+                <div class="slide-list" id="slide-tabs-container">
+                    <!-- Tabs injected dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Panel: Visual Render Canvas & Output -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="preview-tabs">
+                    <button class="preview-tab active" id="tab-visual" onclick="togglePreviewTab('visual')">Visual Preview</button>
+                    <button class="preview-tab" id="tab-xml" onclick="togglePreviewTab('xml')">Raw SVG Source</button>
+                </div>
+                <div class="preview-actions">
+                    <button class="btn-icon" title="Copy Raw SVG" onclick="copyRawSvg()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <button class="btn-icon" title="Download SVG" onclick="downloadSvg()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- SVG Render Frame -->
+            <div class="preview-body">
+                <div id="svg-render-area">
+                    <!-- SVG gets injected here -->
+                </div>
+                <textarea id="xml-output-area" readonly></textarea>
+            </div>
+            
+            <!-- Error Banner -->
+            <div id="error-banner"></div>
+        </div>
+
+    </div>
+
+    <!-- Controller Script -->
+    <script>
+        let pyodide = null;
+        let selectedSlideIndex = 0;
+        let currentSlides = [];
+        let renderMode = "lesson"; // "lesson" or "slide"
+        let isRenderInProgress = false;
+
+        // Monaco Editor instance
+        window.editor = null;
+
+        // Initialize Monaco Editor
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            window.editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: '# Loading preset...',
+                language: 'yaml',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 13,
+                fontFamily: 'var(--font-mono)',
+                minimap: { enabled: false },
+                lineNumbers: "on",
+                scrollbar: {
+                    vertical: 'visible',
+                    horizontal: 'visible'
+                }
+            });
+
+            // Trigger render when editor changes (debounced)
+            let timeout = null;
+            window.editor.onDidChangeModelContent(() => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    parseStructureAndRender();
+                }, 800);
+            });
+
+            // Start initializing Python environment once Monaco is loaded
+            initPython();
+        });
+
+        // Initialize Pyodide & Load Python dependencies
+        async function initPython() {
+            const updateStatus = (text, subtext) => {
+                document.getElementById('loading-text').innerText = text;
+                document.getElementById('loading-subtext').innerText = subtext;
+            };
+
+            try {
+                updateStatus("Loading WebAssembly Core", "Fetching Pyodide environment...");
+                pyodide = await loadPyodide();
+
+                updateStatus("Setting up Micro Pip", "Loading pip installer package...");
+                await pyodide.loadPackage("micropip");
+
+                updateStatus("Installing Dependencies", "Installing PyYAML and loading local wheel...");
+                await pyodide.runPythonAsync(`
+                    import micropip
+                    await micropip.install("pyyaml")
+                    await micropip.install("./eduvis-0.1.0-py3-none-any.whl")
+                `);
+
+                updateStatus("Configuring Render Engine", "Importing Python libraries...");
+                pyodide.runPython(`
+import yaml
+import json
+from eduvis.renderers.svg.spec_renderer import SVGSpecRenderer
+from eduvis.cli import _build_svg_spec_yaml, _element_title
+
+renderer = SVGSpecRenderer()
+
+def parse_lesson_structure(yaml_str):
+    try:
+        doc = yaml.safe_load(yaml_str)
+        if isinstance(doc, dict) and "content" in doc:
+            content = doc.get("content", [])
+            slides = []
+            for i, element in enumerate(content):
+                if isinstance(element, dict):
+                    slides.append({
+                        "index": i,
+                        "id": element.get("id", f"slide_{i+1}"),
+                        "title": _element_title(element)
+                    })
+            return json.dumps({
+                "type": "lesson",
+                "title": (doc.get("lesson") or {}).get("title", "Lesson"),
+                "slides": slides
+            })
+        else:
+            return json.dumps({"type": "slide"})
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+def render_slide_from_lesson(yaml_str, index, posting_group):
+    doc = yaml.safe_load(yaml_str)
+    lesson_title = (doc.get("lesson") or {}).get("title", "")
+    element = doc["content"][index]
+    
+    title = f"{lesson_title} — {_element_title(element)}" if lesson_title else _element_title(element)
+    svg_spec_yaml = _build_svg_spec_yaml(element)
+    
+    return renderer.render(svg_spec_yaml, title=title, posting_group=posting_group)
+
+def render_raw_slide(yaml_str, posting_group):
+    # If it is a raw slide, just render it directly
+    return renderer.render(yaml_str, posting_group=posting_group)
+`);
+
+                // Hide loading overlay
+                updateStatus("Ready", "All systems operational.");
+                document.getElementById('loading-overlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                }, 500);
+
+                // Load default preset
+                onPresetChange("lesson-geometry-triangles.yaml");
+
+            } catch (error) {
+                console.error(error);
+                updateStatus("Initialization Failed", error.message);
+                document.getElementById('loading-subtext').style.color = 'var(--accent-red)';
+            }
+        }
+
+        // Handle preset changes
+        async function onPresetChange(fileName) {
+            document.getElementById('status-container').style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+            document.getElementById('status-container').style.borderColor = 'rgba(99, 102, 241, 0.2)';
+            document.getElementById('status-container').style.color = 'var(--primary)';
+            document.getElementById('status-text').innerText = "Loading preset...";
+
+            try {
+                const response = await fetch(`./${fileName}`);
+                if (!response.ok) throw new Error("Preset file not found");
+                const text = await response.text();
+                
+                selectedSlideIndex = 0;
+                window.editor.setValue(text);
+                parseStructureAndRender();
+            } catch (err) {
+                showError("Failed to fetch preset: " + err.message);
+            }
+        }
+
+        // Parse structure of YAML input and update slides / render
+        function parseStructureAndRender() {
+            if (!pyodide || isRenderInProgress) return;
+            isRenderInProgress = true;
+
+            const yamlText = window.editor.getValue();
+            
+            try {
+                // Call Python function to parse the document metadata and slide structure
+                const resultJson = pyodide.globals.get("parse_lesson_structure")(yamlText);
+                const result = JSON.parse(resultJson);
+
+                if (result.error) {
+                    showError(result.error);
+                    isRenderInProgress = false;
+                    return;
+                }
+
+                hideError();
+
+                if (result.type === "lesson") {
+                    renderMode = "lesson";
+                    currentSlides = result.slides;
+                    
+                    // Show slide selector
+                    document.getElementById('slide-selector-section').style.display = 'flex';
+                    
+                    // Keep selected slide within limits
+                    if (selectedSlideIndex >= currentSlides.length) {
+                        selectedSlideIndex = 0;
+                    }
+
+                    // Render tabs
+                    updateSlideSelectorUI();
+                } else {
+                    renderMode = "slide";
+                    document.getElementById('slide-selector-section').style.display = 'none';
+                }
+
+                // Render active slide
+                performRender();
+
+            } catch (err) {
+                showError(err.message);
+                isRenderInProgress = false;
+            }
+        }
+
+        // Update the slide tabs interface
+        function updateSlideSelectorUI() {
+            const container = document.getElementById('slide-tabs-container');
+            container.innerHTML = '';
+
+            document.getElementById('slide-count-indicator').innerText = 
+                `${selectedSlideIndex + 1} of ${currentSlides.length}`;
+
+            currentSlides.forEach((slide) => {
+                const tab = document.createElement('div');
+                tab.className = 'slide-tab';
+                if (slide.index === selectedSlideIndex) {
+                    tab.classList.add('active');
+                }
+                
+                // Show slide order index and dynamic ID/title
+                tab.innerText = `${slide.index + 1}. ${slide.id}`;
+                tab.title = slide.title;
+                tab.onclick = () => {
+                    selectedSlideIndex = slide.index;
+                    updateSlideSelectorUI();
+                    performRender();
+                };
+                container.appendChild(tab);
+            });
+        }
+
+        // Actually execute the rendering in Python
+        function performRender() {
+            const yamlText = window.editor.getValue();
+            const groupSelect = document.getElementById('group-select').value;
+            
+            let svgOutput = "";
+
+            document.getElementById('status-container').style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+            document.getElementById('status-container').style.borderColor = 'rgba(245, 158, 11, 0.2)';
+            document.getElementById('status-container').style.color = '#f59e0b';
+            document.getElementById('status-text').innerText = "Compiling SVG...";
+
+            try {
+                if (renderMode === "lesson") {
+                    if (currentSlides.length === 0) {
+                        throw new Error("No slides in lesson content block.");
+                    }
+                    svgOutput = pyodide.globals.get("render_slide_from_lesson")(yamlText, selectedSlideIndex, groupSelect);
+                } else {
+                    svgOutput = pyodide.globals.get("render_raw_slide")(yamlText, groupSelect);
+                }
+
+                // Inject SVG into preview panel
+                document.getElementById('svg-render-area').innerHTML = svgOutput;
+                document.getElementById('xml-output-area').value = svgOutput;
+
+                // Set success badge
+                document.getElementById('status-container').style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                document.getElementById('status-container').style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                document.getElementById('status-container').style.color = 'var(--accent-green)';
+                document.getElementById('status-text').innerText = "Connected";
+                
+                hideError();
+            } catch (err) {
+                showError("Render Error:\n" + err.message);
+            } finally {
+                isRenderInProgress = false;
+            }
+        }
+
+        // Trigger manual render
+        function triggerRender() {
+            parseStructureAndRender();
+        }
+
+        // Toggle Visual Preview vs XML Source Code
+        function togglePreviewTab(tabName) {
+            document.getElementById('tab-visual').classList.remove('active');
+            document.getElementById('tab-xml').classList.remove('active');
+            
+            document.getElementById('svg-render-area').style.display = 'none';
+            document.getElementById('xml-output-area').style.display = 'none';
+
+            if (tabName === 'visual') {
+                document.getElementById('tab-visual').classList.add('active');
+                document.getElementById('svg-render-area').style.display = 'flex';
+            } else {
+                document.getElementById('tab-xml').classList.add('active');
+                document.getElementById('xml-output-area').style.display = 'block';
+            }
+        }
+
+        // Error display helpers
+        function showError(msg) {
+            const banner = document.getElementById('error-banner');
+            banner.innerText = msg;
+            banner.style.display = 'block';
+            
+            document.getElementById('status-container').style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            document.getElementById('status-container').style.borderColor = 'rgba(239, 68, 68, 0.2)';
+            document.getElementById('status-container').style.color = 'var(--accent-red)';
+            document.getElementById('status-text').innerText = "Compile Error";
+        }
+
+        function hideError() {
+            document.getElementById('error-banner').style.display = 'none';
+        }
+
+        // Download rendered SVG file
+        function downloadSvg() {
+            const svgMarkup = document.getElementById('xml-output-area').value;
+            if (!svgMarkup) return;
+
+            let fileName = "slide.svg";
+            if (renderMode === "lesson" && currentSlides[selectedSlideIndex]) {
+                fileName = `${currentSlides[selectedSlideIndex].id}.svg`;
+            }
+
+            const blob = new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Copy Raw SVG markup to clipboard
+        function copyRawSvg() {
+            const svgMarkup = document.getElementById('xml-output-area').value;
+            if (!svgMarkup) return;
+
+            navigator.clipboard.writeText(svgMarkup).then(() => {
+                alert("SVG source copied to clipboard!");
+            }).catch(err => {
+                console.error("Copy failed: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
