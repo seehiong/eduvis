@@ -2,7 +2,7 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#B71C1C" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Negative Numbers — Understanding Values Below Zero —</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Negative Numbers - Understanding Values Below Zero —</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Challenge: challenge negative</text>
   <rect x="637" y="23" width="83" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="678" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CHALLENGE</text>
@@ -15,23 +15,23 @@
   <text x="93" y="184.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 93, 184.0)">SOLVE</text>
   <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">Amir says: &quot;-20 is BIGGER than -3 because 20 is bigger than 3.&quot; What is wrong with</text>
   <text x="116" y="137" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">Amir&#x27;s reasoning?</text>
-  <rect x="116" y="165" width="286" height="56" rx="6" fill="#f0f9ff" stroke="#3b82f6" stroke-width="1.5" />
-  <circle cx="133" cy="193" r="11" fill="#3b82f6" />
-  <text x="133" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">A</text>
-  <text x="152" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">On the number line, -20 is further</text>
-  <text x="152" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">LEFT than -3, so -20 is SMALLER, not</text>
-  <text x="152" y="212" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">bigger</text>
+  <rect x="116" y="165" width="286" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <circle cx="135" cy="193" r="11" fill="#f1f5f9" />
+  <text x="135" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">A</text>
+  <text x="158" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">On the number line, -20 is further</text>
+  <text x="158" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">LEFT than -3, so -20 is SMALLER, not</text>
+  <text x="158" y="212" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">bigger</text>
   <rect x="418" y="165" width="286" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="435" cy="193" r="11" fill="#f1f5f9" />
-  <text x="435" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">B</text>
-  <text x="454" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">He is correct — -20 &gt; -3</text>
+  <circle cx="437" cy="193" r="11" fill="#f1f5f9" />
+  <text x="437" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">B</text>
+  <text x="460" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">He is correct — -20 &gt; -3</text>
   <rect x="116" y="233" width="286" height="40" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="133" cy="253" r="11" fill="#f1f5f9" />
-  <text x="133" y="256.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">C</text>
-  <text x="152" y="248" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">The digit size does not matter for</text>
-  <text x="152" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">negative numbers</text>
-  <rect x="418" y="233" width="286" height="40" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="435" cy="253" r="11" fill="#f1f5f9" />
-  <text x="435" y="256.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">D</text>
-  <text x="454" y="256" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Both A and C</text>
+  <circle cx="135" cy="253" r="11" fill="#f1f5f9" />
+  <text x="135" y="256.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">C</text>
+  <text x="158" y="248" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">The digit size does not matter for</text>
+  <text x="158" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">negative numbers</text>
+  <rect x="418" y="233" width="286" height="40" rx="6" fill="#f0f9ff" stroke="#3b82f6" stroke-width="1.5" />
+  <circle cx="437" cy="253" r="11" fill="#3b82f6" />
+  <text x="437" y="256.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">D</text>
+  <text x="460" y="256" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">Both A and C</text>
 </svg>

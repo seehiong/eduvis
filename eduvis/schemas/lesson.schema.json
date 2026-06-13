@@ -24,6 +24,13 @@
         },
         "title": {
           "type": "string"
+        },
+        "concepts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Target concepts for the lesson."
         }
       },
       "additionalProperties": true
@@ -57,6 +64,13 @@
           },
           "relationships": {
             "$ref": "relationships.schema.json"
+          },
+          "concepts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Concepts taught by this element."
           }
         },
         "additionalProperties": true

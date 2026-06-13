@@ -268,6 +268,7 @@ relationships:
     difficulty: starter
   question: Which of these is a prime number?
   options: {A: "1", B: "2", C: "4", D: "6"}
+  answer: "B"
 
 - id: hint_prime_identification
   type: hint_list

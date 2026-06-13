@@ -98,6 +98,9 @@ content:
       B: "-2 (because it's further right on the number line)"
       C: "They are equal"
       D: "Cannot compare them"
+    answer: "B"
+    student_answer: "A"
+    correct_answer: "B"
 
   # --- REMEDIATION: IF the student answers incorrectly ----------------------
   # The runtime reads remediation_for and shows this HINT on failure of CHECK.

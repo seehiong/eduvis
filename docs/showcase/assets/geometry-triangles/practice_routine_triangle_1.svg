@@ -2,7 +2,7 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#004D40" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle — Finding the Unknown Angle —</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle - Finding the Unknown Angle —</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Independent Practice: practice routine triangle 1</text>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ROUTINE</text>
@@ -13,21 +13,21 @@
   <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 216 A 7 7 0 0 0 88 223 L 105 223 Z" fill="#ffedd5" />
   <line x1="105" y1="91" x2="105" y2="223" stroke="#fdba74" stroke-width="1" />
   <text x="93" y="157.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 93, 157.0)">SOLVE</text>
-  <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">In triangle PQR, ∠P = 42° and ∠Q = 115°. Find the value of ∠R.</text>
+  <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">In triangle PQR, Angle P = 42 deg and Angle Q = 115 deg. Find the value of Angle R.</text>
   <rect x="116" y="147" width="286" height="30" rx="6" fill="#f0f9ff" stroke="#3b82f6" stroke-width="1.5" />
-  <circle cx="133" cy="162" r="11" fill="#3b82f6" />
-  <text x="133" y="165.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">A</text>
-  <text x="152" y="165" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">23°</text>
+  <circle cx="135" cy="162" r="11" fill="#3b82f6" />
+  <text x="135" y="165.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">A</text>
+  <text x="158" y="165" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">23 deg</text>
   <rect x="418" y="147" width="286" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="435" cy="162" r="11" fill="#f1f5f9" />
-  <text x="435" y="165.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">B</text>
-  <text x="454" y="165" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">33°</text>
+  <circle cx="437" cy="162" r="11" fill="#f1f5f9" />
+  <text x="437" y="165.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">B</text>
+  <text x="460" y="165" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">33 deg</text>
   <rect x="116" y="189" width="286" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="133" cy="204" r="11" fill="#f1f5f9" />
-  <text x="133" y="207.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">C</text>
-  <text x="152" y="207" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">65°</text>
+  <circle cx="135" cy="204" r="11" fill="#f1f5f9" />
+  <text x="135" y="207.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">C</text>
+  <text x="158" y="207" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">65 deg</text>
   <rect x="418" y="189" width="286" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="435" cy="204" r="11" fill="#f1f5f9" />
-  <text x="435" y="207.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">D</text>
-  <text x="454" y="207" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">13°</text>
+  <circle cx="437" cy="204" r="11" fill="#f1f5f9" />
+  <text x="437" y="207.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">D</text>
+  <text x="460" y="207" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">13 deg</text>
 </svg>

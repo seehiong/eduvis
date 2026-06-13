@@ -2,7 +2,7 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#BF360C" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle — Finding the Unknown Angle — Hook:</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle - Finding the Unknown Angle — Hook:</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">hook roof truss</text>
   <rect x="672" y="23" width="48" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="696" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HOOK</text>

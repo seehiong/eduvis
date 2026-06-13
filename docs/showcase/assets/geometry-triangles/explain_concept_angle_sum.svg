@@ -2,7 +2,7 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#1565C0" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle — Finding the Unknown Angle —</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle - Finding the Unknown Angle —</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: explain concept angle sum</text>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
@@ -14,9 +14,9 @@
   <text x="375.4" y="108.7" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">Q</text>
   <text x="573.2" y="310.2" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">R</text>
   <path d="M 256.0,301.4 A 16,16 0 0,0 249.6,288.6" fill="none" stroke="#eab308" stroke-width="1.5" />
-  <text x="266.8" y="292.0" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">53°</text>
+  <text x="275.8" y="287.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="start">53 deg</text>
   <path d="M 367.5,131.4 A 16,16 0 0,0 388.4,129.9" fill="none" stroke="#eab308" stroke-width="1.5" />
-  <text x="379.2" y="152.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">87°</text>
+  <text x="379.9" y="162.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">87 deg</text>
   <path d="M 548.7,290.1 A 16,16 0 0,0 544.0,301.4" fill="none" stroke="#eab308" stroke-width="1.5" />
-  <text x="532.3" y="293.9" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">40°</text>
+  <text x="523.0" y="290.1" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="end">40 deg</text>
 </svg>

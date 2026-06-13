@@ -2,7 +2,7 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#1565C0" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Negative Numbers — Understanding Values Below Zero —</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Negative Numbers - Understanding Values Below Zero —</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: explain concept negative</text>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
@@ -36,9 +36,14 @@
   <text x="680" y="121" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">Larger values</text>
   <rect x="232.0" y="129" width="336.0" height="12" rx="3" fill="#FFFFFF" opacity="0.12" />
   <line x1="232.0" y1="121" x2="232.0" y2="135" stroke="#ef4444" stroke-width="2.5" />
-  <text x="232.0" y="115" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#b91c1c" text-anchor="middle">-3</text>
+  <text x="232.0" y="87" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#b91c1c" text-anchor="middle">-3</text>
+  <text x="232.0" y="101" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#b91c1c" text-anchor="middle">(further left,</text>
+  <text x="232.0" y="115" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#b91c1c" text-anchor="middle">smaller value)</text>
   <line x1="400.0" y1="121" x2="400.0" y2="135" stroke="#64748b" stroke-width="2.5" />
-  <text x="400.0" y="115" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#64748b" text-anchor="middle">0</text>
+  <text x="400.0" y="101" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#64748b" text-anchor="middle">0</text>
+  <text x="400.0" y="115" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#64748b" text-anchor="middle">(reference zero)</text>
   <line x1="568.0" y1="121" x2="568.0" y2="135" stroke="#22c55e" stroke-width="2.5" />
-  <text x="568.0" y="115" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#15803d" text-anchor="middle">3</text>
+  <text x="568.0" y="87" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#15803d" text-anchor="middle">3</text>
+  <text x="568.0" y="101" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#15803d" text-anchor="middle">(further right,</text>
+  <text x="568.0" y="115" font-family="Arial, sans-serif" font-size="11" font-weight="normal" fill="#15803d" text-anchor="middle">larger value)</text>
 </svg>

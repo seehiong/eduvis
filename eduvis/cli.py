@@ -94,8 +94,19 @@ def _element_title(element: dict) -> str:
     return (eid or "slide").replace("_", " ").title()
 
 
-def _build_svg_spec_yaml(element: dict) -> str:
+def _build_svg_spec_yaml(element: dict, elements_by_id: dict[str, dict] | None = None) -> str:
     """Convert one EduVis element dict to an svg_spec YAML string for rendering."""
+    # Resolve remediation_block question references if elements_by_id is provided
+    if element.get("type") == "remediation_block" and elements_by_id:
+        element = element.copy()
+        review = element.get("review", {})
+        if isinstance(review, dict):
+            review = review.copy()
+            q_id = review.get("source_question")
+            if q_id and q_id in elements_by_id:
+                review["question_spec"] = elements_by_id[q_id]
+            element["review"] = review
+
     placement = element.get("placement") or {}
     zone = _ZONE_MAP.get(placement.get("layout_zone", "full"), "full")
     layout = _LAYOUT_FOR_ZONE.get(zone, "header + full-width")
@@ -261,6 +272,8 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
     if not isinstance(content, list) or not content:
         raise click.ClickException("No 'content' list found in the lesson file.")
 
+    elements_by_id = {el["id"]: el for el in content if isinstance(el, dict) and "id" in el}
+
     out_dir = Path(output)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -275,7 +288,7 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
         element_id = element.get("id", f"element_{rendered + skipped + 1}")
         title = f"{lesson_title} — {_element_title(element)}" if lesson_title else _element_title(element)
 
-        svg_spec_yaml = _build_svg_spec_yaml(element)
+        svg_spec_yaml = _build_svg_spec_yaml(element, elements_by_id)
 
         try:
             svg_text = renderer.render(

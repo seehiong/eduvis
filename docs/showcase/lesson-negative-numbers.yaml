@@ -110,13 +110,13 @@ content:
       right: "Larger values"
     highlight:
       - value: -3
-        label: "-3"
+        label: "-3\n(further left,\nsmaller value)"
         color: red
       - value: 0
-        label: "0"
+        label: "0\n(reference zero)"
         color: grey
       - value: 3
-        label: "3"
+        label: "3\n(further right,\nlarger value)"
         color: green
 
   # --- EXPLAIN (procedure) ---------------------------------------------------
@@ -219,6 +219,7 @@ content:
       B: "-5"
       C: "They are equal"
       D: "Cannot tell"
+    answer: "B"
 
   - id: practice_starter_negative_2
     type: multiple_choice
@@ -237,6 +238,7 @@ content:
       B: "-3"
       C: "They are equal"
       D: "Cannot tell"
+    answer: "A"
 
   - id: practice_starter_negative_3
     type: multiple_choice
@@ -255,6 +257,7 @@ content:
       B: "-1, -4, 0"
       C: "0, -1, -4"
       D: "-4, 0, -1"
+    answer: "A"
 
   # --- INDEPENDENT PRACTICE (ROUTINE) ----------------------------------------
   # Exam-style problems. Typical difficulty for assessment.
@@ -276,6 +279,7 @@ content:
       B: "City B"
       C: "Both the same"
       D: "Cannot tell"
+    answer: "A"
 
   - id: practice_routine_negative_2
     type: multiple_choice
@@ -294,6 +298,7 @@ content:
       B: "The fish (deeper)"
       C: "Same depth"
       D: "Cannot tell"
+    answer: "A"
 
   # --- CHALLENGE -------------------------------------------------------------
   # Stretch question. Extends beyond routine application.
@@ -318,6 +323,7 @@ content:
       B: "He is correct — -20 > -3"
       C: "The digit size does not matter for negative numbers"
       D: "Both A and C"
+    answer: "D"
 
   # --- RECALL ----------------------------------------------------------------
   # Retrieval without re-reading. Builds long-term memory.
@@ -338,6 +344,7 @@ content:
       B: "-2"
       C: "They are equal"
       D: "Cannot tell"
+    answer: "B"
 
   - id: recall_negative_2
     type: multiple_choice
@@ -355,3 +362,4 @@ content:
       B: "-3, -8, 0, 1"
       C: "1, 0, -3, -8"
       D: "0, 1, -3, -8"
+    answer: "A"

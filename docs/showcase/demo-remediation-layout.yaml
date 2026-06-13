@@ -1,0 +1,96 @@
+# EduVis Showcase: Pedagogical Remediation Layout Demo
+# Demonstrates:
+# 1. 2-option MCQ (True / False check)
+# 2. 5-option MCQ (Multiple choice with A-E)
+# 3. Unified Remediation Block (Review - Remember - Solve)
+
+lesson:
+  syllabus: showcase
+  topic: remediation-layout
+  title: "Pedagogical Remediation & Layout Demo"
+  concepts:
+    - prime_numbers
+
+progression:
+  pattern: direct_instruction
+  pedagogy:
+    confidence_first: false
+    explain_why: true
+    no_skipped_steps: true
+  phases:
+    - phase: explain
+      purpose: conceptual_model
+    - phase: independent_practice
+      difficulty: starter
+
+content:
+
+  # --- CONCEPTUAL MODEL: EXPLAIN PHASE ---------------------------------------
+  # A 2-option MCQ (True/False check on primes).
+  - id: check_true_false
+    type: multiple_choice
+    concepts:
+      - prime_numbers
+    placement:
+      lesson_phase: explain
+      purpose: conceptual_model
+      layout_zone: center
+      memory_role: anchor
+    question: "True or False: The number 1 is a prime number."
+    options:
+      "True": "Incorrect, 1 only has one factor."
+      "False": "Correct, 1 is not a prime number."
+    answer: "False"
+
+  # --- CHECK: 5-option MCQ ----------------------------------------------------
+  # A 5-option MCQ (A-E) to check prime identification.
+  - id: check_five_options
+    type: multiple_choice
+    concepts:
+      - prime_numbers
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      memory_role: practice
+    question: "Which of the following numbers is prime?"
+    options:
+      A: "1 (first positive integer)"
+      B: "4 (factors: 1, 2, 4)"
+      C: "6 (factors: 1, 2, 3, 6)"
+      D: "9 (factors: 1, 3, 9)"
+      E: "2 (only even prime number)"
+    answer: "E"
+
+  # --- UNIFIED REMEDIATION BLOCK ---------------------------------------------
+  # Demonstrates a split-screen Review-Remember-Solve layout.
+  # Review shows check_five_options with student answer C (wrong) and correct E.
+  - id: explain_remediation
+    type: remediation_block
+    concepts:
+      - prime_numbers
+    placement:
+      lesson_phase: explain
+      purpose: worked_example
+      layout_zone: center
+      memory_role: misconception_fix
+    relationships:
+      remediation_for:
+        - check_five_options
+    review:
+      source_question: check_five_options
+      student_answer: "C"
+      correct_answer: "E"
+    remember:
+      type: callout_box
+      title: "Prime Numbers Rule"
+      border_color: orange
+      lines:
+        - "A prime number is a whole number greater than 1."
+        - "It must have exactly two factors: 1 and itself."
+    solve:
+      type: hint_list
+      items:
+        - "Step 1: Write down factors of Option C (6): 1, 2, 3, 6 (four factors). Not prime."
+        - "Step 2: Write down factors of Option E (2): 1, 2 (exactly two factors). Prime!"
+      final: "Therefore, E is the correct answer."

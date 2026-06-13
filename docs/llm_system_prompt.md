@@ -187,13 +187,12 @@ required/optional fields are listed below.
   summary_list    items: [strings]  — identical to text_list, use on summary/takeaway slides
                   items (required): array  # Summary bullet strings
                   PREFER summary_list on final slides to signal lesson wrap-up.
-  multiple_choice question: string, options: {A, B, C, D}  — MCQ layout
+  multiple_choice question: string, options: {key: text}  — MCQ layout (2 to 5 options)
                   question (required): string  # The MCQ stem
-                  options (required, object):  # Exactly four options keyed A–D
-                    A: string
-                    B: string
-                    C: string
-                    D: string
+                  options (required): object  # A mapping of option keys (e.g. A, B or A, B, C, D, E) to their text
+                  answer (required): string  # The correct option key
+                  student_answer (optional): string  # Optional student selection for review screens
+                  correct_answer (optional): string  # Optional correct answer key for review screens
   hint_list       items: [strings], final: string  — numbered hints
                   items (required): array  # Hint steps (auto-numbered unless item starts with a digit or 'Step')
                   final (optional): string  # Confirmation method shown in a box at the bottom
@@ -218,6 +217,13 @@ required/optional fields are listed below.
                     - rows (optional): array
                     - headers (optional): array
                     - row_colors (optional): array
+  remediation_block review: {source_question, student_answer, correct_answer}, remember: {type, ...}, solve: {type, ...} — remediation block
+                  review (required, object):  # Shows the question context and answers
+                    source_question: string
+                    student_answer (optional): string
+                    correct_answer (optional): string
+                  remember (required): object  # The conceptual anchor element definition (e.g. callout_box, fact_boxes, number_line)
+                  solve (required): object  # The step-by-step solution element definition (e.g. hint_list, text_list, math_grid)
   fraction_model  shape: circle|bar|grid, total_parts, shaded_parts, color, label
                   shape (optional): circle|bar|grid, default: circle  # Visual representation style
                   total_parts (required): integer  # Total number of equal parts

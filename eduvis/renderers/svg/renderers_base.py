@@ -198,37 +198,47 @@ def _render_number_line(spec, zx, zy, zw, zh, posting_group="G1", tracker=None) 
         
         label = hl.get("label", "")
         if label:
-            w = len(label) * (size_lbl + 1) * 0.55
+            lines = [ln.strip() for ln in str(label).split('\n') if ln.strip()]
+            N = len(lines)
+            max_ln_len = max(len(ln) for ln in lines)
+            w = max_ln_len * (size_lbl + 1) * 0.55
             left_x = hx - w / 2
             right_x = hx + w / 2
             
             level = 0
             while True:
-                # Check collision with left neighbor / left direction label on this level
-                collision_left = (level in level_rights and level_rights[level] + 5 > left_x)
-                
-                # Check collision with right direction label (which sits at level 0 near the rx end)
-                collision_right = False
-                if level == 0 and dlabs.get("right"):
-                    w_right = len(dlabs["right"]) * size_lbl * 0.55
-                    if right_x + 5 > rx - w_right / 2:
-                        collision_right = True
-                
-                if not collision_left and not collision_right:
+                collision = False
+                for l in range(level, level + N):
+                    if l in level_rights and level_rights[l] + 5 > left_x:
+                        collision = True
+                        break
+                    if l == 0 and dlabs.get("right"):
+                        w_right = len(dlabs["right"]) * size_lbl * 0.55
+                        if right_x + 5 > rx - w_right / 2:
+                            collision = True
+                            break
+                if not collision:
                     break
                 level += 1
             
-            level_rights[level] = right_x
+            for l in range(level, level + N):
+                level_rights[l] = right_x
+                
             y_offset = -20 - level * 14
             line_top = axis_y - 14 - level * 14
         else:
+            lines = []
+            N = 0
             y_offset = -20
             line_top = axis_y - 14
 
         out.append(_line(hx, line_top, hx, axis_y, color=hcol, stroke_w=2.5))
-        if label:
-            out.append(_text(hx, axis_y + y_offset, label,
-                              size=size_lbl + 1, color=hcol, anchor="middle"))
+        if lines:
+            lead_lbl = size_lbl + 4
+            for idx, ln in enumerate(lines):
+                ly = axis_y + y_offset - (N - 1 - idx) * lead_lbl
+                out.append(_text(hx, ly, ln,
+                                  size=size_lbl + 1, color=hcol, anchor="middle"))
         if tracker:
             tracker.close_unit(out, sub_type="number_line_highlight")
 
@@ -618,23 +628,42 @@ def _render_multiple_choice(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[l
     q_lines = _wrap(question, inner_w, size_q)
     q_h = len(q_lines) * lead_q
     
-    # Calculate options heights
-    labels   = ["A", "B", "C", "D"]
+    # Calculate options layout dynamically for 2 to 5 options
+    labels = sorted(options.keys()) if isinstance(options, dict) else []
+    if not labels:
+        labels = ["A", "B", "C", "D"]
+        
+    pairs = [labels[i:i+2] for i in range(0, len(labels), 2)]
+    
     badge_r  = 11
     col_gap  = 16
     opt_w    = (inner_w - col_gap) // 2
-    text_off = badge_r * 2 + 10
+    
+    # Calculate max badge label length to decide if we need pill badges
+    max_lbl_len = max(len(str(lbl)) for lbl in labels) if labels else 1
+    if max_lbl_len > 1:
+        badge_w = max_lbl_len * 7 + 14
+        text_off = 8 + badge_w + 8
+    else:
+        badge_w = badge_r * 2
+        text_off = 8 + badge_w + 8
+        
     text_w   = opt_w - text_off - 8
     row_sep  = 12
     
     wrapped = {lbl: _wrap(str(options.get(lbl, "")), text_w, size_opt) or [""]
                for lbl in labels}
                
-    h0 = max(badge_r * 2 + 8, max(len(wrapped["A"]), len(wrapped["B"])) * lead_opt + 8)
-    h1 = max(badge_r * 2 + 8, max(len(wrapped["C"]), len(wrapped["D"])) * lead_opt + 8)
+    row_heights = []
+    for pair in pairs:
+        max_lines = max(len(wrapped[lbl]) for lbl in pair)
+        row_h = max(badge_r * 2 + 8, max_lines * lead_opt + 8)
+        row_heights.append(row_h)
+        
+    total_options_h = sum(row_heights) + row_sep * (len(pairs) - 1)
     
     # Total card height
-    h = min(zh, q_h + 20 + h0 + row_sep + h1 + 24)
+    h = min(zh, q_h + 20 + total_options_h + 24)
     
     out = _render_ribbon_box(zx, zy, zw, h, ribbon_type, label=spec.get("ribbon_label", ribbon_type))
     
@@ -646,47 +675,172 @@ def _render_multiple_choice(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[l
         cy += lead_q
     cy += 10
     
-    # Render row helper
-    def _render_row(pair, top_y, row_h):
+    # Render options
+    for r_idx, pair in enumerate(pairs):
+        row_h = row_heights[r_idx]
         for i, lbl in enumerate(pair):
             ox = zx + pad + i * (opt_w + col_gap)
-            bx = ox + badge_r + 6
-            by = top_y + row_h // 2
+            by = cy + row_h // 2
             
             # Determine selection/highlight
-            is_sel = (lbl == spec.get("answer", "A"))
+            student_ans = spec.get("student_answer") or spec.get("answer")
+            correct_ans = spec.get("correct_answer")
             
-            if is_sel:
-                bg_color = "#f0f9ff"      # Soft blue
-                stroke_color = "#3b82f6"  # Blue border
-                badge_bg = "#3b82f6"
-                badge_fg = "#ffffff"
-                text_color = "#1e3a8a"
+            is_student = (student_ans is not None and lbl == student_ans)
+            is_correct = (correct_ans is not None and lbl == correct_ans)
+            
+            if student_ans is not None and correct_ans is not None:
+                # Review state (red/green highlights)
+                if is_student and student_ans == correct_ans:
+                    bg_color = "#f0fdf4"      # Soft green bg
+                    stroke_color = "#22c55e"  # Green border
+                    badge_bg = "#22c55e"
+                    badge_fg = "#ffffff"
+                    text_color = "#14532d"
+                elif is_student:
+                    bg_color = "#fef2f2"      # Soft red bg
+                    stroke_color = "#ef4444"  # Red border
+                    badge_bg = "#ef4444"
+                    badge_fg = "#ffffff"
+                    text_color = "#7f1d1d"
+                elif is_correct:
+                    bg_color = "#f0fdf4"      # Soft green bg
+                    stroke_color = "#22c55e"  # Green border
+                    badge_bg = "#22c55e"
+                    badge_fg = "#ffffff"
+                    text_color = "#14532d"
+                else:
+                    bg_color = "#ffffff"
+                    stroke_color = "#e2e8f0"
+                    badge_bg = "#f1f5f9"
+                    badge_fg = "#64748b"
+                    text_color = COLORS["body"]
             else:
-                bg_color = "#ffffff"      # White
-                stroke_color = "#e2e8f0"  # Soft border
-                badge_bg = "#f1f5f9"
-                badge_fg = "#64748b"
-                text_color = COLORS["body"]
-                
+                # Normal state
+                is_sel = (lbl == spec.get("answer"))
+                if is_sel:
+                    bg_color = "#f0f9ff"      # Soft blue
+                    stroke_color = "#3b82f6"  # Blue border
+                    badge_bg = "#3b82f6"
+                    badge_fg = "#ffffff"
+                    text_color = "#1e3a8a"
+                else:
+                    bg_color = "#ffffff"
+                    stroke_color = "#e2e8f0"
+                    badge_bg = "#f1f5f9"
+                    badge_fg = "#64748b"
+                    text_color = COLORS["body"]
+                    
             # Draw option card
-            out.append(f'  <rect x="{ox}" y="{top_y}" width="{opt_w}" height="{row_h}" rx="6" fill="{bg_color}" stroke="{stroke_color}" stroke-width="1.5" />')
+            out.append(f'  <rect x="{ox}" y="{cy}" width="{opt_w}" height="{row_h}" rx="6" fill="{bg_color}" stroke="{stroke_color}" stroke-width="1.5" />')
             
-            # Draw badge circle
-            out.append(f'  <circle cx="{bx}" cy="{by}" r="{badge_r}" fill="{badge_bg}" />')
-            # Draw badge label
-            out.append(_text(bx, by + 3.5, lbl, size=size_opt, color=badge_fg, weight="bold", anchor="middle"))
+            # Draw badge
+            if len(str(lbl)) > 1:
+                # Pill badge
+                lbl_badge_w = len(str(lbl)) * 7 + 14
+                bx_start = ox + 8
+                bx = bx_start + lbl_badge_w // 2
+                out.append(f'  <rect x="{bx_start}" y="{by - badge_r}" width="{lbl_badge_w}" height="{badge_r * 2}" rx="{badge_r}" fill="{badge_bg}" />')
+                out.append(_text(bx, by + 3.5, lbl, size=size_opt - 1, color=badge_fg, weight="bold", anchor="middle"))
+            else:
+                # Circle badge
+                cx = ox + 8 + badge_r
+                out.append(f'  <circle cx="{cx}" cy="{by}" r="{badge_r}" fill="{badge_bg}" />')
+                out.append(_text(cx, by + 3.5, lbl, size=size_opt, color=badge_fg, weight="bold", anchor="middle"))
             
             # Draw option text
-            ty = top_y + (row_h - len(wrapped[lbl]) * lead_opt) // 2 + size_opt - 1
+            ty = cy + (row_h - len(wrapped[lbl]) * lead_opt) // 2 + size_opt - 1
             for ln in wrapped[lbl]:
                 out.append(_text(ox + text_off + 4, ty, ln, size=size_opt, color=text_color))
                 ty += lead_opt
                 
-    _render_row(["A", "B"], cy, h0)
-    _render_row(["C", "D"], cy + h0 + row_sep, h1)
-    
+        cy += row_h + row_sep
+        
     return out, h
+
+
+def _render_remediation_block(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[str], int]:
+    from .renderers_math import RENDERERS as math_renderers
+    
+    # Merged renderers lookup
+    all_renderers = {**RENDERERS, **math_renderers}
+    
+    gap = 16
+    left_w = int(zw * 0.46)
+    right_w = zw - left_w - gap
+    
+    out = []
+    
+    # 1. Render Review on the left:
+    review = spec.get("review", {})
+    q_spec = review.get("question_spec")
+    
+    left_h_consumed = 0
+    if q_spec and isinstance(q_spec, dict):
+        q_spec = q_spec.copy()
+        q_spec["student_answer"] = review.get("student_answer")
+        q_spec["correct_answer"] = review.get("correct_answer")
+        if "placement" not in q_spec:
+            q_spec["placement"] = spec.get("placement", {})
+            
+        q_type = q_spec.get("type", "")
+        q_renderer = all_renderers.get(q_type)
+        if q_renderer:
+            q_out, left_h_consumed = q_renderer(q_spec, zx, zy, left_w, zh, posting_group=posting_group)
+            out.extend(q_out)
+            
+    # 2. Render Remember (right top) and Solve (right bottom) on the right:
+    remember_spec = spec.get("remember", {})
+    solve_spec = spec.get("solve", {})
+    
+    rx = zx + left_w + gap
+    
+    remember_h = 0
+    rem_type = remember_spec.get("type", "")
+    rem_renderer = all_renderers.get(rem_type)
+    
+    solve_h = 0
+    sol_type = solve_spec.get("type", "")
+    sol_renderer = all_renderers.get(sol_type)
+    
+    # Dynamic height calculations
+    if rem_renderer:
+        try:
+            _, rem_nat_h = rem_renderer(remember_spec, rx, zy, right_w, zh, posting_group=posting_group)
+        except Exception:
+            rem_nat_h = 100
+        remember_h = rem_nat_h
+        
+    if sol_renderer:
+        try:
+            _, sol_nat_h = sol_renderer(solve_spec, rx, zy, right_w, zh, posting_group=posting_group)
+        except Exception:
+            sol_nat_h = 120
+        solve_h = sol_nat_h
+        
+    right_total_h = remember_h + gap + solve_h
+    total_h = max(left_h_consumed, right_total_h)
+    total_h = min(zh, total_h)
+    
+    if rem_renderer:
+        rem_spec_render = remember_spec.copy()
+        if "ribbon_label" not in rem_spec_render:
+            rem_spec_render["ribbon_label"] = "remember"
+        if "ribbon_type" not in rem_spec_render:
+            rem_spec_render["ribbon_type"] = "remember"
+        rem_out, _ = rem_renderer(rem_spec_render, rx, zy, right_w, remember_h, posting_group=posting_group)
+        out.extend(rem_out)
+        
+    if sol_renderer:
+        sol_spec_render = solve_spec.copy()
+        if "ribbon_label" not in sol_spec_render:
+            sol_spec_render["ribbon_label"] = "solve"
+        if "ribbon_type" not in sol_spec_render:
+            sol_spec_render["ribbon_type"] = "solve"
+        sol_out, _ = sol_renderer(sol_spec_render, rx, zy + remember_h + gap, right_w, solve_h, posting_group=posting_group)
+        out.extend(sol_out)
+        
+    return out, total_h
 
 
 def _render_hint_list(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[str], int]:
@@ -835,15 +989,16 @@ def _render_mixed_card(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[s
 
 
 RENDERERS = {
-    "number_line":     _render_number_line,
-    "text_list":       _render_text_list,
-    "fact_boxes":      _render_fact_boxes,
-    "example_panel":   _render_example_panel,
-    "callout_box":     _render_callout_box,
-    "summary_list":    _render_summary_list,
-    "multiple_choice": _render_multiple_choice,
-    "hint_list":       _render_hint_list,
-    "mixed_card":      _render_mixed_card,
+    "number_line":       _render_number_line,
+    "text_list":         _render_text_list,
+    "fact_boxes":        _render_fact_boxes,
+    "example_panel":     _render_example_panel,
+    "callout_box":       _render_callout_box,
+    "summary_list":      _render_summary_list,
+    "multiple_choice":   _render_multiple_choice,
+    "hint_list":         _render_hint_list,
+    "mixed_card":        _render_mixed_card,
+    "remediation_block": _render_remediation_block,
 }
 
 # ── Self-documenting element specs ────────────────────────────────────────────
@@ -926,19 +1081,19 @@ ELEMENT_SPECS: list[SVGElementSpec] = [
     SVGElementSpec(
         name="multiple_choice",
         subjects=["*"],
-        synopsis="question: string, options: {A, B, C, D}  — MCQ layout for CHECK slides",
+        synopsis="question: string, options: {key: text}  — MCQ layout (2 to 5 options)",
         fields=[
             SVGFieldSpec("question", type="string", required=True, description="The MCQ stem"),
             SVGFieldSpec("options", type="object", required=True,
-                         description="Exactly four options keyed A–D",
-                         properties=[
-                             SVGFieldSpec("A", type="string"),
-                             SVGFieldSpec("B", type="string"),
-                             SVGFieldSpec("C", type="string"),
-                             SVGFieldSpec("D", type="string"),
-                         ]),
+                         description="A mapping of option keys (e.g. A, B or A, B, C, D, E) to their text"),
+            SVGFieldSpec("answer", type="string", required=True,
+                         description="The correct option key"),
+            SVGFieldSpec("student_answer", type="string", required=False,
+                         description="Optional student selection for review screens"),
+            SVGFieldSpec("correct_answer", type="string", required=False,
+                         description="Optional correct answer key for review screens"),
         ],
-        notes=["Only use on CHECK slides — must match the nt block's option values exactly."],
+        notes=["Only use on CHECK slides — must match the option values exactly."],
         render_fn=_render_multiple_choice,
     ),
     SVGElementSpec(
@@ -1005,6 +1160,29 @@ ELEMENT_SPECS: list[SVGElementSpec] = [
         ],
         notes=[],
         render_fn=_render_mixed_card,
+    ),
+    SVGElementSpec(
+        name="remediation_block",
+        subjects=["*"],
+        synopsis="review: {source_question, student_answer, correct_answer}, remember: {type, ...}, solve: {type, ...} — remediation block",
+        fields=[
+            SVGFieldSpec("review", type="object", required=True,
+                         description="Shows the question context and answers",
+                         properties=[
+                             SVGFieldSpec("source_question", type="string", required=True,
+                                          description="ID of the checked question element"),
+                             SVGFieldSpec("student_answer", type="string", required=False,
+                                          description="Option key selected by the student"),
+                             SVGFieldSpec("correct_answer", type="string", required=False,
+                                          description="Correct option key"),
+                         ]),
+            SVGFieldSpec("remember", type="object", required=True,
+                         description="The conceptual anchor element definition"),
+            SVGFieldSpec("solve", type="object", required=True,
+                         description="The step-by-step solution element definition"),
+        ],
+        notes=[],
+        render_fn=_render_remediation_block,
     ),
 ]
 

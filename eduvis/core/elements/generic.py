@@ -67,17 +67,17 @@ ELEMENT_SPECS: list[ElementSpec] = [
     ElementSpec(
         name="multiple_choice",
         subjects=["*"],
-        synopsis="question: string, options: {A, B, C, D}  — MCQ layout",
+        synopsis="question: string, options: {key: text}  — MCQ layout (2 to 5 options)",
         fields=[
             FieldSpec("question", type="string", required=True, description="The MCQ stem"),
             FieldSpec("options", type="object", required=True,
-                      description="Exactly four options keyed A–D",
-                      properties=[
-                          FieldSpec("A", type="string"),
-                          FieldSpec("B", type="string"),
-                          FieldSpec("C", type="string"),
-                          FieldSpec("D", type="string"),
-                      ]),
+                      description="A mapping of option keys (e.g. A, B or A, B, C, D, E) to their text"),
+            FieldSpec("answer", type="string", required=True,
+                      description="The correct option key"),
+            FieldSpec("student_answer", type="string", required=False,
+                      description="Optional student selection for review screens"),
+            FieldSpec("correct_answer", type="string", required=False,
+                      description="Optional correct answer key for review screens"),
         ],
     ),
     ElementSpec(
@@ -136,6 +136,27 @@ ELEMENT_SPECS: list[ElementSpec] = [
                           FieldSpec("headers", type="array", required=False),
                           FieldSpec("row_colors", type="array", required=False),
                       ])),
+        ],
+    ),
+    ElementSpec(
+        name="remediation_block",
+        subjects=["*"],
+        synopsis="review: {source_question, student_answer, correct_answer}, remember: {type, ...}, solve: {type, ...} — remediation block",
+        fields=[
+            FieldSpec("review", type="object", required=True,
+                      description="Shows the question context and answers",
+                      properties=[
+                          FieldSpec("source_question", type="string", required=True,
+                                    description="ID of the checked question element"),
+                          FieldSpec("student_answer", type="string", required=False,
+                                    description="Option key selected by the student"),
+                          FieldSpec("correct_answer", type="string", required=False,
+                                    description="Correct option key"),
+                      ]),
+            FieldSpec("remember", type="object", required=True,
+                      description="The conceptual anchor element definition (e.g. callout_box, fact_boxes, number_line)"),
+            FieldSpec("solve", type="object", required=True,
+                      description="The step-by-step solution element definition (e.g. hint_list, text_list, math_grid)"),
         ],
     ),
 ]

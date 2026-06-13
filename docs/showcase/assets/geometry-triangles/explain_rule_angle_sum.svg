@@ -2,7 +2,7 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#1565C0" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle — Finding the Unknown Angle —</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Angle Sum of a Triangle - Finding the Unknown Angle —</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: explain rule angle sum</text>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
@@ -11,11 +11,11 @@
   <text x="106" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#78350f" text-anchor="middle">ANCHOR</text>
   <rect x="80" y="98" width="2" height="80" rx="1" fill="#10b981" opacity="0.35" />
   <circle cx="85" cy="101" r="3" fill="#10b981" />
-  <text x="98" y="106" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">The interior angles of any triangle always add up to exactly 180°.</text>
+  <text x="98" y="106" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">The interior angles of any triangle always add up to exactly 180 deg.</text>
   <circle cx="85" cy="119" r="3" fill="#10b981" />
-  <text x="98" y="124" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Formula: Angle A + Angle B + Angle C = 180°</text>
+  <text x="98" y="124" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Formula: Angle A + Angle B + Angle C = 180 deg</text>
   <circle cx="85" cy="137" r="3" fill="#10b981" />
-  <text x="98" y="142" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">To find an unknown angle, subtract the two known angles from 180°.</text>
+  <text x="98" y="142" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">To find an unknown angle, subtract the two known angles from 180 deg.</text>
   <circle cx="85" cy="155" r="3" fill="#10b981" />
-  <text x="98" y="160" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Example: Unknown Angle = 180° - (Known Angle 1 + Known Angle 2)</text>
+  <text x="98" y="160" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Example: Unknown Angle = 180 deg - (Known Angle 1 + Known Angle 2)</text>
 </svg>

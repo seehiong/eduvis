@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduVis Schema — Live Editor</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
     <!-- Pyodide WASM Python -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
-    
+
     <!-- Monaco Editor Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs/loader.min.js"></script>
 
@@ -75,8 +78,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         #loading-text {
@@ -148,7 +156,8 @@
             font-weight: 500;
         }
 
-        select, button {
+        select,
+        button {
             background-color: var(--bg-editor);
             border: 1px solid var(--border);
             color: var(--text-main);
@@ -161,7 +170,8 @@
             cursor: pointer;
         }
 
-        select:hover, select:focus {
+        select:hover,
+        select:focus {
             border-color: var(--primary);
         }
 
@@ -211,7 +221,8 @@
             height: 100%;
             border-right: 1px solid var(--border);
             position: relative;
-            overflow: hidden; /* Prevent content from overflowing the panel */
+            overflow: hidden;
+            /* Prevent content from overflowing the panel */
         }
 
         .panel:last-child {
@@ -239,8 +250,10 @@
         /* Editor Section */
         #editor-container {
             flex-grow: 1;
-            height: 0; /* Let flexbox control Monaco Editor's height */
-            min-height: 0; /* Prevent flex expansion */
+            height: 0;
+            /* Let flexbox control Monaco Editor's height */
+            min-height: 0;
+            /* Prevent flex expansion */
             width: 100%;
             background-color: var(--bg-editor);
         }
@@ -403,6 +416,7 @@
                 grid-template-rows: 1fr 1fr;
                 height: calc(100vh - 60px);
             }
+
             .panel {
                 border-right: none;
                 border-bottom: 1px solid var(--border);
@@ -410,6 +424,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Loading Screen -->
@@ -432,7 +447,9 @@
                     <option value="lesson-geometry-triangles.yaml">Angle Sum of a Triangle (Full Lesson)</option>
                     <option value="lesson-negative-numbers.yaml">Negative Numbers (Full Lesson)</option>
                     <option value="demo-adaptive-remediation.yaml">Adaptive Remediation Demo</option>
-                    <option value="../examples/renderer_test.yaml">Comprehensive Renderer Test</option>
+                    <option value="demo-remediation-layout.yaml">Remediation Layout &amp; MCQ Options Demo</option>
+                    <option value="renderer_test.yaml">Comprehensive Renderer Test</option>
+                    <option value="mixed_card_demo.yaml">Mixed Content Card Demo</option>
                 </select>
             </div>
             <div class="control-group">
@@ -453,7 +470,7 @@
 
     <!-- Core Workspace Split Screen -->
     <div class="workspace">
-        
+
         <!-- Left Panel: Editor & Slide selector -->
         <div class="panel">
             <div class="panel-header">
@@ -461,7 +478,7 @@
             </div>
             <!-- Monaco Editor Container -->
             <div id="editor-container"></div>
-            
+
             <!-- Slide selector for full lessons -->
             <div class="slide-selector-wrapper" id="slide-selector-section" style="display: none;">
                 <div class="slide-selector-header">
@@ -473,24 +490,34 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Right Panel: Visual Render Canvas & Output -->
         <div class="panel">
             <div class="panel-header">
                 <div class="preview-tabs">
-                    <button class="preview-tab active" id="tab-visual" onclick="togglePreviewTab('visual')">Visual Preview</button>
+                    <button class="preview-tab active" id="tab-visual" onclick="togglePreviewTab('visual')">Visual
+                        Preview</button>
                     <button class="preview-tab" id="tab-xml" onclick="togglePreviewTab('xml')">Raw SVG Source</button>
                 </div>
                 <div class="preview-actions">
                     <button class="btn-icon" title="Copy Raw SVG" onclick="copyRawSvg()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
                     </button>
                     <button class="btn-icon" title="Download SVG" onclick="downloadSvg()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
                     </button>
                 </div>
             </div>
-            
+
             <!-- SVG Render Frame -->
             <div class="preview-body">
                 <div id="svg-render-area">
@@ -498,7 +525,7 @@
                 </div>
                 <textarea id="xml-output-area" readonly></textarea>
             </div>
-            
+
             <!-- Error Banner -->
             <div id="error-banner"></div>
         </div>
@@ -565,7 +592,7 @@
                 await pyodide.runPythonAsync(`
                     import micropip
                     await micropip.install("pyyaml")
-                    await micropip.install("./eduvis-0.1.0-py3-none-any.whl")
+                    await micropip.install("./eduvis-0.1.1-py3-none-any.whl")
                 `);
 
                 updateStatus("Configuring Render Engine", "Importing Python libraries...");
@@ -602,11 +629,14 @@ def parse_lesson_structure(yaml_str):
 
 def render_slide_from_lesson(yaml_str, index, posting_group):
     doc = yaml.safe_load(yaml_str)
+    content = doc.get("content", [])
+    elements_by_id = {el["id"]: el for el in content if isinstance(el, dict) and "id" in el}
+    
     lesson_title = (doc.get("lesson") or {}).get("title", "")
-    element = doc["content"][index]
+    element = content[index]
     
     title = f"{lesson_title} — {_element_title(element)}" if lesson_title else _element_title(element)
-    svg_spec_yaml = _build_svg_spec_yaml(element)
+    svg_spec_yaml = _build_svg_spec_yaml(element, elements_by_id)
     
     return renderer.render(svg_spec_yaml, title=title, posting_group=posting_group)
 
@@ -643,7 +673,7 @@ def render_raw_slide(yaml_str, posting_group):
                 const response = await fetch(`./${fileName}`);
                 if (!response.ok) throw new Error("Preset file not found");
                 const text = await response.text();
-                
+
                 selectedSlideIndex = 0;
                 window.editor.setValue(text);
                 parseStructureAndRender();
@@ -658,7 +688,7 @@ def render_raw_slide(yaml_str, posting_group):
             isRenderInProgress = true;
 
             const yamlText = window.editor.getValue();
-            
+
             try {
                 // Call Python function to parse the document metadata and slide structure
                 const resultJson = pyodide.globals.get("parse_lesson_structure")(yamlText);
@@ -675,10 +705,10 @@ def render_raw_slide(yaml_str, posting_group):
                 if (result.type === "lesson") {
                     renderMode = "lesson";
                     currentSlides = result.slides;
-                    
+
                     // Show slide selector
                     document.getElementById('slide-selector-section').style.display = 'flex';
-                    
+
                     // Keep selected slide within limits
                     if (selectedSlideIndex >= currentSlides.length) {
                         selectedSlideIndex = 0;
@@ -705,7 +735,7 @@ def render_raw_slide(yaml_str, posting_group):
             const container = document.getElementById('slide-tabs-container');
             container.innerHTML = '';
 
-            document.getElementById('slide-count-indicator').innerText = 
+            document.getElementById('slide-count-indicator').innerText =
                 `${selectedSlideIndex + 1} of ${currentSlides.length}`;
 
             currentSlides.forEach((slide) => {
@@ -714,7 +744,7 @@ def render_raw_slide(yaml_str, posting_group):
                 if (slide.index === selectedSlideIndex) {
                     tab.classList.add('active');
                 }
-                
+
                 // Show slide order index and dynamic ID/title
                 tab.innerText = `${slide.index + 1}. ${slide.id}`;
                 tab.title = slide.title;
@@ -731,7 +761,7 @@ def render_raw_slide(yaml_str, posting_group):
         function performRender() {
             const yamlText = window.editor.getValue();
             const groupSelect = document.getElementById('group-select').value;
-            
+
             let svgOutput = "";
 
             document.getElementById('status-container').style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
@@ -758,7 +788,7 @@ def render_raw_slide(yaml_str, posting_group):
                 document.getElementById('status-container').style.borderColor = 'rgba(16, 185, 129, 0.2)';
                 document.getElementById('status-container').style.color = 'var(--accent-green)';
                 document.getElementById('status-text').innerText = "Connected";
-                
+
                 hideError();
             } catch (err) {
                 showError("Render Error:\n" + err.message);
@@ -776,7 +806,7 @@ def render_raw_slide(yaml_str, posting_group):
         function togglePreviewTab(tabName) {
             document.getElementById('tab-visual').classList.remove('active');
             document.getElementById('tab-xml').classList.remove('active');
-            
+
             document.getElementById('svg-render-area').style.display = 'none';
             document.getElementById('xml-output-area').style.display = 'none';
 
@@ -794,7 +824,7 @@ def render_raw_slide(yaml_str, posting_group):
             const banner = document.getElementById('error-banner');
             banner.innerText = msg;
             banner.style.display = 'block';
-            
+
             document.getElementById('status-container').style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
             document.getElementById('status-container').style.borderColor = 'rgba(239, 68, 68, 0.2)';
             document.getElementById('status-container').style.color = 'var(--accent-red)';
@@ -817,7 +847,7 @@ def render_raw_slide(yaml_str, posting_group):
 
             const blob = new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" });
             const url = URL.createObjectURL(blob);
-            
+
             const link = document.createElement("a");
             link.href = url;
             link.download = fileName;
@@ -840,4 +870,5 @@ def render_raw_slide(yaml_str, posting_group):
         }
     </script>
 </body>
+
 </html>

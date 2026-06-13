@@ -163,6 +163,7 @@ content:
       B: "90 deg"
       C: "45 deg"
       D: "30 deg"
+    answer: "A"
 
   - id: practice_starter_triangle_2
     type: multiple_choice
@@ -181,6 +182,7 @@ content:
       B: "90 deg"
       C: "45 deg"
       D: "180 deg"
+    answer: "A"
 
   # --- INDEPENDENT PRACTICE (ROUTINE) ----------------------------------------
   # Regular, standard geometry problems.
@@ -201,6 +203,7 @@ content:
       B: "33 deg"
       C: "65 deg"
       D: "13 deg"
+    answer: "A"
 
   - id: practice_routine_triangle_2
     type: multiple_choice
@@ -219,6 +222,7 @@ content:
       B: "40 deg"
       C: "80 deg"
       D: "140 deg"
+    answer: "A"
 
   # --- CHALLENGE -------------------------------------------------------------
   # Advanced algebraic angle sum problem.
@@ -241,6 +245,7 @@ content:
       B: "60 deg"
       C: "30 deg"
       D: "120 deg"
+    answer: "A"
 
   # --- RECALL ----------------------------------------------------------------
   # Simple retrieval check.
@@ -260,3 +265,4 @@ content:
       B: "360 deg"
       C: "90 deg"
       D: "It depends on the triangle"
+    answer: "A"
