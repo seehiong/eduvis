@@ -1,13 +1,3 @@
-# EduVis LLM Vocabulary Reference
-
-> **Generated output** — produced by `python -m eduvis docs --subjects math`.
-> This file reflects the schema at the current release. Regenerate after adding elements.
->
-> Inject into an LLM system prompt so the model can write valid EduVis lesson specs.
-> See [../README.md#using-with-llms](../README.md#using-with-llms) for usage.
-
----
-
 ## EduVis Lesson Structure
 
 Every lesson YAML has three top-level keys: lesson, progression, content.
@@ -163,7 +153,7 @@ relationships:
     - abstract_version       # two elements show the same concept at different abstraction levels
 ```
 
-Valid relationship types: anchors | contradicts | parallels | precedes | reinforces
+Valid relationship types: anchors | contradicts | parallels | precedes | reinforces | remediation_for
 
 Each value is a list of element id strings. Referenced IDs must exist in the
 same lesson's content list.
@@ -214,7 +204,16 @@ required/optional fields are listed below.
                     left (optional): string
                     right (optional): string
                   caption (optional): string  # Title above the line
-                  PREFER stacking two captioned number_lines over two near-identical slides.
+  mixed_card      ribbon_type: solve|remember|review, ribbon_label: string, items: [{type: text|math_grid, ...}] — mixed card
+                  ribbon_type (optional): solve|remember|review, default: solve
+                  ribbon_label (optional): string
+                  items (required, array):  # List of sub-elements to render within the card
+                    - type: text|math_grid
+                    - lines (optional): array
+                    - mode (optional): string
+                    - rows (optional): array
+                    - headers (optional): array
+                    - row_colors (optional): array
   fraction_model  shape: circle|bar|grid, total_parts, shaded_parts, color, label
                   shape (optional): circle|bar|grid, default: circle  # Visual representation style
                   total_parts (required): integer  # Total number of equal parts
@@ -242,14 +241,16 @@ required/optional fields are listed below.
                     - color (optional): red|green|blue|yellow|cyan|orange|purple|grey|white
   geometry_shape  vertices: [[x,y],...], labels, side_labels, angles — polygon with annotations
                   vertices (required): array  # List of [x, y] coordinate pairs defining the polygon
-                  labels (optional): array  # Vertex label strings or {text, position} dicts (one per vertex)
+                  labels (optional): array  # Vertex label strings or {text, position, offset, anchor} dicts (one per vertex)
                   side_labels (optional, array):  # [{edge: 'AB', label: '5 cm'}] — label for each named edge
                     - edge: string  # Two-letter vertex pair e.g. 'AB'
                     - label: string  # Text shown at the midpoint of the edge
                   angles (optional, array):  # [{vertex: 'A', arc: true, label: '90°'}] — angle annotations
                     - vertex: string  # Vertex label where the angle sits
-                    - arc (optional): boolean  # Draw arc indicator if true
+                    - sides (optional): array  # Optional list of two vertex labels specifying custom bounding sides for the angle (useful for external angles)
+                    - arc (optional): any  # Draw arc if true (defaults to square for 90° angles); use 'square' to force square right-angle indicator
                     - label (optional): string  # Angle measure label e.g. '90°'
+                  edges (optional): array  # Optional list of edge connections between vertex labels (e.g. ['AB', 'BC'] or [['A', 'B']]). If specified, renders separate lines instead of a single closed polygon.
   factor_array    number: N — draws N as a dot rectangle (concrete->pictorial for factors/primes)
                   number (required): integer  # The whole number to represent as a dot array
                   rows (optional): integer  # Override row count; omit to auto-pick most-square factor pair
@@ -259,10 +260,26 @@ required/optional fields are listed below.
                   verdict (optional): boolean, default: False  # If true, adds 'Prime / Composite / neither' label
                   PREFER factor_array over example_panel whenever a slide teaches factors or primes.
                   verdict: true adds an automatic Prime / Composite / neither label.
-  math_grid       rows: [[cells],...], headers: [strings] — column arithmetic grid
-                  rows (required): array  # List of rows; each row is a list of cell values or the string 'line' to draw a separator
+  math_grid       rows: [[cells],...], headers: [strings] — column arithmetic or ratio grid
+                  mode (optional): arithmetic|ratio, default: arithmetic  # 'arithmetic' (default) for column place-value grids with operators; 'ratio' for ratio tables showing A : B (: C …) per row with colon separators
+                  rows (required): array  # List of rows; each row is a list of cell values. In arithmetic mode, the string 'line' draws a separator. To render an operator (e.g. +, -), place it as the first cell of the row (e.g. ['+', '2', '0']).
                   headers (optional): array  # Optional column header labels
                   row_colors (optional): array  # Per-row color names (same length as data rows)
+                  show_grid (optional): boolean, default: True  # If true (default), draws grid boxes around digit cells in arithmetic mode. If false, hides the boxes but keeps alignment.
+                  In arithmetic mode, place the operator (+, -, ×, ÷) as the first cell of the operator row (e.g. ['+', '2', '0']) so that it renders next to the digits without a border box.
+  fraction_equation terms: [strings|objects] — horizontal math equation featuring vertical fractions
+                  terms (required): array  # List of terms in the equation. Each term can be a string (e.g. '1/5', '+', '3/5', '=', '4/5', '2 1/5') or an object with properties: val, color, bold, placeholder
+  solid_shape     shape: cube|rectangular_prism|triangular_prism|pyramid|cone|cylinder, dimensions, color, label
+                  shape (optional): cube|rectangular_prism|triangular_prism|pyramid|cone|cylinder, default: cube  # 3D shape type
+                  dimensions (optional): array, default: [3, 3, 3]  # [width, height, depth] — if 1 value given, used for all; if 2 given, third defaults to second
+                  color (optional): red|green|blue|yellow|cyan|orange|purple|grey|white, default: blue
+                  label (optional): string  # Measurement label below the shape (e.g. '5 cm' or '5×3×2 cm³')
+                  show_dimensions (optional): boolean, default: False  # If true, renders dimension measurements on the shape (radius, height, etc.)
+                  All shapes use isometric projection for consistent 3D perspective.
+                  Dimensions are auto-scaled to fit the content zone.
+                  For a cube, pass dimensions: [side] or dimensions: [5].
+                  For a rectangular prism, pass dimensions: [width, height, depth].
+                  show_dimensions: true renders radius/height labels for cones and cylinders, useful for volume/surface area lessons.
 ```
 
 IMPORTANT: Only use fields listed above for each element type. Do not invent fields.
