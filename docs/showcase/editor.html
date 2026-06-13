@@ -211,6 +211,7 @@
             height: 100%;
             border-right: 1px solid var(--border);
             position: relative;
+            overflow: hidden; /* Prevent content from overflowing the panel */
         }
 
         .panel:last-child {
@@ -238,6 +239,8 @@
         /* Editor Section */
         #editor-container {
             flex-grow: 1;
+            height: 0; /* Let flexbox control Monaco Editor's height */
+            min-height: 0; /* Prevent flex expansion */
             width: 100%;
             background-color: var(--bg-editor);
         }
@@ -429,6 +432,7 @@
                     <option value="lesson-geometry-triangles.yaml">Angle Sum of a Triangle (Full Lesson)</option>
                     <option value="lesson-negative-numbers.yaml">Negative Numbers (Full Lesson)</option>
                     <option value="demo-adaptive-remediation.yaml">Adaptive Remediation Demo</option>
+                    <option value="../examples/renderer_test.yaml">Comprehensive Renderer Test</option>
                 </select>
             </div>
             <div class="control-group">
