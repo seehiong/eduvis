@@ -1,0 +1,34 @@
+name: Publish Python Package to PyPI
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/eduvis
+    permissions:
+      id-token: write  # Required for Trusted Publishing / OIDC
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Set up uv
+      uses: astral-sh/setup-action@v2
+
+    - name: Build package
+      run: uv build
+
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
