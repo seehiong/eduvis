@@ -43,7 +43,7 @@ _LAYOUT_FOR_ZONE = {
     "right":  "two-column",
     "center": "visual + full-width",
     "full":   "header + full-width",
-    "bottom": "header + full-width",
+    "bottom": "visual + full-width",
 }
 
 # Phase → header background color + badge label.
