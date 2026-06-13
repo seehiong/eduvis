@@ -1,5 +1,5 @@
 # EduVis Showcase: Adaptive Remediation Pattern
-# Demonstrates the CHECK → REMEDIATION_FOR → RETRY adaptive tutoring loop
+# Demonstrates the CHECK -> REMEDIATION_FOR -> RETRY adaptive tutoring loop
 #
 # Educational insight: Students often confuse digit size with negative number magnitude.
 # -10 looks "bigger" than -2 (digit-wise), but sits further left (is actually smaller).
@@ -29,7 +29,7 @@ progression:
 
 content:
 
-  # ── SETUP ──────────────────────────────────────────────────────────────────
+  # --- SETUP ------------------------------------------------------------------
   # Establish what we know about negative number ordering.
 
   - id: setup_concept
@@ -45,7 +45,7 @@ content:
       - "Numbers to the LEFT are always smaller."
       - "For negative numbers: -2 is to the RIGHT of -10, so -2 > -10."
 
-  # ── GUIDED EXAMPLE ─────────────────────────────────────────────────────────
+  # --- GUIDED EXAMPLE ---------------------------------------------------------
   # Show the correct way of thinking.
 
   - id: guided_worked_example
@@ -74,7 +74,7 @@ content:
           REMEMBER: A bigger digit (-10 vs -2) does NOT mean a bigger value!
           Position on the line is what matters.
 
-  # ── CHECK: Does the student have the misconception? ──────────────────────
+  # --- CHECK: Does the student have the misconception? ----------------------
   # This multiple choice question specifically targets the common error.
   # If answered incorrectly, the student will receive HINT7.
 
@@ -99,7 +99,7 @@ content:
       C: "They are equal"
       D: "Cannot compare them"
 
-  # ── REMEDIATION: IF the student answers incorrectly ──────────────────────
+  # --- REMEDIATION: IF the student answers incorrectly ----------------------
   # The runtime reads remediation_for and shows this HINT on failure of CHECK.
   # This is how adaptive tutoring is encoded in EduVis without explicit branching.
 
@@ -127,7 +127,7 @@ content:
       - "Step 5: Therefore -10 < -2 (negative ten is less than negative two)."
     final: "Now try the question again: which is larger, -10 or -2?"
 
-  # ── MISCONCEPTION ANCHOR ───────────────────────────────────────────────────
+  # --- MISCONCEPTION ANCHOR --------------------------------------------------
   # Explicit statement of what the wrong thinking is and why it breaks.
   # Used for student reflection and teacher diagnostics.
 
@@ -145,7 +145,7 @@ content:
       - "RIGHT: 'I'll check the number line position: -10 is further LEFT, so -10 is smaller.'"
       - "KEY INSIGHT: Negative numbers reverse our intuition about digits. More negative = smaller value."
 
-  # ── VISUAL ANCHOR ──────────────────────────────────────────────────────────
+  # --- VISUAL ANCHOR ---------------------------------------------------------
   # Show the number line so students can see the positions clearly.
 
   - id: visual_number_line_comparison
