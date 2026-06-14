@@ -210,6 +210,16 @@ class _ElementRegistry:
         self._ensure_registered()
         return dict(self._specs)
 
+    def element_names(self, subjects: list[str]) -> list[str]:
+        """Return the sorted list of valid element type names for the given subjects."""
+        self._ensure_registered()
+        subject_set = set(subjects) | {"*"}
+        return sorted([
+            spec.name
+            for spec in self._specs.values()
+            if any(s in subject_set for s in spec.subjects)
+        ])
+
     # ── Prompt generation ─────────────────────────────────────────────────────
 
     def format_prompt_docs(self, subjects: list[str]) -> str:

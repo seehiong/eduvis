@@ -628,8 +628,153 @@ def _render_multiple_choice(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[l
     q_lines = _wrap(question, inner_w, size_q)
     q_h = len(q_lines) * lead_q
     
-    # Calculate options layout dynamically for 2 to 5 options
     labels = sorted(options.keys()) if isinstance(options, dict) else []
+    is_tf = len(labels) == 2 and set(l.lower() for l in labels) == {"true", "false"}
+    
+    if is_tf:
+        # Side-by-side buttons for True and False
+        tf_order = []
+        if "True" in options and "False" in options:
+            tf_order = ["True", "False"]
+        elif "true" in options and "false" in options:
+            tf_order = ["true", "false"]
+        else:
+            tf_order = sorted(labels, key=lambda x: x.lower() == "false")
+
+        btn_w = (inner_w - 16) // 2
+        btn_h = 44
+        
+        student_ans = spec.get("student_answer") or spec.get("answer")
+        correct_ans = spec.get("correct_answer")
+        
+        feedback_text = ""
+        if student_ans is not None:
+            feedback_val = options.get(student_ans, "")
+            if feedback_val and feedback_val.lower() not in {"true", "false"}:
+                feedback_text = feedback_val
+
+        feedback_lines = []
+        feedback_h = 0
+        if feedback_text:
+            feedback_lines = _wrap(feedback_text, inner_w - 48, size_opt)
+            feedback_h = len(feedback_lines) * lead_opt + 16
+
+        h = min(zh, q_h + 20 + btn_h + (16 + feedback_h if feedback_text else 0) + 24)
+        
+        out = _render_ribbon_box(zx, zy, zw, h, ribbon_type, label=spec.get("ribbon_label", ribbon_type))
+        
+        # Render question
+        cy = zy + 16 + size_q
+        for ln in q_lines:
+            out.append(_text(zx + pad, cy, ln, size=size_q,
+                              color=COLORS["heading"], weight="bold"))
+            cy += lead_q
+        cy += 12
+        
+        # Render buttons side-by-side
+        for i, lbl in enumerate(tf_order):
+            bx_start = zx + pad + i * (btn_w + 16)
+            by = cy + btn_h // 2
+            
+            is_student = (student_ans is not None and lbl.lower() == student_ans.lower())
+            is_correct = (correct_ans is not None and lbl.lower() == correct_ans.lower())
+            
+            is_green = False
+            is_red = False
+            is_blue = False
+            
+            if student_ans is not None and correct_ans is not None:
+                # Review state
+                if is_student and student_ans.lower() == correct_ans.lower():
+                    is_green = True
+                elif is_student:
+                    is_red = True
+                elif is_correct:
+                    is_green = True
+            elif phase == "explain":
+                # Concept explanation / truth model -> show correct as green, others unselected
+                if lbl.lower() == spec.get("answer", "").lower():
+                    is_green = True
+            else:
+                # Normal state
+                is_sel = (lbl.lower() == spec.get("answer", "").lower())
+                if is_sel:
+                    is_blue = True
+                    
+            if is_green:
+                bg_color = "#f0fdf4"      # Soft green bg (Emerald-50)
+                stroke_color = "#10b981"  # Emerald-500
+                text_color = "#047857"    # Emerald-700
+                has_dot = True
+                dot_color = "#10b981"
+            elif is_red:
+                bg_color = "#fef2f2"      # Soft red bg (Red-50)
+                stroke_color = "#ef4444"  # Red-500
+                text_color = "#b91c1c"    # Red-700
+                has_dot = True
+                dot_color = "#ef4444"
+            elif is_blue:
+                bg_color = "#eff6ff"      # Soft blue bg (Blue-50)
+                stroke_color = "#3b82f6"  # Blue-500
+                text_color = "#1d4ed8"    # Blue-700
+                has_dot = True
+                dot_color = "#3b82f6"
+            else:
+                bg_color = "#f8fafc"      # Soft grey bg (Slate-50)
+                stroke_color = "#cbd5e1"  # Slate-300
+                text_color = "#475569"    # Slate-600
+                has_dot = False
+                dot_color = "#cbd5e1"
+            
+            # Draw premium button box
+            out.append(f'  <rect x="{bx_start}" y="{cy}" width="{btn_w}" height="{btn_h}" rx="8" fill="{bg_color}" stroke="{stroke_color}" stroke-width="1.5" />')
+            
+            # Draw radio circle indicator on the left
+            r_cx = bx_start + 22
+            out.append(f'  <circle cx="{r_cx}" cy="{by}" r="7" fill="none" stroke="{stroke_color}" stroke-width="1.5" />')
+            if has_dot:
+                out.append(f'  <circle cx="{r_cx}" cy="{by}" r="4" fill="{dot_color}" />')
+                
+            # Draw choice label text
+            out.append(_text(bx_start + 38, by + 4.5, lbl, size=size_opt + 1, color=text_color, weight="bold"))
+            
+        cy += btn_h
+        
+        if feedback_text:
+            cy += 16
+            is_student_correct = False
+            if student_ans is not None:
+                if correct_ans is not None:
+                    is_student_correct = (student_ans.lower() == correct_ans.lower())
+                else:
+                    is_student_correct = (student_ans.lower() == spec.get("answer", "").lower())
+                    
+            f_color = COLORS["green"] if is_student_correct else COLORS["red"]
+            f_bg = "#f0fdf4" if is_student_correct else "#fef2f2"
+            f_stroke = "#10b981" if is_student_correct else "#ef4444"
+            
+            # Draw premium alert card
+            out.append(f'  <rect x="{zx + pad}" y="{cy}" width="{inner_w}" height="{feedback_h}" rx="8" fill="{f_bg}" opacity="0.5" />')
+            out.append(f'  <rect x="{zx + pad}" y="{cy}" width="{inner_w}" height="{feedback_h}" rx="8" fill="none" stroke="{f_stroke}" stroke-width="1.2" opacity="0.4" />')
+            out.append(f'  <rect x="{zx + pad}" y="{cy + 2}" width="4" height="{feedback_h - 4}" rx="2" fill="{f_stroke}" />')
+            
+            # Left icon (circle with white tick or cross)
+            icon_cx = zx + pad + 24
+            icon_cy = cy + feedback_h // 2
+            out.append(f'  <circle cx="{icon_cx}" cy="{icon_cy}" r="9" fill="{f_stroke}" />')
+            if is_student_correct:
+                out.append(f'  <path d="M {icon_cx - 4} {icon_cy} L {icon_cx - 1} {icon_cy + 3} L {icon_cx + 4} {icon_cy - 3}" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />')
+            else:
+                out.append(f'  <path d="M {icon_cx - 3} {icon_cy - 3} L {icon_cx + 3} {icon_cy + 3} M {icon_cx + 3} {icon_cy - 3} L {icon_cx - 3} {icon_cy + 3}" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" />')
+            
+            ty = cy + (feedback_h - len(feedback_lines) * lead_opt) // 2 + size_opt - 1
+            for ln in feedback_lines:
+                out.append(_text(zx + pad + 44, ty, ln, size=size_opt, color=f_color, weight="bold"))
+                ty += lead_opt
+                
+        return out, h
+        
+    # Calculate options layout dynamically for 2 to 5 options
     if not labels:
         labels = ["A", "B", "C", "D"]
         

@@ -3,9 +3,11 @@
 # Demonstrates: hook -> explore -> explain -> guided -> starter -> routine -> challenge -> recall
 # This lesson builds from concrete scenarios (temperature, money) through abstract rules
 
-lesson:
-  syllabus: showcase
+curriculum:
+  code: showcase
   topic: negative-numbers
+
+lesson:
   title: Negative Numbers - Understanding Values Below Zero
 
 progression:
@@ -21,6 +23,8 @@ progression:
       purpose: conceptual_model
     - phase: explain
       purpose: procedure
+    - phase: explain
+      purpose: comparison
     - phase: guided_practice
       count: 1
     - phase: independent_practice
@@ -45,7 +49,7 @@ content:
       lesson_phase: hook
       layout_zone: center
       visual_weight: primary
-      memory_role: anchor
+      memory_role: example
     items:
       - text: "Temperature: Five degrees below zero (-5 deg C)"
         border_color: blue

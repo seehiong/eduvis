@@ -9,9 +9,11 @@
 # - Shows the CHECK first; on failure, shows the HINT and retries
 # - The progression still declares the logical order
 
-lesson:
-  syllabus: showcase
+curriculum:
+  code: showcase
   topic: adaptive-remediation
+
+lesson:
   title: "Adaptive Remediation Demo: Catching the Misconception"
 
 progression:
@@ -23,9 +25,14 @@ progression:
   phases:
     - phase: explain
       purpose: conceptual_model
+    - phase: explain
+      purpose: comparison
+    - phase: explain
+      purpose: conceptual_model
     - phase: guided_practice
     - phase: independent_practice
       difficulty: starter
+    - phase: guided_practice
 
 content:
 
@@ -44,6 +51,47 @@ content:
       - "On a number line, numbers to the RIGHT are always larger."
       - "Numbers to the LEFT are always smaller."
       - "For negative numbers: -2 is to the RIGHT of -10, so -2 > -10."
+
+  # --- MISCONCEPTION ANCHOR --------------------------------------------------
+  # Explicit statement of what the wrong thinking is and why it breaks.
+  # Used for student reflection and teacher diagnostics.
+
+  - id: misconception_explanation
+    type: callout_box
+    placement:
+      lesson_phase: explain
+      purpose: comparison
+      layout_zone: center
+      visual_weight: supporting
+      memory_role: misconception_fix
+    title: "Why -10 < -2 (not -10 > -2)"
+    lines:
+      - "WRONG: 'I'll compare the digits: 10 > 2, so -10 > -2.'"
+      - "RIGHT: 'I'll check the number line position: -10 is further LEFT, so -10 is smaller.'"
+      - "KEY INSIGHT: Negative numbers reverse our intuition about digits. More negative = smaller value."
+
+  # --- VISUAL ANCHOR ---------------------------------------------------------
+  # Show the number line so students can see the positions clearly.
+
+  - id: visual_number_line_comparison
+    type: number_line
+    placement:
+      lesson_phase: explain
+      purpose: conceptual_model
+      layout_zone: center
+      visual_weight: supporting
+      memory_role: anchor
+    range: [-12, 0]
+    direction_labels:
+      left: "Smaller"
+      right: "Larger"
+    highlight:
+      - value: -10
+        label: "-10\n(further left,\nsmaller value)"
+        color: red
+      - value: -2
+        label: "-2\n(further right,\nlarger value)"
+        color: green
 
   # --- GUIDED EXAMPLE ---------------------------------------------------------
   # Show the correct way of thinking.
@@ -129,44 +177,3 @@ content:
       - "Step 4: Numbers further LEFT are always SMALLER."
       - "Step 5: Therefore -10 < -2 (negative ten is less than negative two)."
     final: "Now try the question again: which is larger, -10 or -2?"
-
-  # --- MISCONCEPTION ANCHOR --------------------------------------------------
-  # Explicit statement of what the wrong thinking is and why it breaks.
-  # Used for student reflection and teacher diagnostics.
-
-  - id: misconception_explanation
-    type: callout_box
-    placement:
-      lesson_phase: explain
-      purpose: comparison
-      layout_zone: center
-      visual_weight: supporting
-      memory_role: misconception_fix
-    title: "Why -10 < -2 (not -10 > -2)"
-    lines:
-      - "WRONG: 'I'll compare the digits: 10 > 2, so -10 > -2.'"
-      - "RIGHT: 'I'll check the number line position: -10 is further LEFT, so -10 is smaller.'"
-      - "KEY INSIGHT: Negative numbers reverse our intuition about digits. More negative = smaller value."
-
-  # --- VISUAL ANCHOR ---------------------------------------------------------
-  # Show the number line so students can see the positions clearly.
-
-  - id: visual_number_line_comparison
-    type: number_line
-    placement:
-      lesson_phase: explain
-      purpose: conceptual_model
-      layout_zone: center
-      visual_weight: supporting
-      memory_role: anchor
-    range: [-12, 0]
-    direction_labels:
-      left: "Smaller"
-      right: "Larger"
-    highlight:
-      - value: -10
-        label: "-10\n(further left,\nsmaller value)"
-        color: red
-      - value: -2
-        label: "-2\n(further right,\nlarger value)"
-        color: green

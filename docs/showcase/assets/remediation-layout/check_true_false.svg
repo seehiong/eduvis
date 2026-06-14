@@ -2,26 +2,29 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#1565C0" />
-  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Pedagogical Remediation &amp; Layout Demo — Explain: check</text>
+  <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Pedagogical Remediation &amp; Layout Demo - Explain: check</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">true false</text>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
   <line x1="80" y1="65" x2="720" y2="65" stroke="#fde047" stroke-width="1.5" />
   <rect x="80" y="65" width="52" height="16" rx="3" fill="#fef3c7" stroke="#fde047" stroke-width="1.2" />
   <text x="106" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#78350f" text-anchor="middle">ANCHOR</text>
-  <rect x="80" y="90" width="640" height="102" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
-  <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 184 A 7 7 0 0 0 88 191 L 105 191 Z" fill="#ffedd5" />
-  <line x1="105" y1="91" x2="105" y2="191" stroke="#fdba74" stroke-width="1" />
-  <text x="93" y="141.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 93, 141.0)">SOLVE</text>
+  <rect x="80" y="90" width="640" height="154" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+  <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 236 A 7 7 0 0 0 88 243 L 105 243 Z" fill="#ffedd5" />
+  <line x1="105" y1="91" x2="105" y2="243" stroke="#fdba74" stroke-width="1" />
+  <text x="93" y="167.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 93, 167.0)">SOLVE</text>
   <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">True or False: The number 1 is a prime number.</text>
-  <rect x="116" y="147" width="286" height="40" rx="6" fill="#f0f9ff" stroke="#3b82f6" stroke-width="1.5" />
-  <rect x="124" y="156" width="49" height="22" rx="11" fill="#3b82f6" />
-  <text x="148" y="170.5" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">False</text>
-  <text x="185" y="162" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">Correct, 1 is not a prime</text>
-  <text x="185" y="178" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#1e3a8a" text-anchor="start">number.</text>
-  <rect x="418" y="147" width="286" height="40" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <rect x="426" y="156" width="42" height="22" rx="11" fill="#f1f5f9" />
-  <text x="447" y="170.5" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#64748b" text-anchor="middle">True</text>
-  <text x="487" y="162" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Incorrect, 1 only has one</text>
-  <text x="487" y="178" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">factor.</text>
+  <rect x="116" y="149" width="286" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <circle cx="138" cy="171" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="154" y="175.5" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#475569" text-anchor="start">True</text>
+  <rect x="418" y="149" width="286" height="44" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+  <circle cx="440" cy="171" r="7" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+  <circle cx="440" cy="171" r="4" fill="#3b82f6" />
+  <text x="456" y="175.5" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="start">False</text>
+  <rect x="116" y="209" width="588" height="32" rx="8" fill="#f0fdf4" opacity="0.5" />
+  <rect x="116" y="209" width="588" height="32" rx="8" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.4" />
+  <rect x="116" y="211" width="4" height="28" rx="2" fill="#10b981" />
+  <circle cx="140" cy="225" r="9" fill="#10b981" />
+  <path d="M 136 225 L 139 228 L 144 222" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="160" y="228" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#15803d" text-anchor="start">Correct, 1 is not a prime number.</text>
 </svg>

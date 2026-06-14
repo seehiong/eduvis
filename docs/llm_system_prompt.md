@@ -1,11 +1,13 @@
 ## EduVis Lesson Structure
 
-Every lesson YAML has three top-level keys: lesson, progression, content.
+Every lesson YAML has four top-level keys: curriculum, lesson, progression, content.
 
 ```yaml
-lesson:
-  syllabus: string        # curriculum code e.g. "SEC-math-2027"
+curriculum:
+  code: string            # curriculum code e.g. "SEC-math-2027"
   topic: string           # topic code e.g. "N1.6"
+
+lesson:
   title: string           # human-readable lesson title
   concepts:               # optional list of target concepts
     - string
@@ -270,6 +272,7 @@ required/optional fields are listed below.
                   verdict (optional): boolean, default: False  # If true, adds 'Prime / Composite / neither' label
                   PREFER factor_array over example_panel whenever a slide teaches factors or primes.
                   verdict: true adds an automatic Prime / Composite / neither label.
+                  NEVER use factor_array to compare two groups or show a ratio — it renders a single color only. Use bar_model for group comparison and math_grid (mode: ratio) for ratio relationships.
   math_grid       rows: [[cells],...], headers: [strings] — column arithmetic or ratio grid
                   mode (optional): arithmetic|ratio, default: arithmetic  # 'arithmetic' (default) for column place-value grids with operators; 'ratio' for ratio tables showing A : B (: C …) per row with colon separators
                   rows (required): array  # List of rows; each row is a list of cell values. In arithmetic mode, the string 'line' draws a separator. To render an operator (e.g. +, -), place it as the first cell of the row (e.g. ['+', '2', '0']).

@@ -3,9 +3,11 @@
 # Note: summary_list is an alias for text_list and is omitted.
 # Note: math_box does NOT exist; registered math types are listed below.
 
-lesson:
-  syllabus: SEC-math-2027
+curriculum:
+  code: SEC-math-2027
   topic: N1.6
+
+lesson:
   title: Renderer Test
 
 content:

@@ -188,12 +188,19 @@ def lesson_schema() -> dict:
         "type": "object",
         "required": ["lesson", "progression", "content"],
         "properties": {
+            "curriculum": {
+                "type": "object",
+                "required": ["code", "topic"],
+                "properties": {
+                    "code": {"type": "string", "description": "Curriculum code (e.g. SEC-math-2027)."},
+                    "topic": {"type": "string", "description": "Topic code (e.g. N1.6)."},
+                },
+                "additionalProperties": False,
+            },
             "lesson": {
                 "type": "object",
                 "required": ["title"],
                 "properties": {
-                    "syllabus": {"type": "string"},
-                    "topic": {"type": "string"},
                     "title": {"type": "string"},
                     "concepts": {"type": "array", "items": {"type": "string"}, "description": "Target concepts for the lesson."},
                 },

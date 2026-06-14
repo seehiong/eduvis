@@ -122,7 +122,7 @@ def _render_bar_model(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[st
         return [], 0
 
     BAR_H    = 32
-    GAP      = 14
+    GAP      = 24
     label_w  = 110
     bar_area = zw - label_w - 20
     max_val  = max((b.get("value", 1) for b in bars), default=1)
@@ -168,7 +168,7 @@ def _render_bar_model(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[st
         out.append(_line(brace_x1, brace_y, brace_x2, brace_y, color=dcol, stroke_w=2))
         out.append(_line(brace_x2, brace_y - 6, brace_x2, brace_y + 6,
                           color=dcol, stroke_w=2))
-        out.append(_text(mid_x, brace_y - 12, diff.get("label", ""),
+        out.append(_text(mid_x, brace_y + 14, diff.get("label", ""),
                           size=size_lbl, color=dcol, anchor="middle"))
 
     return out, cy - zy

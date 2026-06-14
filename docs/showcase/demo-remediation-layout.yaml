@@ -4,9 +4,11 @@
 # 2. 5-option MCQ (Multiple choice with A-E)
 # 3. Unified Remediation Block (Review - Remember - Solve)
 
-lesson:
-  syllabus: showcase
+curriculum:
+  code: showcase
   topic: remediation-layout
+
+lesson:
   title: "Pedagogical Remediation & Layout Demo"
   concepts:
     - prime_numbers
@@ -22,6 +24,8 @@ progression:
       purpose: conceptual_model
     - phase: independent_practice
       difficulty: starter
+    - phase: explain
+      purpose: worked_example
 
 content:
 

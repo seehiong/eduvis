@@ -54,12 +54,14 @@ def _lesson_skeleton() -> str:
     return """\
 ## EduVis Lesson Structure
 
-Every lesson YAML has three top-level keys: lesson, progression, content.
+Every lesson YAML has four top-level keys: curriculum, lesson, progression, content.
 
 ```yaml
-lesson:
-  syllabus: string        # curriculum code e.g. "SEC-math-2027"
+curriculum:
+  code: string            # curriculum code e.g. "SEC-math-2027"
   topic: string           # topic code e.g. "N1.6"
+
+lesson:
   title: string           # human-readable lesson title
   concepts:               # optional list of target concepts
     - string

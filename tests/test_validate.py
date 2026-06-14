@@ -6,20 +6,21 @@ from eduvis.core import validate_lesson
 
 def _lesson(**overrides):
     doc = {
-        "lesson": {"syllabus": "test", "topic": "T1", "title": "Test Lesson"},
-        "progression": {
-            "pattern": "direct_instruction",
-            "pedagogy": {},
-            "phases": [{"phase": "explain"}],
-        },
-        "content": [
-            {
-                "id": "slide_1",
-                "type": "text_list",
-                "placement": {"lesson_phase": "explain", "memory_role": "example"},
-                "items": ["Point one", "Point two"],
-            }
-        ],
+      "curriculum": {"code": "test", "topic": "T1"},
+      "lesson": {"title": "Test Lesson"},
+      "progression": {
+          "pattern": "direct_instruction",
+          "pedagogy": {},
+          "phases": [{"phase": "explain"}],
+      },
+      "content": [
+          {
+              "id": "slide_1",
+              "type": "text_list",
+              "placement": {"lesson_phase": "explain", "memory_role": "example"},
+              "items": ["Point one", "Point two"],
+          }
+      ],
     }
     doc.update(overrides)
     return doc
@@ -121,3 +122,189 @@ def test_confidence_first_pedagogy():
     ]
     warnings = validate_lesson(doc)
     assert any("confidence_first" in w for w in warnings)
+
+
+def test_valid_curriculum_block():
+    doc = _lesson()
+    warnings = validate_lesson(doc)
+    assert not any("curriculum" in w for w in warnings)
+
+
+def test_legacy_curriculum_warning():
+    doc = _lesson()
+    del doc["curriculum"]
+    doc["lesson"]["syllabus"] = "test"
+    doc["lesson"]["topic"] = "T1"
+    warnings = validate_lesson(doc)
+    assert any("legacy 'lesson.syllabus' and 'lesson.topic' are deprecated" in w for w in warnings)
+
+
+def test_missing_curriculum_error():
+    doc = _lesson()
+    del doc["curriculum"]
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [curriculum] missing required top-level 'curriculum' block" in w for w in warnings)
+
+
+def test_phase_sequence_out_of_order():
+    doc = _lesson()
+    doc["progression"] = {
+        "pattern": "direct_instruction",
+        "phases": [{"phase": "explain"}, {"phase": "guided_practice"}]
+    }
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "guided_practice", "memory_role": "example"},
+            "items": ["Q1"]
+        },
+        {
+            "id": "slide_2",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["Q2"]
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [progression:sequence] element 'slide_2' has phase 'explain' which appears out of order" in w for w in warnings)
+
+
+def test_progression_coverage_undeclared_phase():
+    doc = _lesson()
+    doc["progression"] = {
+        "pattern": "direct_instruction",
+        "phases": [{"phase": "explain"}]
+    }
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "guided_practice", "memory_role": "example"},
+            "items": ["Q1"]
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [progression:sequence] element 'slide_1' has phase 'guided_practice' which is not declared" in w for w in warnings)
+
+
+def test_progression_coverage_unused_phase():
+    doc = _lesson()
+    doc["progression"] = {
+        "pattern": "direct_instruction",
+        "phases": [{"phase": "explain"}, {"phase": "guided_practice"}]
+    }
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["Q1"]
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("WARN: [progression:coverage] phase 'guided_practice' is declared in the progression but not used" in w for w in warnings)
+
+
+def test_remediation_target_future():
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "hint_1",
+            "type": "hint_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "relationships": {"remediation_for": ["question_1"]},
+            "items": ["Step 1"]
+        },
+        {
+            "id": "question_1",
+            "type": "multiple_choice",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Q?",
+            "options": {"A": "1", "B": "2"},
+            "answer": "A"
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [relationships:remediation_for] element 'hint_1' is a remediation for 'question_1' which appears after it" in w for w in warnings)
+
+
+def test_remediation_target_invalid_type():
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["Anchor"]
+        },
+        {
+            "id": "hint_1",
+            "type": "hint_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "relationships": {"remediation_for": ["slide_1"]},
+            "items": ["Step 1"]
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [relationships:remediation_for] element 'hint_1' is a remediation but targets element 'slide_1' of type 'text_list'" in w for w in warnings)
+
+
+def test_anchor_density_warning():
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "anchor"},
+            "items": ["A1"]
+        },
+        {
+            "id": "slide_2",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "anchor"},
+            "items": ["A2"]
+        },
+        {
+            "id": "slide_3",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "anchor"},
+            "items": ["A3"]
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("WARN: [pedagogy:anchor] lesson contains 3 anchor elements" in w for w in warnings)
+
+
+def test_concept_connectivity_check():
+    doc = _lesson()
+    doc["lesson"]["concepts"] = ["concept_a", "concept_b"]
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "concepts": ["concept_a"],
+            "items": ["C1"]
+        },
+        {
+            "id": "slide_2",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "concepts": ["concept_b"],
+            "items": ["C2"]
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("WARN: [coherence:concept] Multiple concept groups detected with no relationships connecting them" in w for w in warnings)
+
+
+def test_element_registry_element_names():
+    from eduvis.core.registry import ElementRegistry
+    names_math = ElementRegistry.element_names(["math"])
+    assert "geometry_shape" in names_math
+    assert "text_list" in names_math
+
+    names_empty = ElementRegistry.element_names([])
+    assert "text_list" in names_empty
+    assert "geometry_shape" not in names_empty

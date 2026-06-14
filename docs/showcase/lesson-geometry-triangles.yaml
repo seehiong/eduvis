@@ -3,9 +3,11 @@
 # Topic: Angle Sum of a Triangle (finding the unknown angle)
 # Demonstrates: hook -> explore -> explain -> guided -> starter -> routine -> challenge -> recall
 
-lesson:
-  syllabus: showcase
+curriculum:
+  code: showcase
   topic: geometry-triangles
+
+lesson:
   title: Angle Sum of a Triangle - Finding the Unknown Angle
 
 progression:
@@ -44,7 +46,7 @@ content:
       lesson_phase: hook
       layout_zone: center
       visual_weight: primary
-      memory_role: anchor
+      memory_role: example
     items:
       - text: "Roof Truss: Triangles distribute weight evenly and resist deformation."
         border_color: green

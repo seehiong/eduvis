@@ -483,11 +483,13 @@ The vocabulary covers all five pillars in one block: lesson skeleton, progressio
 ```
 ## EduVis Lesson Structure
 
-Every lesson YAML has three top-level keys: lesson, progression, content.
+Every lesson YAML has four top-level keys: curriculum, lesson, progression, content.
+
+curriculum:
+  code: string            # curriculum code e.g. "SEC-math-2027"
+  topic: string           # topic code e.g. "N1.6"
 
 lesson:
-  syllabus: string        # curriculum code e.g. "SEC-math-2027"
-  topic: string           # topic code e.g. "N1.6"
   title: string           # human-readable lesson title
   concepts:               # optional list of target concepts
     - string
@@ -677,8 +679,8 @@ Science and Humanities element types and renderers are planned for a future rele
 
 ### v0.2 — Relationships and curriculum metadata
 - Relationships between elements within a lesson
-- Curriculum tagging (`syllabus`, `topic`)
-- Lesson-level coherence validation against the declared progression pattern
+- Curriculum metadata block (`code`, `topic`)
+- Lesson-level pedagogical validation (chronological sequence, progression coverage, concepts coherence, anchor density limits)
 
 ### v0.3 — EduVis-Presentation *(companion spec)*
 - Reveal sequencing
