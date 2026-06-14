@@ -7,8 +7,8 @@ from ..primitives import (
 )
 
 def parse_term(term_val: str):
-    # Try mixed fraction: e.g. "2 1/5"
-    m_mixed = re.match(r"^(\d+)\s+(\d+|\?)/(\d+|\?)$", term_val)
+    # Try mixed fraction: e.g. "2 1/5" or "-2 1/5"
+    m_mixed = re.match(r"^(-?\d+)\s+(\d+|\?)/(\d+|\?)$", term_val)
     if m_mixed:
         return {
             "type": "mixed_fraction",
@@ -17,8 +17,8 @@ def parse_term(term_val: str):
             "den": m_mixed.group(3)
         }
     
-    # Try simple fraction: e.g. "3/5" or "?/5"
-    m_frac = re.match(r"^(\d+|\?)/(\d+|\?)$", term_val)
+    # Try simple fraction: e.g. "3/5" or "-3/5" or "?/5" or "-?/5"
+    m_frac = re.match(r"^(-?\d+|-\?|\?)/(\d+|\?)$", term_val)
     if m_frac:
         return {
             "type": "fraction",
@@ -46,8 +46,8 @@ def _render_fraction_equation(spec, zx, zy, zw, zh, posting_group="G1") -> tuple
         return [], 0
 
     body_sz = _get_font_size("body", posting_group)
-    fsize_main = int(body_sz * 1.5)  # e.g., 24px
-    fsize_frac = int(body_sz * 1.1)  # e.g., 18px
+    fsize_main = int(body_sz * 1.8)  # e.g., 28px
+    fsize_frac = int(body_sz * 1.3)  # e.g., 20px
 
     parsed_terms = []
     
@@ -123,20 +123,20 @@ def _render_fraction_equation(spec, zx, zy, zw, zh, posting_group="G1") -> tuple
             out.append(_rect(bx, by, bw, bh, fill="none", stroke=COLORS["grey"], stroke_w=1, rx=4))
 
         if term["type"] == "operator":
-            val = term["val"]
+            val = term["val"].replace("-", "−").replace("*", "×").replace("x", "×")
             # Draw vertically centered operator
             mid_x = cx + tw // 2
             mid_y = cy + int(fsize_main * 0.3)
             out.append(_text(mid_x, mid_y, val, size=fsize_main, color=color, anchor="middle", weight="bold"))
             
         elif term["type"] == "number":
-            val = term["val"]
+            val = term["val"].replace("-", "−")
             mid_x = cx + tw // 2
             mid_y = cy + int(fsize_main * 0.3)
             out.append(_text(mid_x, mid_y, val, size=fsize_main, color=color, anchor="middle", weight=weight))
             
         elif term["type"] == "fraction":
-            num = term["num"]
+            num = term["num"].replace("-", "−")
             den = term["den"]
             mid_x = cx + tw // 2
             
@@ -152,8 +152,8 @@ def _render_fraction_equation(spec, zx, zy, zw, zh, posting_group="G1") -> tuple
             out.append(_text(mid_x, dy, den, size=fsize_frac, color=color, anchor="middle", weight=weight))
             
         elif term["type"] == "mixed_fraction":
-            whole = term["whole"]
-            num = term["num"]
+            whole = term["whole"].replace("-", "−")
+            num = term["num"].replace("-", "−")
             den = term["den"]
             ww = int(len(whole) * fsize_main * 0.6)
             

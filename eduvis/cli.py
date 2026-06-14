@@ -111,8 +111,18 @@ def _build_svg_spec_yaml(element: dict, elements_by_id: dict[str, dict] | None =
             element["review"] = review
 
     placement = element.get("placement") or {}
-    zone = _ZONE_MAP.get(placement.get("layout_zone", "full"), "full")
-    layout = _LAYOUT_FOR_ZONE.get(zone, "header + full-width")
+    if "zones" in element:
+        zones = {}
+        for z_name, z_elements in element["zones"].items():
+            if isinstance(z_elements, list):
+                zones[z_name] = [_element_to_spec(el) for el in z_elements]
+            else:
+                zones[z_name] = [_element_to_spec(z_elements)]
+        layout = element.get("layout", "two-column")
+    else:
+        zone = _ZONE_MAP.get(placement.get("layout_zone", "full"), "full")
+        layout = _LAYOUT_FOR_ZONE.get(zone, "header + full-width")
+        zones = {zone: [_element_to_spec(element)]}
 
     phase = placement.get("lesson_phase", "")
     difficulty = placement.get("difficulty", "")
@@ -136,7 +146,7 @@ def _build_svg_spec_yaml(element: dict, elements_by_id: dict[str, dict] | None =
         "phase_label": phase_label,
         "role_color": role_color,
         "memory_role": memory_role,
-        "zones": {zone: [_element_to_spec(element)]},
+        "zones": zones,
     }
     return yaml.dump(spec_dict, allow_unicode=True, default_flow_style=False)
 
