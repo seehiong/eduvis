@@ -120,6 +120,7 @@ ELEMENT_SPECS: list[ElementSpec] = [
         notes=[
             "PREFER factor_array over example_panel whenever a slide teaches factors or primes.",
             "verdict: true adds an automatic Prime / Composite / neither label.",
+            "NEVER use factor_array to compare two groups or show a ratio — it renders a single color only. Use bar_model for group comparison and math_grid (mode: ratio) for ratio relationships.",
         ],
     ),
     ElementSpec(
