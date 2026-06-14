@@ -283,13 +283,17 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
     lesson_title = (doc.get("lesson") or {}).get("title", "")
     rendered = 0
     skipped = 0
+    first_dict_idx = next((i for i, el in enumerate(content) if isinstance(el, dict)), None)
 
-    for element in content:
+    for idx, element in enumerate(content):
         if not isinstance(element, dict):
             continue
 
         element_id = element.get("id", f"element_{rendered + skipped + 1}")
-        title = f"{lesson_title} — {_element_title(element)}" if lesson_title else _element_title(element)
+        if lesson_title and idx == first_dict_idx:
+            title = f"{lesson_title} - {_element_title(element)}"
+        else:
+            title = _element_title(element)
 
         svg_spec_yaml = _build_svg_spec_yaml(element, elements_by_id)
 

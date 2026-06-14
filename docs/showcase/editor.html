@@ -635,7 +635,11 @@ def render_slide_from_lesson(yaml_str, index, posting_group):
     lesson_title = (doc.get("lesson") or {}).get("title", "")
     element = content[index]
     
-    title = f"{lesson_title} — {_element_title(element)}" if lesson_title else _element_title(element)
+    first_dict_idx = next((i for i, el in enumerate(content) if isinstance(el, dict)), None)
+    if lesson_title and index == first_dict_idx:
+        title = f"{lesson_title} - {_element_title(element)}"
+    else:
+        title = _element_title(element)
     svg_spec_yaml = _build_svg_spec_yaml(element, elements_by_id)
     
     return renderer.render(svg_spec_yaml, title=title, posting_group=posting_group)
