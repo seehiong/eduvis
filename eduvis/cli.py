@@ -79,6 +79,7 @@ _ROLE_COLOR: dict[str, str] = {
 
 # ── Bridge helpers ────────────────────────────────────────────────────────────
 
+
 def _element_to_spec(element: dict) -> dict:
     """Strip EduVis meta-fields; return only fields the SVG renderer needs."""
     return {k: v for k, v in element.items() if k not in _EDUVIS_META}
@@ -86,6 +87,8 @@ def _element_to_spec(element: dict) -> dict:
 
 def _element_title(element: dict) -> str:
     """Build a human-readable slide title from an element's id and lesson_phase."""
+    if element.get("title"):
+        return str(element["title"])
     eid = element.get("id", "")
     placement = element.get("placement") or {}
     phase = placement.get("lesson_phase", "")
