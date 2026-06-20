@@ -17,10 +17,9 @@
   <rect x="116" y="149" width="286" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
   <circle cx="138" cy="171" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.5" />
   <text x="154" y="175.5" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#475569" text-anchor="start">True</text>
-  <rect x="418" y="149" width="286" height="44" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
-  <circle cx="440" cy="171" r="7" fill="none" stroke="#3b82f6" stroke-width="1.5" />
-  <circle cx="440" cy="171" r="4" fill="#3b82f6" />
-  <text x="456" y="175.5" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="start">False</text>
+  <rect x="418" y="149" width="286" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <circle cx="440" cy="171" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="456" y="175.5" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#475569" text-anchor="start">False</text>
   <rect x="116" y="209" width="588" height="32" rx="8" fill="#f0fdf4" opacity="0.5" />
   <rect x="116" y="209" width="588" height="32" rx="8" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.4" />
   <rect x="116" y="211" width="4" height="28" rx="2" fill="#10b981" />

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eduvis"
-version = "0.2.0"
+version = "0.3.0"
 description = "An open, curriculum-aware schema for educational content"
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -33,6 +33,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
+    "ruff>=0.3.0",
+    "pylint>=3.0.0",
 ]
 
 [project.urls]
@@ -54,3 +56,71 @@ eduvis = ["schemas/*.json"]
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C90", # mccabe complexity (Cyclomatic Complexity)
+    "PLR", # Pylint Refactor (includes function length, branch complexity, etc.)
+]
+ignore = [
+    "PLR0913", # Too many arguments in function definition (necessary for some rendering logic)
+    "E501",    # Line too long (style rule, formatting/wrapping is handled by formatters)
+    "I001",    # Import block is un-sorted or un-formatted (style rule)
+    "PLR2004", # Magic value used in comparison (extremely noisy for coordinate/length checks)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Exclude CLI and renderers from strict complexity rules (drawing code has natural linear complexity)
+"eduvis/cli.py" = ["C901", "PLR0912", "PLR0915"]
+"eduvis/renderers/**/*" = ["C901", "PLR0911", "PLR0912", "PLR0915", "E741", "E713", "PLR1730", "W293", "W291", "F401"]
+"tests/**/*" = ["C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10  # Cyclomatic Complexity <= 10
+
+[tool.ruff.lint.pylint]
+max-statements = 50  # Max 50 statements in a function/method
+
+[tool.pylint.messages_control]
+disable = [
+    "line-too-long",
+    "missing-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "too-many-statements",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-arguments",
+    "too-many-locals",
+    "too-many-nested-blocks",
+    "import-outside-toplevel",
+    "invalid-name",
+    "duplicate-code",
+    "cyclic-import",
+    "unrecognized-option",
+]
+
+[tool.pylint.main]
+ignore-paths = [".venv", "build", "dist", "eduvis/renderers", "eduvis/cli.py"]
+
+[tool.pylint.design]
+max-nested-blocks = 3    # Maximum nesting depth of 3
+max-module-lines = 1000  # Module size limit of 1000 lines
+max-returns = 6
+max-branches = 12
+max-args = 5
+
+[tool.pylint.similarities]
+min-similarity-lines = 4  # Duplication detection limit (4 lines)
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = true
+

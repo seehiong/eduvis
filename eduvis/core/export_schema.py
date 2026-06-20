@@ -19,6 +19,7 @@ from .schemas.placement import (
 )
 from .schemas.progression import VALID_PATTERNS, VALID_PEDAGOGY_FLAGS
 from .schemas.relationships import VALID_TYPES
+from .schemas.presentation import VALID_ADVANCE_MODES, VALID_ACTIONS
 
 _BASE = "https://eduvis.dev/schemas"
 _DRAFT = "https://json-schema.org/draft/2020-12/schema"
@@ -164,6 +165,101 @@ def progression_schema() -> dict:
     }
 
 
+def presentation_schema() -> dict:
+    step_item = {
+        "type": "object",
+        "required": ["index"],
+        "properties": {
+            "index": {"type": "integer", "minimum": 0},
+            "visible_items": {
+                "type": "array",
+                "items": {"type": "integer", "minimum": 0},
+                "description": "Subset of element items index to reveal.",
+            },
+            "auto_advance_after": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Seconds to wait before auto-advancing to next step.",
+            },
+            "caption": {
+                "type": "string",
+                "description": "Accessibility subtitle or narration text for this step.",
+            },
+            "audio_offset": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Seconds offset into the single slide audio file.",
+            },
+            "audio_file": {
+                "type": ["string", "null"],
+                "description": "Override audio file reference per step.",
+            },
+            "highlight": {
+                "type": "object",
+                "required": ["target", "style"],
+                "properties": {
+                    "target": {"type": "string"},
+                    "style": {"type": "string"},
+                },
+                "additionalProperties": False,
+            },
+            "viewport": {
+                "type": "object",
+                "properties": {
+                    "zoom": {"type": "number", "minimum": 0},
+                    "center": {
+                        "type": "array",
+                        "items": {"type": "number"},
+                        "minItems": 2,
+                        "maxItems": 2,
+                    },
+                },
+                "additionalProperties": False,
+            },
+            "action": {
+                "type": "string",
+                "enum": sorted(VALID_ACTIONS),
+            },
+        },
+        "additionalProperties": False,
+    }
+
+    reveal_entry = {
+        "type": "object",
+        "required": ["target", "steps"],
+        "properties": {
+            "target": {"type": "string", "description": "Element ID being revealed."},
+            "steps": {"type": "array", "items": step_item},
+        },
+        "additionalProperties": False,
+    }
+
+    slide_entry = {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+            "id": {"type": "string", "description": "Slide ID mapping to content element ID."},
+            "advance": {"type": "string", "enum": sorted(VALID_ADVANCE_MODES)},
+            "duration": {"type": "number", "minimum": 0},
+            "reveals": {"type": "array", "items": reveal_entry},
+        },
+        "additionalProperties": False,
+    }
+
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/presentation.schema.json",
+        "title": "EduVis Presentation",
+        "description": "Visual sequencing, narration timing, and camera commands for presentation renderers.",
+        "type": "object",
+        "required": ["slides"],
+        "properties": {
+            "slides": {"type": "array", "items": slide_entry},
+        },
+        "additionalProperties": False,
+    }
+
+
 def lesson_schema() -> dict:
     """Top-level lesson document schema. Element content fields are open (additionalProperties: true)
     because they vary by type; the Python validator handles element-level field checking."""
@@ -194,6 +290,37 @@ def lesson_schema() -> dict:
                 "properties": {
                     "code": {"type": "string", "description": "Curriculum code (e.g. SEC-math-2027)."},
                     "topic": {"type": "string", "description": "Topic code (e.g. N1.6)."},
+                    "concept": {"type": "string", "description": "Primary concept code or title."},
+                    "learning_outcomes": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Learning outcomes mapped to this lesson."
+                    },
+                    "requires": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Prerequisite concept or topic codes."
+                    },
+                    "supports": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Concept or topic codes supported by this lesson."
+                    },
+                    "remediated_by": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Concept or topic codes recommended to remediate gaps."
+                    },
+                    "assessment_targets": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Assessment objectives/targets mapping."
+                    },
+                    "assessment_objectives": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Assessment objectives/targets mapping."
+                    },
                 },
                 "additionalProperties": False,
             },
@@ -207,6 +334,7 @@ def lesson_schema() -> dict:
                 "additionalProperties": True,
             },
             "progression": {"$ref": "progression.schema.json"},
+            "presentation": {"$ref": "presentation.schema.json"},
             "content": {
                 "type": "array",
                 "items": element,
@@ -225,4 +353,5 @@ def get_all_schemas() -> dict[str, dict]:
         "relationships": relationships_schema(),
         "progression": progression_schema(),
         "lesson": lesson_schema(),
+        "presentation": presentation_schema(),
     }

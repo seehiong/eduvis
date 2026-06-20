@@ -185,8 +185,8 @@ Study how great lessons are structured. The specs capture:
 ## Roadmap
 
 - **v0.1** (now): Core schema, SVG renderer, Secondary Mathematics
-- **v0.2** (planned): Relationships between elements within a lesson, lesson-level coherence validation
-- **v0.3** (planned): Presentation spec (reveal sequencing, narration timing, zoom/pan)
+- **v0.2** (now): Relationships between elements within a lesson, lesson-level coherence validation
+- **v0.3** (now): Presentation spec (reveal sequencing, narration timing, zoom/pan, viewport commands)
 
 ## Further Reading
 

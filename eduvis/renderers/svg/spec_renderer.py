@@ -194,7 +194,6 @@ class SVGSpecRenderer:
 
         header_color = spec.get("header_color", "#ffffff")
         phase_label  = spec.get("phase_label", "")
-        role_color   = spec.get("role_color", "")
         memory_role  = spec.get("memory_role", "")
 
         # Use theme title color on light headers, white on dark headers

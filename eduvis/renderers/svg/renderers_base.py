@@ -697,7 +697,7 @@ def _render_multiple_choice(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[l
                     is_green = True
             else:
                 # Normal state
-                is_sel = (lbl.lower() == spec.get("answer", "").lower())
+                is_sel = False
                 if is_sel:
                     is_blue = True
                     
@@ -862,7 +862,7 @@ def _render_multiple_choice(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[l
                     text_color = COLORS["body"]
             else:
                 # Normal state
-                is_sel = (lbl == spec.get("answer"))
+                is_sel = False
                 if is_sel:
                     bg_color = "#f0f9ff"      # Soft blue
                     stroke_color = "#3b82f6"  # Blue border

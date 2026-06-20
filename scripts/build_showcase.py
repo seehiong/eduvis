@@ -18,22 +18,23 @@ SHOWCASE_MAP = {
     "docs/showcase/lesson-negative-numbers.yaml": "docs/showcase/assets/negative-numbers",
     "docs/showcase/demo-adaptive-remediation.yaml": "docs/showcase/assets/adaptive-remediation",
     "docs/showcase/demo-remediation-layout.yaml": "docs/showcase/assets/remediation-layout",
+    "docs/showcase/lesson-presentation-demo.yaml": "docs/showcase/assets/presentation-demo",
 }
 
 
 def main() -> None:
     print("Building showcase assets...")
     success = True
-    
+
     for src_rel, dest_rel in SHOWCASE_MAP.items():
         src_path = ROOT_DIR / src_rel
         dest_path = ROOT_DIR / dest_rel
-        
+
         print(f"\nRendering: {src_rel} -> {dest_rel}")
-        
+
         # Ensure destination directory exists
         dest_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Run render CLI command using the current python interpreter
         cmd = [
             sys.executable,
@@ -44,7 +45,7 @@ def main() -> None:
             "-o",
             str(dest_path),
         ]
-        
+
         try:
             res = subprocess.run(cmd, check=True, capture_output=True, text=True)
             print(res.stdout.strip())
@@ -52,7 +53,7 @@ def main() -> None:
             print(f"Error rendering {src_rel}:", file=sys.stderr)
             print(err.stderr, file=sys.stderr)
             success = False
-            
+
     if success:
         print("\nShowcase build completed successfully!")
         sys.exit(0)

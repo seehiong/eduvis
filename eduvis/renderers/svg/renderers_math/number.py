@@ -322,7 +322,7 @@ def _render_math_grid(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[st
 
     r_idx = 0
     for row in padded_rows:
-        if isinstance(row, str) and (row == "line" or row == "---" or row.startswith("-")):
+        if isinstance(row, str) and (row in {"line", "---"} or row.startswith("-")):
             ly = cy + 4
             out.append(_line(grid_x, ly, grid_x + grid_w, ly,
                              color=COLORS["body"], stroke_w=2))
@@ -370,7 +370,7 @@ def _render_math_grid(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[st
                     mid_x = bx + col_ws[c] // 2
                     mid_y = cy + CELL_H // 2 + 5
 
-                    is_line = val == "line" or val == "---" or val.startswith("--")
+                    is_line = val in {"line", "---"} or val.startswith("--")
                     if is_line:
                         ly = cy + CELL_H // 2
                         out.append(_line(bx, ly, bx + col_ws[c], ly, color=COLORS["body"], stroke_w=2))

@@ -244,6 +244,31 @@ class _ElementRegistry:
 
     # ── Field validation ──────────────────────────────────────────────────────
 
+    def _validate_array_item(
+        self, element_name: str, field_spec: FieldSpec, i: int, item: dict
+    ) -> list[str]:
+        warnings: list[str] = []
+        for prop in field_spec.items.properties:
+            item_val = item.get(prop.name)
+            if item_val is None:
+                if prop.required:
+                    msg = (
+                        f"[{element_name}] {field_spec.name}[{i}] "
+                        f"missing required property '{prop.name}'"
+                    )
+                    warnings.append(msg)
+                    logger.warning(msg)
+            elif not _check_type(prop, item_val):
+                msg = (
+                    f"[{element_name}] {field_spec.name}[{i}].{prop.name}: "
+                    f"expected {prop.type}, got {type(item_val).__name__} {item_val!r}"
+                )
+                if prop.constraint:
+                    msg += f" — {prop.constraint}"
+                warnings.append(msg)
+                logger.warning(msg)
+        return warnings
+
     def validate_fields(self, element_name: str, content_data: dict) -> list[str]:
         """
         Validate content_data against the registered field schema for element_name.
@@ -286,48 +311,30 @@ class _ElementRegistry:
                 and isinstance(value, list)
             ):
                 for i, item in enumerate(value):
-                    if not isinstance(item, dict):
-                        continue
-                    for prop in field_spec.items.properties:
-                        item_val = item.get(prop.name)
-                        if item_val is None:
-                            if prop.required:
-                                msg = (
-                                    f"[{element_name}] {field_spec.name}[{i}] "
-                                    f"missing required property '{prop.name}'"
-                                )
-                                warnings.append(msg)
-                                logger.warning(msg)
-                        elif not _check_type(prop, item_val):
-                            msg = (
-                                f"[{element_name}] {field_spec.name}[{i}].{prop.name}: "
-                                f"expected {prop.type}, got {type(item_val).__name__} {item_val!r}"
-                            )
-                            if prop.constraint:
-                                msg += f" — {prop.constraint}"
-                            warnings.append(msg)
-                            logger.warning(msg)
+                    if isinstance(item, dict):
+                        warnings.extend(
+                            self._validate_array_item(element_name, field_spec, i, item)
+                        )
 
         return warnings
 
 
 def _check_type(field_spec: FieldSpec, value: Any) -> bool:
     t = field_spec.type
-    if t == "string":
-        return isinstance(value, str)
-    if t == "number":
-        return isinstance(value, (int, float)) and not isinstance(value, bool)
-    if t == "integer":
-        return isinstance(value, int) and not isinstance(value, bool)
-    if t == "boolean":
-        return isinstance(value, bool)
-    if t == "array":
-        return isinstance(value, list)
-    if t in ("object", "dict"):
-        return isinstance(value, dict)
-    if t == "color":
-        return isinstance(value, str)
+    type_checks = {
+        "string": lambda v: isinstance(v, str),
+        "number": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
+        "integer": lambda v: isinstance(v, int) and not isinstance(v, bool),
+        "boolean": lambda v: isinstance(v, bool),
+        "array": lambda v: isinstance(v, list),
+        "object": lambda v: isinstance(v, dict),
+        "dict": lambda v: isinstance(v, dict),
+        "color": lambda v: isinstance(v, str),
+    }
+    if t in type_checks:
+        return type_checks[t](value)
     return True
+
 
 
 # ── Public singleton ──────────────────────────────────────────────────────────

@@ -353,13 +353,105 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform-origin 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         #svg-render-area svg {
             display: block;
             width: 100%;
             height: auto;
+        }
+
+        /* Glassmorphic Presentation Subtitle Panel */
+        #narration-subtitle {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f3f4f6;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            max-width: 80%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+            line-height: 1.4;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Glassmorphic Controller Floating Bar */
+        #presentation-controller {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            background: rgba(19, 26, 38, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            user-select: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .timeline-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        #timeline-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), #a855f7);
+            transition: width 0.3s ease;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .btn-ctrl {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: #d1d5db;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-ctrl:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        #step-indicator {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-weight: 500;
         }
 
         /* Raw XML Textarea */
@@ -444,6 +536,7 @@
             <div class="control-group">
                 <label for="preset-select">Preset:</label>
                 <select id="preset-select" onchange="onPresetChange(this.value)">
+                    <option value="lesson-presentation-demo.yaml">Interactive Presentation &amp; Zoom Demo</option>
                     <option value="lesson-geometry-triangles.yaml">Angle Sum of a Triangle (Full Lesson)</option>
                     <option value="lesson-negative-numbers.yaml">Negative Numbers (Full Lesson)</option>
                     <option value="demo-adaptive-remediation.yaml">Adaptive Remediation Demo</option>
@@ -474,7 +567,10 @@
         <!-- Left Panel: Editor & Slide selector -->
         <div class="panel">
             <div class="panel-header">
-                <div class="panel-title">YAML Specification</div>
+                <div class="preview-tabs">
+                    <button class="preview-tab active" id="tab-editor-content" onclick="switchEditorTab('content')">Content (content.yaml)</button>
+                    <button class="preview-tab" id="tab-editor-presentation" onclick="switchEditorTab('presentation')">Presentation (presentation.yaml)</button>
+                </div>
             </div>
             <!-- Monaco Editor Container -->
             <div id="editor-container"></div>
@@ -524,6 +620,28 @@
                     <!-- SVG gets injected here -->
                 </div>
                 <textarea id="xml-output-area" readonly></textarea>
+
+                <!-- Subtitles Panel -->
+                <div id="narration-subtitle" style="display: none;"></div>
+
+                <!-- Glassmorphic Controller -->
+                <div id="presentation-controller" style="display: none;">
+                    <div class="timeline-container">
+                        <div id="timeline-progress-bar"></div>
+                    </div>
+                    <div class="control-row">
+                        <button class="btn-ctrl" title="Step Back" onclick="prevStep()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="btn-ctrl" id="btn-play-pause" title="Play/Pause Auto-Advance" onclick="togglePlayPause()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        </button>
+                        <button class="btn-ctrl" title="Step Forward" onclick="nextStep()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                        <span id="step-indicator">Step 1 of 1</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Error Banner -->
@@ -542,13 +660,34 @@
 
         // Monaco Editor instance
         window.editor = null;
+        window.contentModel = null;
+        window.presentationModel = null;
+        let activeEditorTab = 'content';
+
+        function switchEditorTab(tabName) {
+            if (activeEditorTab === tabName) return;
+            activeEditorTab = tabName;
+
+            document.getElementById('tab-editor-content').classList.remove('active');
+            document.getElementById('tab-editor-presentation').classList.remove('active');
+
+            if (tabName === 'content') {
+                document.getElementById('tab-editor-content').classList.add('active');
+                window.editor.setModel(window.contentModel);
+            } else {
+                document.getElementById('tab-editor-presentation').classList.add('active');
+                window.editor.setModel(window.presentationModel);
+            }
+        }
 
         // Initialize Monaco Editor
         require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs' } });
         require(['vs/editor/editor.main'], function () {
+            window.contentModel = monaco.editor.createModel('# Loading content...', 'yaml');
+            window.presentationModel = monaco.editor.createModel('# Loading presentation...', 'yaml');
+
             window.editor = monaco.editor.create(document.getElementById('editor-container'), {
-                value: '# Loading preset...',
-                language: 'yaml',
+                model: window.contentModel,
                 theme: 'vs-dark',
                 automaticLayout: true,
                 fontSize: 13,
@@ -563,12 +702,15 @@
 
             // Trigger render when editor changes (debounced)
             let timeout = null;
-            window.editor.onDidChangeModelContent(() => {
+            const onModelChange = () => {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => {
                     parseStructureAndRender();
                 }, 800);
-            });
+            };
+
+            window.contentModel.onDidChangeContent(onModelChange);
+            window.presentationModel.onDidChangeContent(onModelChange);
 
             // Start initializing Python environment once Monaco is loaded
             initPython();
@@ -592,7 +734,7 @@
                 await pyodide.runPythonAsync(`
                     import micropip
                     await micropip.install("pyyaml")
-                    await micropip.install("./eduvis-0.1.1-py3-none-any.whl")
+                    await micropip.install("./eduvis-0.3.0-py3-none-any.whl")
                 `);
 
                 updateStatus("Configuring Render Engine", "Importing Python libraries...");
@@ -656,10 +798,50 @@ def _build_svg_spec_yaml(element: dict, elements_by_id: dict[str, dict] | None =
 
 renderer = SVGSpecRenderer()
 
-def parse_lesson_structure(yaml_str):
+def _merge_content_and_presentation(content_yaml_str, presentation_yaml_str):
+    doc = yaml.safe_load(content_yaml_str)
+    if not isinstance(doc, dict):
+        doc = {}
+    if presentation_yaml_str and presentation_yaml_str.strip():
+        try:
+            pres = yaml.safe_load(presentation_yaml_str)
+            if isinstance(pres, dict):
+                if "presentation" in pres:
+                    doc["presentation"] = pres["presentation"]
+                else:
+                    doc["presentation"] = pres
+        except Exception:
+            pass
+    return doc
+
+def split_lesson_yaml(yaml_str):
     try:
         doc = yaml.safe_load(yaml_str)
+    except Exception as e:
+        return json.dumps({"content": yaml_str, "presentation": ""})
+    
+    if not isinstance(doc, dict):
+        return json.dumps({"content": yaml_str, "presentation": ""})
+    
+    presentation_dict = {}
+    if "presentation" in doc:
+        presentation_dict = doc.pop("presentation")
+    
+    content_str = yaml.dump(doc, allow_unicode=True, default_flow_style=False, sort_keys=False)
+    
+    presentation_str = ""
+    if presentation_dict:
+        # Wrap it in 'presentation:' key or output it as is
+        presentation_str = yaml.dump(presentation_dict, allow_unicode=True, default_flow_style=False, sort_keys=False)
+        
+    return json.dumps({"content": content_str, "presentation": presentation_str})
+
+def parse_lesson_structure(content_yaml_str, presentation_yaml_str):
+    try:
+        doc = _merge_content_and_presentation(content_yaml_str, presentation_yaml_str)
         if isinstance(doc, dict) and "content" in doc:
+            from eduvis.core import validate_lesson
+            warnings = validate_lesson(doc)
             content = doc.get("content", [])
             slides = []
             for i, element in enumerate(content):
@@ -672,21 +854,59 @@ def parse_lesson_structure(yaml_str):
             return json.dumps({
                 "type": "lesson",
                 "title": (doc.get("lesson") or {}).get("title", "Lesson"),
-                "slides": slides
+                "slides": slides,
+                "presentation": doc.get("presentation"),
+                "warnings": warnings
             })
         else:
             return json.dumps({"type": "slide"})
     except Exception as e:
         return json.dumps({"error": str(e)})
 
-def render_slide_from_lesson(yaml_str, index, posting_group):
-    doc = yaml.safe_load(yaml_str)
+def render_slide_from_lesson(content_yaml_str, presentation_yaml_str, index, posting_group, step_index=None):
+    doc = _merge_content_and_presentation(content_yaml_str, presentation_yaml_str)
     content = doc.get("content", [])
     elements_by_id = {el["id"]: el for el in content if isinstance(el, dict) and "id" in el}
     
     lesson_title = (doc.get("lesson") or {}).get("title", "")
     element = content[index]
     
+    presentation = doc.get("presentation")
+    if step_index is not None and isinstance(presentation, dict) and "slides" in presentation:
+        slide_id = element.get("id")
+        slide_pres = next((s for s in presentation["slides"] if s.get("id") == slide_id), None)
+        if slide_pres and "reveals" in slide_pres:
+            def filter_elem(el, reveals, step_idx):
+                el_id = el.get("id")
+                for rev in reveals:
+                    target = rev.get("target")
+                    if target == el_id and "steps" in rev:
+                        steps = rev["steps"]
+                        step = next((s for s in steps if s.get("index") == step_idx), None)
+                        if step:
+                            visible_indices = step.get("visible_items")
+                            if visible_indices is not None:
+                                el = el.copy()
+                                for list_field in ["items", "bars", "rows", "plots", "highlight", "highlights"]:
+                                    if list_field in el and isinstance(el[list_field], list):
+                                        el[list_field] = [
+                                            item for i, item in enumerate(el[list_field])
+                                            if i in visible_indices
+                                        ]
+                if "zones" in el and isinstance(el["zones"], dict):
+                    el = el.copy()
+                    zones = {}
+                    for z_name, z_elements in el["zones"].items():
+                        if isinstance(z_elements, list):
+                            zones[z_name] = [filter_elem(el_sub, reveals, step_idx) for el_sub in z_elements]
+                        else:
+                            zones[z_name] = filter_elem(z_elements, reveals, step_idx)
+                    el["zones"] = zones
+                return el
+            
+            element = filter_elem(element, slide_pres["reveals"], step_index)
+            elements_by_id = {k: filter_elem(v, slide_pres["reveals"], step_index) for k, v in elements_by_id.items()}
+            
     first_dict_idx = next((i for i, el in enumerate(content) if isinstance(el, dict)), None)
     if lesson_title and index == first_dict_idx:
         title = f"{lesson_title} - {_element_title(element)}"
@@ -709,7 +929,7 @@ def render_raw_slide(yaml_str, posting_group):
                 }, 500);
 
                 // Load default preset
-                onPresetChange("lesson-geometry-triangles.yaml");
+                onPresetChange("lesson-presentation-demo.yaml");
 
             } catch (error) {
                 console.error(error);
@@ -731,23 +951,42 @@ def render_raw_slide(yaml_str, posting_group):
                 const text = await response.text();
 
                 selectedSlideIndex = 0;
-                window.editor.setValue(text);
+                
+                // Use Python to split Content vs Presentation
+                if (pyodide) {
+                    const splitJson = pyodide.globals.get("split_lesson_yaml")(text);
+                    const splitResult = JSON.parse(splitJson);
+                    window.contentModel.setValue(splitResult.content);
+                    window.presentationModel.setValue(splitResult.presentation || '');
+                } else {
+                    window.contentModel.setValue(text);
+                    window.presentationModel.setValue('');
+                }
+                switchEditorTab('content');
                 parseStructureAndRender();
             } catch (err) {
                 showError("Failed to fetch preset: " + err.message);
             }
         }
 
+        let presentationData = null;
+        let activeStepIndex = 0;
+        let isPlaying = false;
+        let autoAdvanceTimeout = null;
+        let hasValidationErrorsOrWarnings = false;
+        let validationMessages = [];
+
         // Parse structure of YAML input and update slides / render
         function parseStructureAndRender() {
             if (!pyodide || isRenderInProgress) return;
             isRenderInProgress = true;
 
-            const yamlText = window.editor.getValue();
+            const contentYaml = window.contentModel ? window.contentModel.getValue() : '';
+            const presentationYaml = window.presentationModel ? window.presentationModel.getValue() : '';
 
             try {
                 // Call Python function to parse the document metadata and slide structure
-                const resultJson = pyodide.globals.get("parse_lesson_structure")(yamlText);
+                const resultJson = pyodide.globals.get("parse_lesson_structure")(contentYaml, presentationYaml);
                 const result = JSON.parse(resultJson);
 
                 if (result.error) {
@@ -756,7 +995,17 @@ def render_raw_slide(yaml_str, posting_group):
                     return;
                 }
 
-                hideError();
+                if (result.warnings && result.warnings.length > 0) {
+                    hasValidationErrorsOrWarnings = true;
+                    validationMessages = result.warnings;
+                    showValidationMessages(result.warnings);
+                } else {
+                    hasValidationErrorsOrWarnings = false;
+                    validationMessages = [];
+                    hideError();
+                }
+
+                presentationData = result.presentation;
 
                 if (result.type === "lesson") {
                     renderMode = "lesson";
@@ -778,7 +1027,7 @@ def render_raw_slide(yaml_str, posting_group):
                 }
 
                 // Render active slide
-                performRender();
+                resetStepAndRender();
 
             } catch (err) {
                 showError(err.message);
@@ -807,16 +1056,62 @@ def render_raw_slide(yaml_str, posting_group):
                 tab.onclick = () => {
                     selectedSlideIndex = slide.index;
                     updateSlideSelectorUI();
-                    performRender();
+                    resetStepAndRender();
                 };
                 container.appendChild(tab);
             });
         }
 
+        function resetStepAndRender(keepPlaying = false) {
+            activeStepIndex = 0;
+            if (!keepPlaying) {
+                isPlaying = false;
+                document.getElementById('btn-play-pause').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+            }
+            clearTimeout(autoAdvanceTimeout);
+            performRender();
+        }
+
         // Actually execute the rendering in Python
         function performRender() {
-            const yamlText = window.editor.getValue();
+            const contentYaml = window.contentModel ? window.contentModel.getValue() : '';
+            const presentationYaml = window.presentationModel ? window.presentationModel.getValue() : '';
             const groupSelect = document.getElementById('group-select').value;
+            const slide = currentSlides[selectedSlideIndex];
+
+            if (renderMode === "lesson" && currentSlides.length === 0) {
+                showError("No slides in lesson content block.");
+                isRenderInProgress = false;
+                return;
+            }
+
+            const slideId = slide ? slide.id : "";
+            const slidePres = presentationData && presentationData.slides ?
+                presentationData.slides.find(s => s.id === slideId) : null;
+
+            const reveals = slidePres && slidePres.reveals ? slidePres.reveals : [];
+
+            // Find total steps count
+            let maxStepIndex = 0;
+            reveals.forEach(rev => {
+                if (rev.steps) {
+                    rev.steps.forEach(st => {
+                        if (st.index > maxStepIndex) maxStepIndex = st.index;
+                    });
+                }
+            });
+
+            // Show or hide controller based on reveals presence or slide-level autoplay settings
+            const controller = document.getElementById('presentation-controller');
+            if (renderMode === "lesson" && slidePres && (reveals.length > 0 || (slidePres.advance === 'auto' && slidePres.duration !== undefined))) {
+                controller.style.display = 'flex';
+            } else {
+                controller.style.display = 'none';
+                document.getElementById('narration-subtitle').style.display = 'none';
+                const renderArea = document.getElementById('svg-render-area');
+                renderArea.style.transformOrigin = "50% 50%";
+                renderArea.style.transform = "scale(1)";
+            }
 
             let svgOutput = "";
 
@@ -827,29 +1122,150 @@ def render_raw_slide(yaml_str, posting_group):
 
             try {
                 if (renderMode === "lesson") {
-                    if (currentSlides.length === 0) {
-                        throw new Error("No slides in lesson content block.");
+                    if (slidePres && reveals.length > 0) {
+                        svgOutput = pyodide.globals.get("render_slide_from_lesson")(contentYaml, presentationYaml, selectedSlideIndex, groupSelect, activeStepIndex);
+                    } else {
+                        svgOutput = pyodide.globals.get("render_slide_from_lesson")(contentYaml, presentationYaml, selectedSlideIndex, groupSelect, null);
                     }
-                    svgOutput = pyodide.globals.get("render_slide_from_lesson")(yamlText, selectedSlideIndex, groupSelect);
                 } else {
-                    svgOutput = pyodide.globals.get("render_raw_slide")(yamlText, groupSelect);
+                    svgOutput = pyodide.globals.get("render_raw_slide")(contentYaml, groupSelect);
                 }
 
                 // Inject SVG into preview panel
                 document.getElementById('svg-render-area').innerHTML = svgOutput;
                 document.getElementById('xml-output-area').value = svgOutput;
 
-                // Set success badge
-                document.getElementById('status-container').style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-                document.getElementById('status-container').style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                document.getElementById('status-container').style.color = 'var(--accent-green)';
-                document.getElementById('status-text').innerText = "Connected";
+                if (hasValidationErrorsOrWarnings) {
+                    showValidationMessages(validationMessages);
+                } else {
+                    hideError();
+                }
 
-                hideError();
+                // If presentation slide, apply steps timing & viewport
+                if (renderMode === "lesson" && slidePres) {
+                    const hasSteps = reveals.length > 0;
+                    document.getElementById('step-indicator').innerText = hasSteps ? `Step ${activeStepIndex + 1} of ${maxStepIndex + 1}` : `Slide ${selectedSlideIndex + 1} of ${currentSlides.length}`;
+                    const progressPercent = hasSteps && maxStepIndex > 0 ? (activeStepIndex / maxStepIndex) * 100 : 100;
+                    document.getElementById('timeline-progress-bar').style.width = `${progressPercent}%`;
+
+                    let stepCaption = "";
+                    let stepDuration = null;
+                    let viewportData = null;
+
+                    if (hasSteps) {
+                        reveals.forEach(rev => {
+                            if (rev.steps) {
+                                const stepObj = rev.steps.find(st => st.index === activeStepIndex);
+                                if (stepObj) {
+                                    if (stepObj.caption) stepCaption = stepObj.caption;
+                                    if (stepObj.auto_advance_after !== undefined) stepDuration = stepObj.auto_advance_after;
+                                    if (stepObj.viewport) viewportData = stepObj.viewport;
+                                }
+                            }
+                        });
+                    }
+
+                    // Fallback to slide-level duration/advance
+                    if (stepDuration === null && slidePres.advance === 'auto' && slidePres.duration !== undefined) {
+                        stepDuration = slidePres.duration;
+                    }
+
+                    const subtitleEl = document.getElementById('narration-subtitle');
+                    if (stepCaption) {
+                        subtitleEl.innerText = stepCaption;
+                        subtitleEl.style.display = 'block';
+                    } else {
+                        subtitleEl.style.display = 'none';
+                    }
+
+                    // Apply zoom/pan transitions
+                    const renderArea = document.getElementById('svg-render-area');
+                    if (viewportData) {
+                        const zoom = viewportData.zoom !== undefined ? viewportData.zoom : 1;
+                        const center = viewportData.center || [400, 300];
+                        const cx = center[0];
+                        const cy = center[1];
+                        renderArea.style.transformOrigin = `${cx}px ${cy}px`;
+                        renderArea.style.transform = `scale(${zoom})`;
+                    } else {
+                        renderArea.style.transformOrigin = "50% 50%";
+                        renderArea.style.transform = "scale(1)";
+                    }
+
+                    // Handle auto advance timer
+                    clearTimeout(autoAdvanceTimeout);
+                    if (isPlaying && stepDuration !== null) {
+                        autoAdvanceTimeout = setTimeout(() => {
+                            if (hasSteps && activeStepIndex < maxStepIndex) {
+                                activeStepIndex++;
+                                performRender();
+                            } else {
+                                // Next slide auto
+                                if (selectedSlideIndex < currentSlides.length - 1) {
+                                    selectedSlideIndex++;
+                                    updateSlideSelectorUI();
+                                    resetStepAndRender(true);
+                                } else {
+                                    isPlaying = false;
+                                    document.getElementById('btn-play-pause').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                                }
+                            }
+                        }, stepDuration * 1000);
+                    }
+                }
+
             } catch (err) {
                 showError("Render Error:\n" + err.message);
             } finally {
                 isRenderInProgress = false;
+            }
+        }
+
+        function prevStep() {
+            if (activeStepIndex > 0) {
+                activeStepIndex--;
+                isPlaying = false;
+                document.getElementById('btn-play-pause').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                clearTimeout(autoAdvanceTimeout);
+                performRender();
+            }
+        }
+
+        function nextStep() {
+            const slide = currentSlides[selectedSlideIndex];
+            if (!slide) return;
+            const slideId = slide.id;
+            const slidePres = presentationData && presentationData.slides ?
+                presentationData.slides.find(s => s.id === slideId) : null;
+            const reveals = slidePres && slidePres.reveals ? slidePres.reveals : [];
+
+            let maxStepIndex = 0;
+            reveals.forEach(rev => {
+                if (rev.steps) {
+                    rev.steps.forEach(st => {
+                        if (st.index > maxStepIndex) maxStepIndex = st.index;
+                    });
+                }
+            });
+
+            if (activeStepIndex < maxStepIndex) {
+                activeStepIndex++;
+                isPlaying = false;
+                document.getElementById('btn-play-pause').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                clearTimeout(autoAdvanceTimeout);
+                performRender();
+            }
+        }
+
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('btn-play-pause');
+            if (isPlaying) {
+                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+                performRender();
+            } else {
+                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                clearTimeout(autoAdvanceTimeout);
             }
         }
 
@@ -879,6 +1295,8 @@ def render_raw_slide(yaml_str, posting_group):
         function showError(msg) {
             const banner = document.getElementById('error-banner');
             banner.innerText = msg;
+            banner.style.backgroundColor = 'rgba(239, 68, 68, 0.95)';
+            banner.style.borderTop = '1px solid var(--accent-red)';
             banner.style.display = 'block';
 
             document.getElementById('status-container').style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
@@ -887,8 +1305,46 @@ def render_raw_slide(yaml_str, posting_group):
             document.getElementById('status-text').innerText = "Compile Error";
         }
 
+        function showValidationMessages(messages) {
+            const banner = document.getElementById('error-banner');
+            const hasErrors = messages.some(msg => msg.startsWith("ERROR:"));
+
+            banner.innerHTML = messages.map(msg => {
+                if (msg.startsWith("ERROR:")) {
+                    return `<div style="color: #fca5a5; font-weight: 600; margin-bottom: 4px;">● ${msg}</div>`;
+                } else {
+                    return `<div style="color: #fde047; margin-bottom: 4px;">▲ ${msg}</div>`;
+                }
+            }).join("");
+
+            banner.style.display = 'block';
+
+            if (hasErrors) {
+                banner.style.backgroundColor = 'rgba(127, 29, 29, 0.95)';
+                banner.style.borderTop = '1px solid #ef4444';
+
+                document.getElementById('status-container').style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                document.getElementById('status-container').style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                document.getElementById('status-container').style.color = 'var(--accent-red)';
+                document.getElementById('status-text').innerText = "Validation Error";
+            } else {
+                banner.style.backgroundColor = 'rgba(120, 85, 0, 0.95)';
+                banner.style.borderTop = '1px solid #f59e0b';
+
+                document.getElementById('status-container').style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+                document.getElementById('status-container').style.borderColor = 'rgba(245, 158, 11, 0.2)';
+                document.getElementById('status-container').style.color = '#f59e0b';
+                document.getElementById('status-text').innerText = "Validation Warnings";
+            }
+        }
+
         function hideError() {
             document.getElementById('error-banner').style.display = 'none';
+            // Set success badge
+            document.getElementById('status-container').style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+            document.getElementById('status-container').style.borderColor = 'rgba(16, 185, 129, 0.2)';
+            document.getElementById('status-container').style.color = 'var(--accent-green)';
+            document.getElementById('status-text').innerText = "Connected";
         }
 
         // Download rendered SVG file

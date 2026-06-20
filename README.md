@@ -62,6 +62,39 @@ uv sync --extra dev
 uv run pytest tests/ -v
 ```
 
+### Code Quality and Maintainability Checks
+
+To keep the codebase maintainable and clean, we enforce code quality and maintainability limits locally. These checks monitor:
+
+1. **Cyclomatic Complexity**: Functions must have a McCabe complexity $\le 10$.
+2. **Function Length**: Functions are restricted to a maximum of 50 statements.
+3. **Nesting Depth**: Block nesting depth is restricted to at most 3 levels.
+4. **Duplication Detection**: Code replication/duplication of 4 or more lines is flagged.
+5. **Module Size**: Python files (modules) are limited to a maximum of 1000 lines.
+
+To run these checks, ensure your development dependencies are synced:
+
+```bash
+uv sync --extra dev
+```
+
+Then run all quality checks with a single command:
+
+```bash
+uv run python scripts/run_checks.py
+```
+
+Alternatively, you can run the individual tools manually:
+
+```bash
+# Run Ruff for style, complexity, and function length
+uv run ruff check eduvis tests scripts
+
+# Run Pylint for nesting depth, module size, and duplication
+uv run pylint eduvis tests scripts
+```
+
+
 To see every registered element type rendered to SVG in one pass:
 
 ```bash
@@ -667,9 +700,62 @@ Science and Humanities element types and renderers are planned for a future rele
 
 ---
 
+## EduVis-Presentation (v0.3)
+
+The presentation layer is a companion specification that sits on top of EduVis-Core. It controls the animation, reveal sequencing, and interactive player behavior without modifying the underlying pedagogical meaning.
+
+```yaml
+presentation:
+  slides:
+    - id: explore_number_line
+      advance: manual
+      duration: 5.0
+      reveals:
+        - target: explore_number_line
+          steps:
+            - index: 0
+              visible_items: [0]
+              caption: "Let's compare these two temperatures."
+            - index: 1
+              visible_items: [0, 1]
+              highlight: 
+                target: "value_-12"
+                style: "pulse"
+              viewport:
+                zoom: 1.5
+                center: [-12, 0]
+```
+
+**Key Features:**
+- **Slides**: Maps to existing Core element IDs.
+- **Reveals**: Step-by-step unhiding of element internals (e.g., list items, math grid rows).
+- **Viewport**: Declarative zoom and pan commands.
+- **Highlights**: Animate specific targets to draw attention.
+- **Audio/Timing**: `audio_file`, `audio_offset`, and `auto_advance_after` for narration syncing.
+
+### IDE Schema Validation
+To enable autocomplete, tooltips, and real-time schema validation in IDEs (like VS Code with the YAML extension), reference the schema at the top of your files:
+
+For lesson YAML files:
+```yaml
+# yaml-language-server: $schema=https://eduvis.dev/schemas/lesson.schema.json
+curriculum:
+  code: s1_sec_math
+```
+
+For sidecar `presentation.yaml` files:
+```yaml
+# yaml-language-server: $schema=https://eduvis.dev/schemas/presentation.schema.json
+slides:
+  - id: slide_01
+    advance: manual
+```
+
+---
+
 ## Roadmap
 
-### v0.1 — Core schema and SVG renderer
+### v0.1 — Core Schema and SVG Renderer
 - Formal JSON Schema for all element types
 - Placement model: all three layers, including `difficulty`
 - Actions vocabulary: initial set including step-by-step transformation actions
@@ -677,16 +763,64 @@ Science and Humanities element types and renderers are planned for a future rele
 - Built-in SVG reference renderer
 - Secondary Mathematics examples
 
-### v0.2 — Relationships and curriculum metadata
+### v0.2 — Curriculum Knowledge Model
 - Relationships between elements within a lesson
 - Curriculum metadata block (`code`, `topic`)
 - Lesson-level pedagogical validation (chronological sequence, progression coverage, concepts coherence, anchor density limits)
+- Learning outcomes mapping
+- Prerequisite and remediation relationships
+- Assessment objectives
+- Curriculum graph validation
 
-### v0.3 — EduVis-Presentation *(companion spec)*
-- Reveal sequencing
+### v0.3 — EduVis-Presentation (Current)
+- Interactive presentation mode (v0.3.0 player)
+- Companion `presentation` schema layered cleanly over Core
+- Reveal sequencing, highlight/zoom annotations, and viewport commands
 - Narration timing hooks
-- Highlight and zoom annotations
-- Designed to layer cleanly over Core — no Core schema changes required
+
+### v0.4 — Assessment and Validation Engine (Upcoming)
+- Canonical action validation model
+- Step-by-step solution representation
+- Rule-based answer checking (client-side, no LLM inference)
+- Symbolic equivalence checking
+- Misconception detection rules
+- Assessment event schema
+- Mastery model and Assessment objective mapping
+
+### v0.5 — Adaptive Learning and Remediation
+- Multi-path solution support
+- Remediation relationships
+- Hint generation from failed actions
+- Branch-on-fail assessment flows
+- Confidence tracking and Mastery evidence graph
+- Learning pathway recommendations operating on the curriculum graph
+
+### v0.6 — Curriculum Graph and Knowledge Engine
+- Cross-lesson prerequisite graph
+- Concept dependency graph
+- Outcome coverage analysis
+- Curriculum completeness validation
+- Curriculum traversal APIs
+
+### v0.7 — AI Generation and Tutoring
+- Structured lesson, assessment, and visual generation
+- Tutoring workflows
+
+### v1.0 — Autonomous Curriculum Factory
+- Agent-based curriculum generation
+- Curriculum review workflows
+- Standards mapping and multi-framework support
+- Curriculum QA and Syllabus generation
+
+---
+
+### Governance and Quality (Parallel Track)
+- Schema RFC process
+- Architectural fitness tests
+- Schema validation suites
+- Contributor guidelines
+- Reference curriculum implementations
+- Continuous schema evolution (v0.1–v1.0)
 
 ---
 

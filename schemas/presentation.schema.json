@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/presentation.schema.json",
+  "title": "EduVis Presentation",
+  "description": "Visual sequencing, narration timing, and camera commands for presentation renderers.",
+  "type": "object",
+  "required": [
+    "slides"
+  ],
+  "properties": {
+    "slides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Slide ID mapping to content element ID."
+          },
+          "advance": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "manual"
+            ]
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reveals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "target",
+                "steps"
+              ],
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "Element ID being revealed."
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "index"
+                    ],
+                    "properties": {
+                      "index": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "visible_items": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "description": "Subset of element items index to reveal."
+                      },
+                      "auto_advance_after": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Seconds to wait before auto-advancing to next step."
+                      },
+                      "caption": {
+                        "type": "string",
+                        "description": "Accessibility subtitle or narration text for this step."
+                      },
+                      "audio_offset": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Seconds offset into the single slide audio file."
+                      },
+                      "audio_file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "Override audio file reference per step."
+                      },
+                      "highlight": {
+                        "type": "object",
+                        "required": [
+                          "target",
+                          "style"
+                        ],
+                        "properties": {
+                          "target": {
+                            "type": "string"
+                          },
+                          "style": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "viewport": {
+                        "type": "object",
+                        "properties": {
+                          "zoom": {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          "center": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "action": {
+                        "type": "string",
+                        "enum": [
+                          "pause",
+                          "resume"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

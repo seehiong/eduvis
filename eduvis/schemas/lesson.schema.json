@@ -24,6 +24,52 @@
         "topic": {
           "type": "string",
           "description": "Topic code (e.g. N1.6)."
+        },
+        "concept": {
+          "type": "string",
+          "description": "Primary concept code or title."
+        },
+        "learning_outcomes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Learning outcomes mapped to this lesson."
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Prerequisite concept or topic codes."
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Concept or topic codes supported by this lesson."
+        },
+        "remediated_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Concept or topic codes recommended to remediate gaps."
+        },
+        "assessment_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Assessment objectives/targets mapping."
+        },
+        "assessment_objectives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Assessment objectives/targets mapping."
         }
       },
       "additionalProperties": false
@@ -49,6 +95,9 @@
     },
     "progression": {
       "$ref": "progression.schema.json"
+    },
+    "presentation": {
+      "$ref": "presentation.schema.json"
     },
     "content": {
       "type": "array",

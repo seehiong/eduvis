@@ -1,6 +1,5 @@
 """Smoke tests for the EduVis lesson validator."""
 
-import pytest
 from eduvis.core import validate_lesson
 
 
@@ -27,7 +26,46 @@ def _lesson(**overrides):
 
 
 def test_valid_lesson_no_warnings():
-    assert validate_lesson(_lesson()) == []
+    assert not validate_lesson(_lesson())
+
+
+def test_curriculum_knowledge_model():
+    # Valid model should produce no warnings
+    doc = _lesson()
+    doc["curriculum"] = {
+        "code": "SEC-math-2027",
+        "topic": "N1.6",
+        "concept": "solving_linear_equations",
+        "requires": ["algebraic_expressions"],
+        "supports": ["simultaneous_equations"],
+        "learning_outcomes": ["isolate_variable"],
+        "assessment_targets": ["procedural_fluency"],
+        "remediated_by": ["equation_balancing"],
+    }
+    assert not validate_lesson(doc)
+
+    # Invalid concept self-requires
+    doc = _lesson()
+    doc["curriculum"] = {
+        "code": "test",
+        "topic": "T1",
+        "concept": "solving_linear_equations",
+        "requires": ["solving_linear_equations"],
+    }
+    warnings = validate_lesson(doc)
+    assert any("cannot require itself" in w for w in warnings)
+
+    # Overlapping requires and supports
+    doc = _lesson()
+    doc["curriculum"] = {
+        "code": "test",
+        "topic": "T1",
+        "concept": "solving_linear_equations",
+        "requires": ["algebraic_expressions"],
+        "supports": ["algebraic_expressions"],
+    }
+    warnings = validate_lesson(doc)
+    assert any("concepts cannot be in both 'requires' and 'supports'" in w for w in warnings)
 
 
 def test_missing_lesson_block():
@@ -308,3 +346,88 @@ def test_element_registry_element_names():
     names_empty = ElementRegistry.element_names([])
     assert "text_list" in names_empty
     assert "geometry_shape" not in names_empty
+
+
+# ── Presentation SVG fields ───────────────────────────────────────────────────
+
+
+def _lesson_with_presentation(slides_override):
+    """Helper: lesson with an inline presentation block using given slides list."""
+    doc = _lesson()
+    doc["presentation"] = {"slides": slides_override}
+    return doc
+
+
+def test_presentation_svg_neither_field_is_valid():
+    """A slide with no svg_ref or svg_inline is perfectly valid."""
+    doc = _lesson_with_presentation([
+        {"id": "slide_1", "advance": "auto"},
+    ])
+    warnings = validate_lesson(doc)
+    assert not any("svg" in w.lower() for w in warnings)
+
+
+def test_presentation_svg_ref_only_is_valid():
+    """A slide with only svg_ref (non-empty string) is valid."""
+    doc = _lesson_with_presentation([
+        {"id": "slide_1", "svg_ref": "output/negatives/slide_1.svg"},
+    ])
+    warnings = validate_lesson(doc)
+    assert not any("svg" in w.lower() for w in warnings)
+
+
+def test_presentation_svg_inline_only_is_valid():
+    """A slide with only svg_inline (valid SVG string) is valid."""
+    doc = _lesson_with_presentation([
+        {"id": "slide_1", "svg_inline": "<svg xmlns='http://www.w3.org/2000/svg'></svg>"},
+    ])
+    warnings = validate_lesson(doc)
+    assert not any("svg" in w.lower() for w in warnings)
+
+
+def test_presentation_svg_both_emits_warn_not_error():
+    """When both svg_ref and svg_inline are set, a WARN is emitted (not an ERROR)."""
+    doc = _lesson_with_presentation([
+        {
+            "id": "slide_1",
+            "svg_ref": "output/slide_1.svg",
+            "svg_inline": "<svg xmlns='http://www.w3.org/2000/svg'></svg>",
+        },
+    ])
+    warnings = validate_lesson(doc)
+    svg_warnings = [w for w in warnings if "svg" in w.lower()]
+    assert len(svg_warnings) == 1
+    assert "WARN" in svg_warnings[0]
+    assert "svg_inline" in svg_warnings[0]
+    assert "takes precedence" in svg_warnings[0]
+    # Must NOT be an ERROR
+    assert not any(w.startswith("ERROR") and "svg" in w.lower() for w in warnings)
+
+
+def test_presentation_svg_ref_empty_string_is_error():
+    """An empty svg_ref string is an ERROR."""
+    doc = _lesson_with_presentation([
+        {"id": "slide_1", "svg_ref": ""},
+    ])
+    warnings = validate_lesson(doc)
+    assert any("ERROR" in w and "svg_ref" in w for w in warnings)
+
+
+def test_presentation_svg_inline_empty_string_is_error():
+    """An empty svg_inline string is an ERROR."""
+    doc = _lesson_with_presentation([
+        {"id": "slide_1", "svg_inline": ""},
+    ])
+    warnings = validate_lesson(doc)
+    assert any("ERROR" in w and "svg_inline" in w for w in warnings)
+
+
+def test_presentation_svg_inline_not_starting_with_svg_tag_is_warn():
+    """svg_inline that doesn't start with '<svg' emits a WARN (not ERROR)."""
+    doc = _lesson_with_presentation([
+        {"id": "slide_1", "svg_inline": "<!-- comment --><svg></svg>"},
+    ])
+    warnings = validate_lesson(doc)
+    svg_warns = [w for w in warnings if "svg_inline" in w and "WARN" in w]
+    assert len(svg_warns) == 1
+    assert "does not appear to start with" in svg_warns[0]

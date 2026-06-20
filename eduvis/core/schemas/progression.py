@@ -24,6 +24,21 @@ def validate(progression: dict) -> list[str]:
         )
         return warnings
 
+    _validate_pattern(progression, warnings)
+    _validate_pedagogy(progression, warnings)
+
+    phases = progression.get("phases", [])
+    if not isinstance(phases, list):
+        warnings.append("[progression] phases must be a list")
+        return warnings
+
+    for i, entry in enumerate(phases):
+        _validate_phase_entry(i, entry, warnings)
+
+    return warnings
+
+
+def _validate_pattern(progression: dict, warnings: list[str]) -> None:
     pattern = progression.get("pattern")
     if pattern is None:
         warnings.append("[progression] pattern is required")
@@ -33,6 +48,8 @@ def validate(progression: dict) -> list[str]:
             f"choose from: {', '.join(sorted(VALID_PATTERNS))}"
         )
 
+
+def _validate_pedagogy(progression: dict, warnings: list[str]) -> None:
     pedagogy = progression.get("pedagogy", {})
     if not isinstance(pedagogy, dict):
         warnings.append("[progression] pedagogy must be a mapping")
@@ -49,43 +66,37 @@ def validate(progression: dict) -> list[str]:
                     f"got {type(value).__name__}"
                 )
 
-    phases = progression.get("phases", [])
-    if not isinstance(phases, list):
-        warnings.append("[progression] phases must be a list")
-        return warnings
 
-    for i, entry in enumerate(phases):
-        if not isinstance(entry, dict):
-            warnings.append(f"[progression] phases[{i}] must be a mapping")
-            continue
+def _validate_phase_entry(i: int, entry: dict, warnings: list[str]) -> None:
+    if not isinstance(entry, dict):
+        warnings.append(f"[progression] phases[{i}] must be a mapping")
+        return
 
-        phase_name = entry.get("phase")
-        if phase_name is None:
-            warnings.append(f"[progression] phases[{i}] missing required 'phase' key")
-        elif phase_name not in VALID_PHASES:
-            warnings.append(
-                f"[progression] phases[{i}].phase '{phase_name}' is not valid; "
-                f"choose from: {', '.join(sorted(VALID_PHASES))}"
-            )
+    phase_name = entry.get("phase")
+    if phase_name is None:
+        warnings.append(f"[progression] phases[{i}] missing required 'phase' key")
+    elif phase_name not in VALID_PHASES:
+        warnings.append(
+            f"[progression] phases[{i}].phase '{phase_name}' is not valid; "
+            f"choose from: {', '.join(sorted(VALID_PHASES))}"
+        )
 
-        difficulty = entry.get("difficulty")
-        if difficulty is not None and difficulty not in VALID_DIFFICULTY:
-            warnings.append(
-                f"[progression] phases[{i}].difficulty '{difficulty}' is not valid; "
-                f"choose from: {', '.join(sorted(VALID_DIFFICULTY))}"
-            )
+    difficulty = entry.get("difficulty")
+    if difficulty is not None and difficulty not in VALID_DIFFICULTY:
+        warnings.append(
+            f"[progression] phases[{i}].difficulty '{difficulty}' is not valid; "
+            f"choose from: {', '.join(sorted(VALID_DIFFICULTY))}"
+        )
 
-        purpose = entry.get("purpose")
-        if purpose is not None and purpose not in VALID_PURPOSES:
-            warnings.append(
-                f"[progression] phases[{i}].purpose '{purpose}' is not valid; "
-                f"choose from: {', '.join(sorted(VALID_PURPOSES))}"
-            )
+    purpose = entry.get("purpose")
+    if purpose is not None and purpose not in VALID_PURPOSES:
+        warnings.append(
+            f"[progression] phases[{i}].purpose '{purpose}' is not valid; "
+            f"choose from: {', '.join(sorted(VALID_PURPOSES))}"
+        )
 
-        count = entry.get("count")
-        if count is not None and (not isinstance(count, int) or count < 1):
-            warnings.append(
-                f"[progression] phases[{i}].count must be a positive integer, got {count!r}"
-            )
-
-    return warnings
+    count = entry.get("count")
+    if count is not None and (not isinstance(count, int) or count < 1):
+        warnings.append(
+            f"[progression] phases[{i}].count must be a positive integer, got {count!r}"
+        )

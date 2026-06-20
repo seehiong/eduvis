@@ -8,12 +8,14 @@ Validates a complete EduVis lesson document against all five pillars:
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from .registry import ElementRegistry
 from .schemas import actions as actions_schema
 from .schemas import placement as placement_schema
 from .schemas import progression as progression_schema
 from .schemas import relationships as relationships_schema
+from .schemas import presentation as presentation_schema
 
 logger = logging.getLogger(__name__)
 
@@ -38,42 +40,10 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
     # ── curriculum block ──────────────────────────────────────────────────────
     curriculum = lesson_doc.get("curriculum")
     lesson = lesson_doc.get("lesson")
-    
-    if curriculum is not None:
-        if not isinstance(curriculum, dict):
-            warnings.append("ERROR: [curriculum] 'curriculum' block must be a mapping")
-        else:
-            code = curriculum.get("code")
-            topic = curriculum.get("topic")
-            if not isinstance(code, str) or not code.strip():
-                warnings.append("ERROR: [curriculum] 'code' must be a non-empty string")
-            if not isinstance(topic, str) or not topic.strip():
-                warnings.append("ERROR: [curriculum] 'topic' must be a non-empty string")
-    else:
-        # Check if legacy keys exist in lesson block
-        if isinstance(lesson, dict) and ("syllabus" in lesson or "topic" in lesson):
-            warnings.append(
-                "WARN: [curriculum] legacy 'lesson.syllabus' and 'lesson.topic' are deprecated; "
-                "migrate to the top-level 'curriculum' block"
-            )
-        else:
-            warnings.append("ERROR: [curriculum] missing required top-level 'curriculum' block")
+    _validate_curriculum(curriculum, lesson, warnings)
 
     # ── lesson block ──────────────────────────────────────────────────────────
-    if not lesson:
-        warnings.append("ERROR: [lesson] missing required top-level 'lesson' block")
-    elif not isinstance(lesson, dict):
-        warnings.append("ERROR: [lesson] must be a mapping")
-    else:
-        # Validate lesson-level concepts
-        concepts = lesson.get("concepts")
-        if concepts is not None:
-            if not isinstance(concepts, list):
-                warnings.append("ERROR: [lesson] 'concepts' must be a list of strings")
-            else:
-                for c in concepts:
-                    if not isinstance(c, str):
-                        warnings.append(f"ERROR: [lesson] 'concepts' entry must be a string, got {type(c).__name__}")
+    _validate_lesson_metadata(lesson, warnings)
 
     # ── progression block ─────────────────────────────────────────────────────
     progression = lesson_doc.get("progression")
@@ -92,69 +62,26 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
         warnings.append("ERROR: [content] 'content' must be a list")
         return warnings
 
-    # Collect all IDs first for referential integrity
-    known_ids: set[str] = set()
-    id_counts: dict[str, int] = {}
-    for item in content:
-        if isinstance(item, dict):
-            eid = item.get("id")
-            if eid:
-                id_counts[eid] = id_counts.get(eid, 0) + 1
-                known_ids.add(str(eid))
+    # Collect and validate IDs
+    known_ids, valid_content = _validate_content_metadata(content, warnings)
+    if not valid_content:
+        return warnings
 
-    for eid, count in id_counts.items():
-        if count > 1:
-            warnings.append(f"ERROR: [content] duplicate element id '{eid}'")
+    _validate_remaining_blocks(lesson_doc, content, known_ids, progression, warnings)
+
+    return warnings
+
+
+def _validate_remaining_blocks(lesson_doc: dict, content: list, known_ids: set[str], progression: Any, warnings: list[str]) -> None:
+    # ── presentation block ────────────────────────────────────────────────────
+    presentation = lesson_doc.get("presentation")
+    if presentation is not None:
+        warnings.extend(presentation_schema.validate(presentation, known_ids))
 
     # ── per-element validation ────────────────────────────────────────────────
     for item in content:
-        if not isinstance(item, dict):
-            warnings.append("ERROR: [content] each element must be a mapping")
-            continue
-
-        element_id = str(item.get("id", "<no-id>"))
-        element_type = item.get("type")
-
-        if not item.get("id"):
-            warnings.append("ERROR: [content] element missing required 'id' field")
-
-        if not element_type:
-            warnings.append(f"ERROR: [{element_id}] missing required 'type' field")
-        else:
-            # Validate element-specific fields against the registry
-            for w in ElementRegistry.validate_fields(str(element_type), item):
-                warnings.append(f"ERROR: {w}")
-
-        # Placement (required)
-        placement = item.get("placement")
-        if placement is None:
-            warnings.append(f"ERROR: [{element_id}] missing 'placement' block")
-        else:
-            for w in placement_schema.validate(element_id, placement):
-                warnings.append(f"ERROR: {w}")
-
-        # Actions (optional)
-        actions_data = item.get("actions")
-        if actions_data is not None:
-            for w in actions_schema.validate(element_id, actions_data):
-                warnings.append(f"ERROR: {w}")
-
-        # Relationships (optional) — exclude self from referential check
-        rels = item.get("relationships")
-        if rels is not None:
-            ref_ids = known_ids - {element_id}
-            for w in relationships_schema.validate(element_id, rels, ref_ids):
-                warnings.append(f"ERROR: {w}")
-
-        # Concepts (optional)
-        element_concepts = item.get("concepts")
-        if element_concepts is not None:
-            if not isinstance(element_concepts, list):
-                warnings.append(f"ERROR: [{element_id}] 'concepts' must be a list of strings")
-            else:
-                for c in element_concepts:
-                    if not isinstance(c, str):
-                        warnings.append(f"ERROR: [{element_id}] 'concepts' entry must be a string, got {type(c).__name__}")
+        if isinstance(item, dict):
+            _validate_element_fields(item, known_ids, warnings)
 
     # ── phase sequence & coverage validation ──────────────────────────────────
     if progression and isinstance(progression, dict):
@@ -175,7 +102,159 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
     # ── concept coherence checks ──────────────────────────────────────────────
     warnings.extend(_check_concept_coherence(lesson_doc))
 
-    return warnings
+
+def _validate_curriculum(curriculum: Any, lesson: Any, warnings: list[str]) -> None:
+    if curriculum is not None:
+        if not isinstance(curriculum, dict):
+            warnings.append("ERROR: [curriculum] 'curriculum' block must be a mapping")
+        else:
+            _validate_curriculum_fields(curriculum, warnings)
+            _validate_curriculum_graph(curriculum, warnings)
+    elif isinstance(lesson, dict) and ("syllabus" in lesson or "topic" in lesson):
+        warnings.append(
+            "WARN: [curriculum] legacy 'lesson.syllabus' and 'lesson.topic' are deprecated; "
+            "migrate to the top-level 'curriculum' block"
+        )
+    else:
+        warnings.append("ERROR: [curriculum] missing required top-level 'curriculum' block")
+
+
+def _validate_curriculum_fields(curriculum: dict, warnings: list[str]) -> None:
+    code = curriculum.get("code")
+    topic = curriculum.get("topic")
+    if not isinstance(code, str) or not code.strip():
+        warnings.append("ERROR: [curriculum] 'code' must be a non-empty string")
+    if not isinstance(topic, str) or not topic.strip():
+        warnings.append("ERROR: [curriculum] 'topic' must be a non-empty string")
+
+    concept = curriculum.get("concept")
+    if concept is not None:
+        if not isinstance(concept, str) or not concept.strip():
+            warnings.append("ERROR: [curriculum] 'concept' must be a non-empty string")
+
+    # Validate list of strings fields
+    list_fields = ["learning_outcomes", "requires", "supports", "remediated_by", "assessment_targets", "assessment_objectives"]
+    for field in list_fields:
+        val = curriculum.get(field)
+        if val is not None:
+            if not isinstance(val, list):
+                warnings.append(f"ERROR: [curriculum] '{field}' must be a list of strings")
+            else:
+                for i, item in enumerate(val):
+                    if not isinstance(item, str) or not item.strip():
+                        warnings.append(f"ERROR: [curriculum] '{field}' entry at index {i} must be a non-empty string")
+
+
+def _validate_curriculum_graph(curriculum: dict, warnings: list[str]) -> None:
+    concept = curriculum.get("concept")
+    requires = curriculum.get("requires") or []
+    supports = curriculum.get("supports") or []
+
+    if concept:
+        concept_str = concept.strip()
+        if isinstance(requires, list) and concept_str in [r.strip() for r in requires if isinstance(r, str)]:
+            warnings.append(f"ERROR: [curriculum:graph] concept '{concept_str}' cannot require itself")
+        if isinstance(supports, list) and concept_str in [s.strip() for s in supports if isinstance(s, str)]:
+            warnings.append(f"ERROR: [curriculum:graph] concept '{concept_str}' cannot support itself")
+
+    if isinstance(requires, list) and isinstance(supports, list):
+        req_set = {r.strip() for r in requires if isinstance(r, str) and r.strip()}
+        sup_set = {s.strip() for s in supports if isinstance(s, str) and s.strip()}
+        overlap = req_set & sup_set
+        if overlap:
+            warnings.append(
+                f"ERROR: [curriculum:graph] concepts cannot be in both 'requires' and 'supports': "
+                f"{', '.join(sorted(overlap))}"
+            )
+
+
+def _validate_lesson_metadata(lesson: Any, warnings: list[str]) -> None:
+    if not lesson:
+        warnings.append("ERROR: [lesson] missing required top-level 'lesson' block")
+    elif not isinstance(lesson, dict):
+        warnings.append("ERROR: [lesson] must be a mapping")
+    else:
+        # Validate lesson-level concepts
+        concepts = lesson.get("concepts")
+        if concepts is not None:
+            if not isinstance(concepts, list):
+                warnings.append("ERROR: [lesson] 'concepts' must be a list of strings")
+            else:
+                for c in concepts:
+                    if not isinstance(c, str):
+                        warnings.append(f"ERROR: [lesson] 'concepts' entry must be a string, got {type(c).__name__}")
+
+
+def _validate_content_metadata(content: list, warnings: list[str]) -> tuple[set[str], bool]:
+    known_ids: set[str] = set()
+    id_counts: dict[str, int] = {}
+    valid = True
+
+    for item in content:
+        if not isinstance(item, dict):
+            warnings.append("ERROR: [content] each element must be a mapping")
+            valid = False
+            continue
+        eid = item.get("id")
+        if eid:
+            id_counts[eid] = id_counts.get(eid, 0) + 1
+            known_ids.add(str(eid))
+
+    for eid, count in id_counts.items():
+        if count > 1:
+            warnings.append(f"ERROR: [content] duplicate element id '{eid}'")
+
+    return known_ids, valid
+
+
+def _validate_element_fields(item: dict, known_ids: set[str], warnings: list[str]) -> None:
+    element_id = str(item.get("id", "<no-id>"))
+    element_type = item.get("type")
+
+    if not item.get("id"):
+        warnings.append("ERROR: [content] element missing required 'id' field")
+
+    if not element_type:
+        warnings.append(f"ERROR: [{element_id}] missing required 'type' field")
+    else:
+        # Validate element-specific fields against the registry
+        for w in ElementRegistry.validate_fields(str(element_type), item):
+            warnings.append(f"ERROR: {w}")
+
+    # Placement (required)
+    placement = item.get("placement")
+    if placement is None:
+        warnings.append(f"ERROR: [{element_id}] missing 'placement' block")
+    else:
+        for w in placement_schema.validate(element_id, placement):
+            warnings.append(f"ERROR: {w}")
+
+    _validate_element_actions_rels_concepts(item, element_id, known_ids, warnings)
+
+
+def _validate_element_actions_rels_concepts(item: dict, element_id: str, known_ids: set[str], warnings: list[str]) -> None:
+    # Actions (optional)
+    actions_data = item.get("actions")
+    if actions_data is not None:
+        for w in actions_schema.validate(element_id, actions_data):
+            warnings.append(f"ERROR: {w}")
+
+    # Relationships (optional) — exclude self from referential check
+    rels = item.get("relationships")
+    if rels is not None:
+        ref_ids = known_ids - {element_id}
+        for w in relationships_schema.validate(element_id, rels, ref_ids):
+            warnings.append(f"ERROR: {w}")
+
+    # Concepts (optional)
+    element_concepts = item.get("concepts")
+    if element_concepts is not None:
+        if not isinstance(element_concepts, list):
+            warnings.append(f"ERROR: [{element_id}] 'concepts' must be a list of strings")
+        else:
+            for c in element_concepts:
+                if not isinstance(c, str):
+                    warnings.append(f"ERROR: [{element_id}] 'concepts' entry must be a string, got {type(c).__name__}")
 
 
 # ── Phase Sequence & Coverage ─────────────────────────────────────────────────
@@ -186,7 +265,34 @@ def _check_phase_sequence(progression_phases: list[dict], content: list[dict]) -
     if not progression_phases or not content:
         return warnings
 
-    # Map content elements to their placement phase info
+    element_phases = _collect_element_phases(content)
+
+    # 1. Progression Coverage: Undeclared Phases Check (ERROR)
+    declared_phases_list = [p.get("phase") for p in progression_phases if isinstance(p, dict) and p.get("phase")]
+    declared_phases_set = set(declared_phases_list)
+
+    for el in element_phases:
+        if el["phase"] not in declared_phases_set:
+            warnings.append(
+                f"ERROR: [progression:sequence] element '{el['id']}' has phase '{el['phase']}' "
+                f"which is not declared in the progression phases list"
+            )
+
+    # 2. Progression Coverage: Unused Phases Check (WARN)
+    content_phases_set = {el["phase"] for el in element_phases if el["phase"]}
+    for dp in declared_phases_list:
+        if dp not in content_phases_set:
+            warnings.append(
+                f"WARN: [progression:coverage] phase '{dp}' is declared in the progression but not used by any content elements"
+            )
+
+    # 3. Monotonic Phase Sequence Matching (ERROR)
+    _validate_phase_monotonicity(element_phases, progression_phases, declared_phases_set, warnings)
+
+    return warnings
+
+
+def _collect_element_phases(content: list[dict]) -> list[dict]:
     element_phases = []
     for item in content:
         if not isinstance(item, dict):
@@ -204,27 +310,12 @@ def _check_phase_sequence(progression_phases: list[dict], content: list[dict]) -
             "purpose": purpose,
             "difficulty": difficulty
         })
+    return element_phases
 
-    # 1. Progression Coverage: Undeclared Phases Check (ERROR)
-    declared_phases_list = [p.get("phase") for p in progression_phases if isinstance(p, dict) and p.get("phase")]
-    declared_phases_set = set(declared_phases_list)
-    
-    for el in element_phases:
-        if el["phase"] not in declared_phases_set:
-            warnings.append(
-                f"ERROR: [progression:sequence] element '{el['id']}' has phase '{el['phase']}' "
-                f"which is not declared in the progression phases list"
-            )
 
-    # 2. Progression Coverage: Unused Phases Check (WARN)
-    content_phases_set = {el["phase"] for el in element_phases if el["phase"]}
-    for dp in declared_phases_list:
-        if dp not in content_phases_set:
-            warnings.append(
-                f"WARN: [progression:coverage] phase '{dp}' is declared in the progression but not used by any content elements"
-            )
-
-    # 3. Monotonic Phase Sequence Matching (ERROR)
+def _validate_phase_monotonicity(
+    element_phases: list[dict], progression_phases: list[dict], declared_phases_set: set[str], warnings: list[str]
+) -> None:
     curr_prog_idx = 0
     num_prog = len(progression_phases)
 
@@ -253,29 +344,33 @@ def _check_phase_sequence(progression_phases: list[dict], content: list[dict]) -
             curr_prog_idx = matched_idx
         else:
             # Sequence error: phase appears out of order
-            matched_behind = False
-            for p_idx in range(0, curr_prog_idx):
-                p_phase = progression_phases[p_idx]
-                if el["phase"] == p_phase.get("phase"):
-                    p_purpose = p_phase.get("purpose")
-                    p_difficulty = p_phase.get("difficulty")
-                    if (p_purpose is None or el["purpose"] == p_purpose) and \
-                       (p_difficulty is None or el["difficulty"] == p_difficulty):
-                           matched_behind = True
-                           break
+            _handle_phase_sequence_error(el, curr_prog_idx, progression_phases, warnings)
 
-            if matched_behind:
-                warnings.append(
-                    f"ERROR: [progression:sequence] element '{el['id']}' has phase '{el['phase']}' "
-                    f"which appears out of order (this phase was already completed in the progression)"
-                )
-            else:
-                warnings.append(
-                    f"ERROR: [progression:sequence] element '{el['id']}' has phase '{el['phase']}' "
-                    f"which does not match the constraints of progression phases"
-                )
 
-    return warnings
+def _handle_phase_sequence_error(el: dict, curr_prog_idx: int, progression_phases: list[dict], warnings: list[str]) -> None:
+    matched_behind = False
+    for p_idx in range(0, curr_prog_idx):
+        p_phase = progression_phases[p_idx]
+        if el["phase"] == p_phase.get("phase"):
+            p_purpose = p_phase.get("purpose")
+            p_difficulty = p_phase.get("difficulty")
+            if (
+                (p_purpose is None or el["purpose"] == p_purpose)
+                and (p_difficulty is None or el["difficulty"] == p_difficulty)
+            ):
+                matched_behind = True
+                break
+
+    if matched_behind:
+        warnings.append(
+            f"ERROR: [progression:sequence] element '{el['id']}' has phase '{el['phase']}' "
+            f"which appears out of order (this phase was already completed in the progression)"
+        )
+    else:
+        warnings.append(
+            f"ERROR: [progression:sequence] element '{el['id']}' has phase '{el['phase']}' "
+            f"which does not match the constraints of progression phases"
+        )
 
 
 # ── Pedagogy coherence ────────────────────────────────────────────────────────
@@ -465,34 +560,39 @@ def _check_remediations(content: list[dict]) -> list[str]:
     for idx, item in enumerate(content):
         if not isinstance(item, dict):
             continue
-        eid = item.get("id", "<no-id>")
-        rels = item.get("relationships")
-        if not isinstance(rels, dict):
-            continue
-        remediations = rels.get("remediation_for")
-        if not isinstance(remediations, list):
-            continue
+        _validate_element_remediations(idx, item, id_to_index, id_to_type, warnings)
 
-        for target in remediations:
-            if not isinstance(target, str):
-                continue
-            if target not in id_to_index:
-                continue
-
-            target_idx = id_to_index[target]
-            if target_idx >= idx:
-                warnings.append(
-                    f"ERROR: [relationships:remediation_for] element '{eid}' is a remediation for '{target}' "
-                    f"which appears after it in the lesson; a hint cannot remediate a future question"
-                )
-
-            target_type = id_to_type.get(target)
-            if target_type and not is_assessment_element(target_type):
-                warnings.append(
-                    f"ERROR: [relationships:remediation_for] element '{eid}' is a remediation but targets "
-                    f"element '{target}' of type '{target_type}'; remediation must target an assessment element"
-                )
     return warnings
+
+
+def _validate_element_remediations(
+    idx: int, item: dict, id_to_index: dict[str, int], id_to_type: dict[str, str], warnings: list[str]
+) -> None:
+    eid = item.get("id", "<no-id>")
+    rels = item.get("relationships")
+    if not isinstance(rels, dict):
+        return
+    remediations = rels.get("remediation_for")
+    if not isinstance(remediations, list):
+        return
+
+    for target in remediations:
+        if not isinstance(target, str) or target not in id_to_index:
+            continue
+
+        target_idx = id_to_index[target]
+        if target_idx >= idx:
+            warnings.append(
+                f"ERROR: [relationships:remediation_for] element '{eid}' is a remediation for '{target}' "
+                f"which appears after it in the lesson; a hint cannot remediate a future question"
+            )
+
+        target_type = id_to_type.get(target)
+        if target_type and not is_assessment_element(target_type):
+            warnings.append(
+                f"ERROR: [relationships:remediation_for] element '{eid}' is a remediation but targets "
+                f"element '{target}' of type '{target_type}'; remediation must target an assessment element"
+            )
 
 
 # ── Concept coherence ─────────────────────────────────────────────────────────
@@ -500,16 +600,35 @@ def _check_remediations(content: list[dict]) -> list[str]:
 def _check_concept_coherence(lesson_doc: dict) -> list[str]:
     """Check that elements tag valid concepts and do not contain unrelated concept clusters."""
     warnings: list[str] = []
-    
+
     lesson = lesson_doc.get("lesson") or {}
     content = lesson_doc.get("content") or []
-    
+
     lesson_concepts = set(lesson.get("concepts", []))
-    
+
     # 1. Collect all concepts tagged on elements
+    element_to_concepts, all_element_concepts = _collect_tagged_concepts(content, lesson_concepts, warnings)
+
+    # Check 2: Warning if a lesson-declared concept is completely unused by any element
+    if lesson_concepts:
+        unused_concepts = lesson_concepts - all_element_concepts
+        if unused_concepts:
+            warnings.append(
+                f"WARN: [lesson:concept] the following declared concepts are not tagged on any content elements: "
+                f"{', '.join(sorted(unused_concepts))}"
+            )
+
+    # Check 3: Check for disconnected concept clusters (Concept Connectivity Check)
+    if len(all_element_concepts) > 1:
+        _check_concept_connectivity(content, element_to_concepts, all_element_concepts, warnings)
+
+    return warnings
+
+
+def _collect_tagged_concepts(content: list, lesson_concepts: set[str], warnings: list[str]) -> tuple[dict[str, set[str]], set[str]]:
     element_to_concepts: dict[str, set[str]] = {}
     all_element_concepts: set[str] = set()
-    
+
     for item in content:
         if not isinstance(item, dict):
             continue
@@ -522,7 +641,7 @@ def _check_concept_coherence(lesson_doc: dict) -> list[str]:
             if valid_concepts:
                 element_to_concepts[eid] = set(valid_concepts)
                 all_element_concepts.update(valid_concepts)
-                
+
                 # Check 1: Error if element concept is not declared in lesson-level concepts
                 if lesson_concepts:
                     for c in valid_concepts:
@@ -531,87 +650,92 @@ def _check_concept_coherence(lesson_doc: dict) -> list[str]:
                                 f"ERROR: [content:concept] element '{eid}' tags concept '{c}' "
                                 f"which is not declared in the lesson-level 'lesson.concepts'"
                             )
-                            
-    # Check 2: Warning if a lesson-declared concept is completely unused by any element
-    if lesson_concepts:
-        unused_concepts = lesson_concepts - all_element_concepts
-        if unused_concepts:
-            warnings.append(
-                f"WARN: [lesson:concept] the following declared concepts are not tagged on any content elements: "
-                f"{', '.join(sorted(unused_concepts))}"
-            )
-            
-    # Check 3: Check for disconnected concept clusters (Concept Connectivity Check)
-    if len(all_element_concepts) > 1:
-        # Build relationship adjacency graph (ignoring direction)
-        adj: dict[str, set[str]] = {
-            item.get("id"): set() 
-            for item in content 
-            if isinstance(item, dict) and item.get("id")
-        }
-        for item in content:
-            if not isinstance(item, dict):
-                continue
-            eid = item.get("id")
-            if not eid:
-                continue
-            rels = item.get("relationships") or {}
-            if isinstance(rels, dict):
-                for rel_type, targets in rels.items():
-                    if isinstance(targets, list):
-                        for t in targets:
-                            if isinstance(t, str) and t in adj:
-                                adj[eid].add(t)
-                                adj[t].add(eid)
-                                
-        # For each concept, find the elements that tag it
-        concept_elements = {c: set() for c in all_element_concepts}
-        for eid, concepts in element_to_concepts.items():
-            for c in concepts:
-                concept_elements[c].add(eid)
-                
-        # Find connected components in the element graph
-        visited = set()
-        components = []
-        for eid in adj:
-            if eid not in visited:
-                comp = set()
-                q = [eid]
-                visited.add(eid)
-                while q:
-                    curr = q.pop(0)
-                    comp.add(curr)
-                    for neighbor in adj[curr]:
-                        if neighbor not in visited:
-                            visited.add(neighbor)
-                            q.append(neighbor)
-                components.append(comp)
-                
-        # Find unrelated pairs of concepts
-        unrelated_pairs = []
-        concepts_list = list(all_element_concepts)
-        for i in range(len(concepts_list)):
-            for j in range(i + 1, len(concepts_list)):
-                c1, c2 = concepts_list[i], concepts_list[j]
-                
-                # Check 1: Are there any elements tagging both?
-                sharing_elements = concept_elements[c1] & concept_elements[c2]
-                if sharing_elements:
-                    continue  # they share elements, so they are related
-                    
-                # Check 2: Is there any path between any element of c1 and any element of c2?
-                connected = False
-                for comp in components:
-                    if (concept_elements[c1] & comp) and (concept_elements[c2] & comp):
-                        connected = True
-                        break
-                        
-                if not connected:
-                    unrelated_pairs.append((c1, c2))
-                    
-        if unrelated_pairs:
-            warnings.append(
-                "WARN: [coherence:concept] Multiple concept groups detected with no relationships connecting them."
-            )
-            
-    return warnings
+    return element_to_concepts, all_element_concepts
+
+
+def _check_concept_connectivity(
+    content: list[dict], element_to_concepts: dict[str, set[str]], all_element_concepts: set[str], warnings: list[str]
+) -> None:
+    adj = _build_concept_connectivity_graph(content)
+
+    # For each concept, find the elements that tag it
+    concept_elements = {c: set() for c in all_element_concepts}
+    for eid, concepts in element_to_concepts.items():
+        for c in concepts:
+            concept_elements[c].add(eid)
+
+    components = _find_concept_components(adj)
+
+    _verify_concept_unrelated_pairs(all_element_concepts, concept_elements, components, warnings)
+
+
+def _build_concept_connectivity_graph(content: list[dict]) -> dict[str, set[str]]:
+    # Build relationship adjacency graph (ignoring direction)
+    adj: dict[str, set[str]] = {
+        item.get("id"): set()
+        for item in content
+        if isinstance(item, dict) and item.get("id")
+    }
+    for item in content:
+        if not isinstance(item, dict):
+            continue
+        eid = item.get("id")
+        if not eid:
+            continue
+        rels = item.get("relationships") or {}
+        if isinstance(rels, dict):
+            for _, targets in rels.items():
+                if isinstance(targets, list):
+                    for t in targets:
+                        if isinstance(t, str) and t in adj:
+                            adj[eid].add(t)
+                            adj[t].add(eid)
+    return adj
+
+
+def _find_concept_components(adj: dict[str, set[str]]) -> list[set[str]]:
+    visited = set()
+    components = []
+    for eid in adj:
+        if eid not in visited:
+            comp = set()
+            q = [eid]
+            visited.add(eid)
+            while q:
+                curr = q.pop(0)
+                comp.add(curr)
+                for neighbor in adj[curr]:
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        q.append(neighbor)
+            components.append(comp)
+    return components
+
+
+def _verify_concept_unrelated_pairs(
+    all_element_concepts: set[str], concept_elements: dict[str, set[str]], components: list[set[str]], warnings: list[str]
+) -> None:
+    unrelated_pairs = []
+    concepts_list = list(all_element_concepts)
+    for i, c1 in enumerate(concepts_list):
+        for c2 in concepts_list[i + 1:]:
+
+            # Check 1: Are there any elements tagging both?
+            sharing_elements = concept_elements[c1] & concept_elements[c2]
+            if sharing_elements:
+                continue  # they share elements, so they are related
+
+            # Check 2: Is there any path between any element of c1 and any element of c2?
+            connected = False
+            for comp in components:
+                if (concept_elements[c1] & comp) and (concept_elements[c2] & comp):
+                    connected = True
+                    break
+
+            if not connected:
+                unrelated_pairs.append((c1, c2))
+
+    if unrelated_pairs:
+        warnings.append(
+            "WARN: [coherence:concept] Multiple concept groups detected with no relationships connecting them."
+        )

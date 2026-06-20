@@ -162,6 +162,57 @@ def _load_renderer():
         ) from exc
 
 
+# ── Sidecar presentation.yaml helpers ───────────────────────────────────────
+
+
+def _update_presentation_svg(
+    sidecar_path: Path,
+    element_id: str,
+    embed_mode: str,
+    svg_text: str,
+    svg_rel_path: str,
+) -> None:
+    """
+    Auto-write SVG data into the sidecar presentation.yaml for the matching slide.
+
+    embed_mode='ref'    → sets svg_ref to svg_rel_path, removes svg_inline.
+    embed_mode='inline' → sets svg_inline to svg_text,  removes svg_ref.
+
+    Only updates slides that already have a matching 'id' entry in the sidecar.
+    If no matching slide entry exists, the file is left unchanged.
+    """
+    if sidecar_path.is_file():
+        try:
+            with open(sidecar_path, encoding="utf-8") as f:
+                doc = yaml.safe_load(f) or {}
+        except yaml.YAMLError:
+            return  # Don't corrupt a broken sidecar
+    else:
+        doc = {}
+
+    slides = doc.get("slides")
+    if not isinstance(slides, list):
+        return  # No slides list — nothing to update
+
+    matched = False
+    for slide in slides:
+        if isinstance(slide, dict) and slide.get("id") == element_id:
+            if embed_mode == "inline":
+                slide["svg_inline"] = svg_text
+                slide.pop("svg_ref", None)
+            else:  # ref (default)
+                slide["svg_ref"] = svg_rel_path
+                slide.pop("svg_inline", None)
+            matched = True
+            break
+
+    if matched:
+        sidecar_path.write_text(
+            yaml.dump(doc, allow_unicode=True, default_flow_style=False, sort_keys=False),
+            encoding="utf-8",
+        )
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 @click.group()
@@ -226,6 +277,18 @@ def validate(lesson_file: str) -> None:
     if not isinstance(doc, dict):
         raise click.ClickException("Lesson file must be a YAML mapping at the top level.")
 
+    # Load optional sidecar presentation.yaml
+    lesson_path = Path(lesson_file)
+    sidecar_path = lesson_path.parent / "presentation.yaml"
+    if sidecar_path.is_file():
+        try:
+            with open(sidecar_path, encoding="utf-8") as f_sidecar:
+                presentation_doc = yaml.safe_load(f_sidecar)
+                if isinstance(presentation_doc, dict):
+                    doc["presentation"] = presentation_doc
+        except yaml.YAMLError as exc:
+            raise click.ClickException(f"Sidecar presentation.yaml parse error: {exc}") from exc
+
     warnings = validate_lesson(doc)
 
     if not warnings:
@@ -257,7 +320,18 @@ def validate(lesson_file: str) -> None:
     default=False,
     help="Skip EduVis validation before rendering.",
 )
-def render(lesson_file: str, output: str, posting_group: str, skip_validation: bool) -> None:
+@click.option(
+    "--embed-mode",
+    type=click.Choice(["ref", "inline"], case_sensitive=False),
+    default="ref",
+    show_default=True,
+    help=(
+        "How to record the rendered SVG in presentation.yaml. "
+        "'ref' writes a relative file path (svg_ref). "
+        "'inline' embeds the full SVG markup (svg_inline)."
+    ),
+)
+def render(lesson_file: str, output: str, posting_group: str, skip_validation: bool, embed_mode: str) -> None:
     """Render an EduVis lesson YAML to one SVG per element."""
     with open(lesson_file, encoding="utf-8") as f:
         try:
@@ -267,6 +341,18 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
 
     if not isinstance(doc, dict):
         raise click.ClickException("Lesson file must be a YAML mapping at the top level.")
+
+    # Load optional sidecar presentation.yaml
+    lesson_path = Path(lesson_file)
+    sidecar_path = lesson_path.parent / "presentation.yaml"
+    if sidecar_path.is_file():
+        try:
+            with open(sidecar_path, encoding="utf-8") as f_sidecar:
+                presentation_doc = yaml.safe_load(f_sidecar)
+                if isinstance(presentation_doc, dict):
+                    doc["presentation"] = presentation_doc
+        except yaml.YAMLError as exc:
+            raise click.ClickException(f"Sidecar presentation.yaml parse error: {exc}") from exc
 
     # ── Validate first ────────────────────────────────────────────────────────
     if not skip_validation:
@@ -322,6 +408,13 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
         out_path.write_text(svg_text, encoding="utf-8")
         click.echo(f"   OK {out_path}")
         rendered += 1
+
+        # Auto-update sidecar presentation.yaml (mode: ref or inline)
+        try:
+            svg_rel = out_path.relative_to(lesson_path.parent).as_posix()
+        except ValueError:
+            svg_rel = str(out_path)  # Fallback: absolute path if not relative
+        _update_presentation_svg(sidecar_path, element_id, embed_mode, svg_text, svg_rel)
 
     click.echo()
     click.secho(

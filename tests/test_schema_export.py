@@ -15,7 +15,7 @@ from eduvis.core.export_schema import (
 
 def test_get_all_schemas_returns_all_pillars():
     schemas = get_all_schemas()
-    assert set(schemas.keys()) == {"placement", "actions", "relationships", "progression", "lesson"}
+    assert set(schemas.keys()) == {"placement", "actions", "relationships", "progression", "lesson", "presentation"}
 
 
 def test_all_schemas_are_json_serialisable():
