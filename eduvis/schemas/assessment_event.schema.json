@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/assessment_event.schema.json",
+  "title": "EduVis Assessment Event",
+  "description": "Telemetry event for tracking student attempts on assessment elements.",
+  "type": "object",
+  "required": [
+    "student_id",
+    "element_id",
+    "attempt_number",
+    "answer_submitted",
+    "is_correct",
+    "timestamp"
+  ],
+  "properties": {
+    "student_id": {
+      "type": "string",
+      "description": "Unique identifier for the student."
+    },
+    "element_id": {
+      "type": "string",
+      "description": "Identifier of the assessment element."
+    },
+    "attempt_number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The 1-based attempt count for this student on this element."
+    },
+    "answer_submitted": {
+      "type": "string",
+      "description": "The raw option key or free-text response submitted by the student."
+    },
+    "is_correct": {
+      "type": "boolean",
+      "description": "Whether the student's answer was correct."
+    },
+    "misconception_detected": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Code representing the detected misconception, if any."
+    },
+    "time_taken_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Time spent by the student on this attempt in seconds."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 formatted timestamp of the event."
+    }
+  },
+  "additionalProperties": false
+}

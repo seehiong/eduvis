@@ -14,11 +14,10 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 SHOWCASE_MAP = {
-    "docs/showcase/lesson-geometry-triangles.yaml": "docs/showcase/assets/geometry-triangles",
-    "docs/showcase/lesson-negative-numbers.yaml": "docs/showcase/assets/negative-numbers",
-    "docs/showcase/demo-adaptive-remediation.yaml": "docs/showcase/assets/adaptive-remediation",
-    "docs/showcase/demo-remediation-layout.yaml": "docs/showcase/assets/remediation-layout",
-    "docs/showcase/lesson-presentation-demo.yaml": "docs/showcase/assets/presentation-demo",
+    "docs/showcase/lessons/geometry-triangles-spatial.yaml": "docs/showcase/assets/geometry-triangles",
+    "docs/showcase/lessons/negative-numbers-confidence-ladder.yaml": "docs/showcase/assets/negative-numbers",
+    "docs/showcase/features/adaptive-remediation-branching.yaml": "docs/showcase/assets/adaptive-remediation",
+    "docs/showcase/features/presentation-sequences.yaml": "docs/showcase/assets/presentation-demo",
 }
 
 

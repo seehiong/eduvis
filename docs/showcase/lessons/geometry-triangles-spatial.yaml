@@ -380,4 +380,3 @@ presentation:
             - index: 0
               visible_items: [0]
               caption: "Let's solve for 'x' in a triangle where the known angles are 60 deg and 70 deg."
-

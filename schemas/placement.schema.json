@@ -73,6 +73,16 @@
         "supporting"
       ],
       "description": "Whether this element is the primary focal point."
+    },
+    "assessment_objective": {
+      "type": "string",
+      "enum": [
+        "application",
+        "conceptual_understanding",
+        "procedural_fluency",
+        "reasoning"
+      ],
+      "description": "The pedagogical skill target (only valid on assessment elements)."
     }
   },
   "additionalProperties": false

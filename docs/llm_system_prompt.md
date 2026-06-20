@@ -105,6 +105,18 @@ comparison | conceptual_model | procedure | summary | worked_example
   comparison           Places two cases side-by-side
   summary              Closing recap of the lesson
 
+### assessment_objective (optional — use on multiple_choice and short_answer elements)
+application | conceptual_understanding | procedural_fluency | reasoning
+
+  procedural_fluency       Student executes a practiced algorithm or procedure correctly
+  conceptual_understanding Student demonstrates grasp of the underlying idea, not just the steps
+  application              Student applies the concept to an unfamiliar or real-world context
+  reasoning                Student explains, justifies, or proves — goes beyond recall
+
+IMPORTANT: assessment_objective is optional and only meaningful on assessment element types
+(multiple_choice, short_answer). It enables curriculum-level analysis of what each question tests,
+preventing every generated curriculum from inventing its own labels.
+
 ### layout_zone (optional)
 bottom | center | full | left | right
 
@@ -157,12 +169,20 @@ relationships:
     - explain_concept        # this element recalls an earlier anchor
   parallels:
     - abstract_version       # two elements show the same concept at different abstraction levels
+  remediation_for:
+    - check_question_1      # this element is presented conditionally when a check fails
 ```
 
 Valid relationship types: anchors | contradicts | parallels | precedes | reinforces | remediation_for
 
 Each value is a list of element id strings. Referenced IDs must exist in the
 same lesson's content list.
+
+### Remediation and Hints: Inline vs. Decoupled Branching
+When specifying help and hints for questions, there are two distinct design patterns:
+1. **Inline worked hints (solution_steps field)**: Defined inside multiple_choice or short_answer elements via the solution_steps array. These are short, immediate, inline steps shown inside the same question slide (e.g. for correct answers or when showing inline hints).
+2. **Decoupled remediation routing (remediation_block & remediation_for relationship)**: Renders a dedicated remediation_block element on a separate slide containing review, remember, and solve blocks. This slide declares relationships.remediation_for pointing back to the question. It acts as a full-screen pedagogical intervention when a check is failed.
+
 
 ## Element Types (subjects: math)
 
@@ -195,6 +215,17 @@ required/optional fields are listed below.
                   answer (required): string  # The correct option key
                   student_answer (optional): string  # Optional student selection for review screens
                   correct_answer (optional): string  # Optional correct answer key for review screens
+                  misconceptions (optional): object  # Mapping of incorrect option keys to misconception codes
+                  solution_steps (optional): array  # Step-by-step worked solution steps shown inline on the same slide (contrast with dedicated remediation_block slides)
+  short_answer    question: string, answer: string, evaluation_mode: string — open-ended text input entry
+                  question (required): string  # The open-ended question stem
+                  answer (required): string  # The correct answer value (e.g. '50 deg' or 'x + 2')
+                  evaluation_mode (optional): string|numeric|algebraic, default: string  # Rule to verify answer equivalence
+                  solution_steps (optional): array  # Step-by-step worked solution steps shown inline on the same slide (contrast with dedicated remediation_block slides)
+                  marking_scheme (optional): array  # SEAB-style step marking rules (M and A marks)
+                  student_working (optional): array  # Step-by-step working input from student
+                  student_answer (optional): string
+                  correct_answer (optional): string
   hint_list       items: [strings], final: string  — numbered hints
                   items (required): array  # Hint steps (auto-numbered unless item starts with a digit or 'Step')
                   final (optional): string  # Confirmation method shown in a box at the bottom

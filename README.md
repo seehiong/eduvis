@@ -32,14 +32,14 @@ Then prefix commands with `uv run` (or use the globally installed `eduvis` if in
 
 ```bash
 # Validate showcase lessons
-uv run eduvis validate docs/showcase/lesson-negative-numbers.yaml
-uv run eduvis validate docs/showcase/lesson-geometry-triangles.yaml
-uv run eduvis validate docs/showcase/demo-adaptive-remediation.yaml
+uv run eduvis validate docs/showcase/lessons/negative-numbers-confidence-ladder.yaml
+uv run eduvis validate docs/showcase/lessons/geometry-triangles-spatial.yaml
+uv run eduvis validate docs/showcase/features/adaptive-remediation-branching.yaml
 
 # Render showcase lessons to SVGs
-uv run eduvis render docs/showcase/lesson-negative-numbers.yaml -o output/negatives/
-uv run eduvis render docs/showcase/lesson-geometry-triangles.yaml -o output/geometry/
-uv run eduvis render docs/showcase/demo-adaptive-remediation.yaml -o output/remediation/
+uv run eduvis render docs/showcase/lessons/negative-numbers-confidence-ladder.yaml -o output/negatives/
+uv run eduvis render docs/showcase/lessons/geometry-triangles-spatial.yaml -o output/geometry/
+uv run eduvis render docs/showcase/features/adaptive-remediation-branching.yaml -o output/remediation/
 
 # Utility commands
 uv run eduvis docs --subjects math
@@ -98,7 +98,7 @@ uv run pylint eduvis tests scripts
 To see every registered element type rendered to SVG in one pass:
 
 ```bash
-uv run eduvis render docs/examples/renderer_test.yaml -o output/renderer_test/
+uv run eduvis render docs/showcase/reference/exhaustive-element-catalog.yaml -o output/exhaustive_catalog/
 ```
 
 This produces one SVG per element type (`test_number_line.svg`, `test_text_list.svg`, `test_math_grid.svg`, `test_solid_cube.svg`, … `test_solid_cylinder.svg`) — useful for checking renderer output after code changes.
@@ -158,39 +158,44 @@ This is not a theoretical schema. The placement model, element types, and LLM pr
 
 ---
 
-## Two-Layer Architecture
+## Orthogonal Architecture Layers
 
-EduVis is deliberately split into two companion specifications.
+To scale adaptive learning cleanly, EduVis separates delivery, curriculum representation, and student cognition into three orthogonal concern layers:
 
 ```
-EduVis-Core
-  ↓
-EduVis-Presentation
+Presentation Layer (How to teach)
+        ↓
+Curriculum Graph (What to teach - Static Map)
+        ↓
+Learner State (What the learner knows - Dynamic GPS)
 ```
 
-### EduVis-Core
+### 1. Presentation Layer (Delivery)
+*Companion specification (`presentation.yaml`)*. Answers: **How should this lesson be delivered?**
+Covers: viewport zoom/pan, pause, reveal sequencing, highlight animations, audio/narration syncing.
 
-The educational meaning layer. Renderer-agnostic, stable, and the rare part.
+### 2. Curriculum Graph (Curriculum Map - Static)
+*Schema definitions (`curriculum_graph`)*. Answers: **What should be learned? What depends on what?**
+Covers:
+* **Taxonomy**: Concepts, Skills, and Misconceptions.
+* **Dependencies**: Prerequisite and support relationships between concepts.
+* **Importance Weighting**: High/Medium/Low indicators for exams and prerequisites to prioritize revision paths.
+* *Note: This layer exists statically, even before any student data is recorded.*
 
-Covers five concerns:
+### 3. Learner State (Cognition - Dynamic)
+*Schema definitions (`learner_state`)*. Answers: **What does this specific learner know? Where are the gaps?**
+Covers:
+* **Mastery tracking**: Learner confidence ratings mapped to specific concepts, skills, and misconceptions.
+* **Recency & Review history**: Last seen timestamps and retention metrics.
 
-| Concern | What it answers |
-|---|---|
-| **Elements** | What content type is this? |
-| **Actions** | What does this element ask the student to do? |
-| **Relationships** | How does this element relate to others in the lesson? |
-| **Placement** | Where does it live in the lesson and in memory? |
-| **Progression** | What is the instructional flow of the whole lesson? |
+---
 
-### EduVis-Presentation *(companion spec, future)*
+### The Mastery Graph View (Static Map + Dynamic GPS)
+The real magic of adaptive learning comes from combining the static **Curriculum Graph** and the dynamic **Learner State**:
 
-The animation and timing layer. Renderer-specific, layered on top of Core.
+$$\text{Curriculum Graph} + \text{Learner State} = \text{Mastery Graph View}$$
 
-Covers: zoom, pan, pause, reveal sequencing, highlight animation, narration timing.
-
-**Why the split matters:** mixing these too early produces a video animation engine, not an educational standard. The educational semantics are the rare and valuable part. Animation is comparatively easy to layer on later.
-
-A Core spec can be rendered to a static PDF today and to a YouTube-style animated lesson tomorrow — without changing a single field.
+Overlaying a student's current mastery levels onto the prerequisite map allows adaptive tutoring engines to trace weak points back to their source (e.g. if *Linear Equations* is weak, check *Algebraic Expressions* and remediate there first) rather than just giving a generic "wrong answer" notification.
 
 ---
 
@@ -458,7 +463,7 @@ A single element from the Negative Numbers lesson — `explore` phase, number li
 
 This element sits inside a `confidence_ladder` lesson that progresses through hook → explore → explain → guided practice → starter problems → routine problems → challenge → recall.
 
-See [docs/showcase/lesson-negative-numbers.yaml](docs/showcase/lesson-negative-numbers.yaml) for the full lesson spec.
+See [docs/showcase/lessons/negative-numbers-confidence-ladder.yaml](docs/showcase/lessons/negative-numbers-confidence-ladder.yaml) for the full lesson spec.
 
 ---
 
@@ -565,13 +570,13 @@ content:
       remediation_for: [check_element_id]
     <element-specific fields...>
 
-## Element types (math, v0.1)
+## Element types (math, v0.4.0)
   number_line      range, highlight, direction_labels, caption
   fraction_model   shape: circle|bar|grid, total_parts, shaded_parts
   bar_model        bars: [{label, value, color}], difference
   coordinate_plane x_range, y_range, plots: [{type, equation, color}]
   geometry_shape   vertices, labels, side_labels, angles
-  solid_shape      shape: cube|cone|cylinder|pyramid, dimensions, color
+  solid_shape      shape: cube|cone|cylinder|pyramid|rectangular_prism|triangular_prism, dimensions, color, show_dimensions, label
   factor_array     number: N
   math_grid        rows: [[cells]], headers
   text_list        items: [strings]
@@ -579,7 +584,9 @@ content:
   example_panel    items: [{heading, body}]
   callout_box      title, lines, border_color
   summary_list     items: [strings]
-  multiple_choice  question, options: {A, B, C, D}
+  multiple_choice  question, options: {A, B, C, D}, answer, misconceptions, solution_steps
+  short_answer     question, answer, evaluation_mode: algebraic|exact|numeric, solution_steps
+  remediation_block review: {source_question, student_answer, correctness}, concept_card: {heading, body}, step_by_step: {heading, steps}
   hint_list        items: [strings], final: string
 ```
 
@@ -619,7 +626,7 @@ show_dimensions: true             # optional: overlay radius/height measurements
 - All 16 vertical edges visible
 - Bold top edge outline
 
-See `docs/examples/renderer_test.yaml` for live examples: `test_solid_cube.svg`, `test_solid_cone.svg`, `test_solid_cylinder.svg`, etc.
+See `docs/showcase/reference/exhaustive-element-catalog.yaml` for live examples: `test_solid_cube.svg`, `test_solid_cone.svg`, `test_solid_cylinder.svg`, etc.
 
 ---
 
@@ -672,7 +679,7 @@ chain = prompt | llm
 
 Science and Humanities element types and renderers are planned for a future release.
 
-> [docs/examples/renderer_test.yaml](docs/examples/renderer_test.yaml) contains one working slide per element type. Run it with `eduvis render` to get a visual catalog of every renderer.
+> [docs/showcase/reference/exhaustive-element-catalog.yaml](docs/showcase/reference/exhaustive-element-catalog.yaml) contains one working slide per element type. Run it with `eduvis render` to get a visual catalog of every renderer.
 
 ### Generic — all subjects
 
@@ -684,6 +691,8 @@ Science and Humanities element types and renderers are planned for a future rele
 | `callout_box` | `title, lines, color` |
 | `summary_list` | `items: [strings]` — use on closing elements |
 | `multiple_choice` | `question, options: {A, B, C, D}` |
+| `short_answer` | `question, answer, evaluation_mode` |
+| `remediation_block` | `review: {source_question}, concept_card, step_by_step` |
 | `hint_list` | `items: [strings], final: string` |
 | `number_line` | `range, highlight, direction_labels, caption` |
 
@@ -738,14 +747,14 @@ To enable autocomplete, tooltips, and real-time schema validation in IDEs (like 
 
 For lesson YAML files:
 ```yaml
-# yaml-language-server: $schema=https://eduvis.dev/schemas/lesson.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/lesson.schema.json
 curriculum:
   code: s1_sec_math
 ```
 
 For sidecar `presentation.yaml` files:
 ```yaml
-# yaml-language-server: $schema=https://eduvis.dev/schemas/presentation.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/presentation.schema.json
 slides:
   - id: slide_01
     advance: manual
@@ -772,39 +781,55 @@ slides:
 - Assessment objectives
 - Curriculum graph validation
 
-### v0.3 — EduVis-Presentation (Current)
+### v0.3 — EduVis-Presentation
 - Interactive presentation mode (v0.3.0 player)
 - Companion `presentation` schema layered cleanly over Core
 - Reveal sequencing, highlight/zoom annotations, and viewport commands
 - Narration timing hooks
 
-### v0.4 — Assessment and Validation Engine (Upcoming)
+### v0.4 — Assessment and Validation Engine (Current)
 - Canonical action validation model
 - Step-by-step solution representation
 - Rule-based answer checking (client-side, no LLM inference)
 - Symbolic equivalence checking
 - Misconception detection rules
 - Assessment event schema
+- Canonical assessment objective vocabulary (`procedural_fluency`, `conceptual_understanding`, `application`, `reasoning`)
 - Mastery model and Assessment objective mapping
+- **Assessment Evidence Bridge**: Framework for aggregating assessment events (e.g. `objective: procedural_fluency`, `score: 0.8`) to update the `learner_state` (e.g. `skill_mastery`, `concept_mastery`, active misconceptions)
 
-### v0.5 — Adaptive Learning and Remediation
-- Multi-path solution support
-- Remediation relationships
-- Hint generation from failed actions
-- Branch-on-fail assessment flows
-- Confidence tracking and Mastery evidence graph
-- Learning pathway recommendations operating on the curriculum graph
+### v0.5 — Curriculum Graph and Knowledge Engine (Upcoming)
+- **Static Curriculum Graph Representation**:
+  - Explicit taxonomy mapping: Concepts, Skills, and Misconceptions
+  - Concept Dependency Maps: Prerequisite (`from` / `to`) and support relationships
+  - **Knowledge Importance Model**: Weighting concepts, skills, and misconceptions by exam relevance (`exam_weight`), graph centrality (`centrality_weight`), and remediation weight (`remediation_weight`)
+- **Curriculum Analytics**:
+  - Concept centrality analysis (identifying key bottleneck concepts)
+  - Outcome coverage analysis
+  - Dependency gap detection
+  - Curriculum completeness validation
+- **Curriculum Traversal APIs** to query relationships programmatically
 
-### v0.6 — Curriculum Graph and Knowledge Engine
-- Cross-lesson prerequisite graph
-- Concept dependency graph
-- Outcome coverage analysis
-- Curriculum completeness validation
-- Curriculum traversal APIs
+### v0.6 — Learner State and Mastery Engine (Upcoming)
+- **Dynamic Learner State representation**:
+  - Separate `learner_state` companion schema containing student-specific confidence, history, and active misconceptions
+  - Granular mastery tracking for all three levels: Concepts, Skills, and Misconceptions (e.g. tracking if a student understands a concept, performs a skill, or holds a misconception)
+- **Mastery Graph Projection**:
+  - Combining static Curriculum Graph with dynamic Learner State to generate real-time Mastery views (the core of the adaptive engine)
+- **Revision & Knowledge Condensation Engine**:
+  - Graph traversal and weight-based analysis to automatically extract top target concepts, top active misconceptions, and optimal revision/exam preparation patterns (e.g. compressing a large concept graph into a high-impact 2-hour study plan)
+- **Adaptive Remediation & Paths**:
+  - Prerequisite check & remediation routing (inferring prerequisite failure roots)
+  - Multi-path solution support and branch-on-fail assessment flows
+  - Hint generation from failed actions
+- **Spaced Repetition & Revision Workflows**:
+  - Spaced-repetition metadata and retrieval practice scheduler
+  - Revision pathway generation (e.g. `mode: lesson | revision | exam_prep | crash_course`) using knowledge importance weights and learner mastery levels
+  - Formalized memory role capabilities: `encode`, `retrieve`, `reinforce`, `remediate`, and `compress` (for exam preparation)
 
 ### v0.7 — AI Generation and Tutoring
-- Structured lesson, assessment, and visual generation
-- Tutoring workflows
+- **Graph-Driven Lesson Generation**: Automatically generate EduVis lesson specs directly from the Curriculum Graph (Curriculum Graph $\to$ Lesson Generator $\to$ EduVis Lesson) rather than simple text prompting
+- Tutoring workflows and visual asset generation
 
 ### v1.0 — Autonomous Curriculum Factory
 - Agent-based curriculum generation
@@ -815,12 +840,13 @@ slides:
 ---
 
 ### Governance and Quality (Parallel Track)
-- Schema RFC process
-- Architectural fitness tests
-- Schema validation suites
-- Contributor guidelines
-- Reference curriculum implementations
-- Continuous schema evolution (v0.1–v1.0)
+
+- **RFC Process**: Managed schema evolution through structured requests for comments
+- **Schema Stability Policy**: Explicit lifecycle labeling per block (`experimental`, `stable`, `deprecated`, `removed`)
+- **Compatibility Guarantees**: Semantic versioning guidelines (v0.x allows breaking changes, v1.x expects backward compatibility)
+- **Validation Suites**: Automated schema test suites
+- **Contributor Guidelines**: Clear instructions for extending schema features and renderers
+- **Reference Implementations**: Canonical lesson and topic specifications
 
 ---
 
@@ -868,13 +894,16 @@ eduvis/ (repository root)
 │
 ├── docs/                     ← Documentation and showcase files
 │   ├── llm_system_prompt.md  ← generated vocabulary reference for LLMs
-│   ├── examples/
-│   │   ├── mixed_card_demo.yaml   ← mixed card layout demo (decimal subtraction)
-│   │   └── renderer_test.yaml     ← one slide per element type (visual catalog)
 │   └── showcase/
-│       ├── lesson-negative-numbers.yaml   ← canonical negative numbers spec
-│       ├── lesson-geometry-triangles.yaml ← geometry shape triangles lesson spec
-│       └── demo-adaptive-remediation.yaml ← adaptive remediation flow spec
+│       ├── lessons/               ← complete teaching flows
+│       │   ├── negative-numbers-confidence-ladder.yaml
+│       │   └── geometry-triangles-spatial.yaml
+│       ├── features/              ← spotlight features (remediation, sequences)
+│       │   ├── adaptive-remediation-branching.yaml
+│       │   └── presentation-sequences.yaml
+│       └── reference/             ← reference catalogs
+│           ├── exhaustive-element-catalog.yaml
+│           └── mixed-content-card.yaml
 
 │
 ├── schemas/                  ← pre-generated JSON Schema files at the repository root

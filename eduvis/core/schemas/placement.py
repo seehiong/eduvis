@@ -21,6 +21,23 @@ VALID_LAYOUT_ZONES = frozenset({"center", "left", "right", "full", "bottom"})
 
 VALID_VISUAL_WEIGHTS = frozenset({"primary", "supporting"})
 
+VALID_ASSESSMENT_OBJECTIVES = frozenset({
+    "procedural_fluency", "conceptual_understanding", "application", "reasoning",
+})
+
+
+def _check_field(element_id: str, name: str, val: str | None, valid_set: frozenset[str], required: bool = False) -> str | None:
+    if val is None:
+        if required:
+            return f"[{element_id}] placement.{name} is required"
+        return None
+    if val not in valid_set:
+        return (
+            f"[{element_id}] placement.{name} '{val}' is not valid; "
+            f"choose from: {', '.join(sorted(valid_set))}"
+        )
+    return None
+
 
 def validate(element_id: str, placement: dict) -> list[str]:
     """Validate a placement dict. Returns warning strings."""
@@ -32,50 +49,19 @@ def validate(element_id: str, placement: dict) -> list[str]:
         )
         return warnings
 
-    phase = placement.get("lesson_phase")
-    if phase is None:
-        warnings.append(f"[{element_id}] placement.lesson_phase is required")
-    elif phase not in VALID_PHASES:
-        warnings.append(
-            f"[{element_id}] placement.lesson_phase '{phase}' is not valid; "
-            f"choose from: {', '.join(sorted(VALID_PHASES))}"
-        )
+    checks = [
+        ("lesson_phase", placement.get("lesson_phase"), VALID_PHASES, True),
+        ("memory_role", placement.get("memory_role"), VALID_MEMORY_ROLES, True),
+        ("difficulty", placement.get("difficulty"), VALID_DIFFICULTY, False),
+        ("purpose", placement.get("purpose"), VALID_PURPOSES, False),
+        ("layout_zone", placement.get("layout_zone"), VALID_LAYOUT_ZONES, False),
+        ("visual_weight", placement.get("visual_weight"), VALID_VISUAL_WEIGHTS, False),
+        ("assessment_objective", placement.get("assessment_objective"), VALID_ASSESSMENT_OBJECTIVES, False),
+    ]
 
-    role = placement.get("memory_role")
-    if role is None:
-        warnings.append(f"[{element_id}] placement.memory_role is required")
-    elif role not in VALID_MEMORY_ROLES:
-        warnings.append(
-            f"[{element_id}] placement.memory_role '{role}' is not valid; "
-            f"choose from: {', '.join(sorted(VALID_MEMORY_ROLES))}"
-        )
-
-    difficulty = placement.get("difficulty")
-    if difficulty is not None and difficulty not in VALID_DIFFICULTY:
-        warnings.append(
-            f"[{element_id}] placement.difficulty '{difficulty}' is not valid; "
-            f"choose from: {', '.join(sorted(VALID_DIFFICULTY))}"
-        )
-
-    purpose = placement.get("purpose")
-    if purpose is not None and purpose not in VALID_PURPOSES:
-        warnings.append(
-            f"[{element_id}] placement.purpose '{purpose}' is not valid; "
-            f"choose from: {', '.join(sorted(VALID_PURPOSES))}"
-        )
-
-    layout_zone = placement.get("layout_zone")
-    if layout_zone is not None and layout_zone not in VALID_LAYOUT_ZONES:
-        warnings.append(
-            f"[{element_id}] placement.layout_zone '{layout_zone}' is not valid; "
-            f"choose from: {', '.join(sorted(VALID_LAYOUT_ZONES))}"
-        )
-
-    visual_weight = placement.get("visual_weight")
-    if visual_weight is not None and visual_weight not in VALID_VISUAL_WEIGHTS:
-        warnings.append(
-            f"[{element_id}] placement.visual_weight '{visual_weight}' is not valid; "
-            f"choose from: {', '.join(sorted(VALID_VISUAL_WEIGHTS))}"
-        )
+    for name, val, valid_set, required in checks:
+        warn = _check_field(element_id, name, val, valid_set, required)
+        if warn:
+            warnings.append(warn)
 
     return warnings

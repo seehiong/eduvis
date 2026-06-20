@@ -1,0 +1,253 @@
+# EduVis Showcase: Adaptive Remediation & Assessment Branching
+# Demonstrates:
+# 1. True / False checking (2-option MCQ)
+# 2. MCQ misconception tracking & solution steps (using new v0.4.0 properties)
+# 3. Unified Remediation block (Review - Remember - Solve) and relationship target constraints
+
+curriculum:
+  code: showcase
+  topic: adaptive-remediation
+
+lesson:
+  title: "Adaptive Remediation & Telemetry Event Branching"
+  concepts:
+    - prime_numbers
+    - negative_numbers
+
+progression:
+  pattern: direct_instruction
+  pedagogy:
+    explain_why: true
+    no_skipped_steps: true
+  phases:
+    - phase: explain
+      purpose: conceptual_model
+    - phase: independent_practice
+      difficulty: starter
+    - phase: explain
+      purpose: worked_example
+    - phase: explain
+      purpose: conceptual_model
+    - phase: independent_practice
+      difficulty: starter
+    - phase: explain
+      purpose: worked_example
+    - phase: independent_practice
+      difficulty: starter
+    - phase: independent_practice
+      difficulty: starter
+
+content:
+
+  # --- 1. TRUE / FALSE CHECK --------------------------------------------------
+  - id: check_true_false
+    type: multiple_choice
+    concepts:
+      - prime_numbers
+    placement:
+      lesson_phase: explain
+      purpose: conceptual_model
+      layout_zone: center
+      memory_role: anchor
+      assessment_objective: conceptual_understanding
+    question: "True or False: The number 1 is a prime number."
+    options:
+      "True": "Incorrect, 1 only has one factor."
+      "False": "Correct, 1 is not a prime number."
+    answer: "False"
+
+  # --- 2. FIVE OPTION MCQ -----------------------------------------------------
+  - id: check_five_options
+    type: multiple_choice
+    concepts:
+      - prime_numbers
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: procedural_fluency
+    relationships:
+      precedes:
+        - visual_number_line
+    question: "Which of the following numbers is prime?"
+    options:
+      A: "1 (first positive integer)"
+      B: "4 (factors: 1, 2, 4)"
+      C: "6 (factors: 1, 2, 3, 6)"
+      D: "9 (factors: 1, 3, 9)"
+      E: "2 (only even prime number)"
+    answer: "E"
+
+  # --- 3. UNIFIED REMEDIATION BLOCK (PRIME NUMBERS) --------------------------
+  - id: explain_prime_remediation
+    type: remediation_block
+    concepts:
+      - prime_numbers
+    placement:
+      lesson_phase: explain
+      purpose: worked_example
+      layout_zone: center
+      memory_role: misconception_fix
+    relationships:
+      remediation_for:
+        - check_five_options
+    review:
+      source_question: check_five_options
+      student_answer: "C"
+      correct_answer: "E"
+    remember:
+      type: callout_box
+      title: "Prime Numbers Rule"
+      border_color: orange
+      lines:
+        - "A prime number is a whole number greater than 1."
+        - "It must have exactly two factors: 1 and itself."
+    solve:
+      type: hint_list
+      items:
+        - "Step 1: Write down factors of Option C (6): 1, 2, 3, 6 (four factors). Not prime."
+        - "Step 2: Write down factors of Option E (2): 1, 2 (exactly two factors). Prime!"
+      final: "Therefore, E is the correct answer."
+
+  # --- 4. NUMERICAL ALIGNMENT ANCHOR -----------------------------------------
+  - id: visual_number_line
+    type: number_line
+    concepts:
+      - negative_numbers
+    placement:
+      lesson_phase: explain
+      purpose: conceptual_model
+      layout_zone: center
+      memory_role: anchor
+    range: [-12, 0]
+    direction_labels:
+      left: "Smaller"
+      right: "Larger"
+    highlight:
+      - value: -10
+        label: "-10 (further left)"
+        color: red
+      - value: -2
+        label: "-2 (further right)"
+        color: green
+
+  # --- 5. MCQ WITH MISCONCEPTION REGISTRY & SOLUTION STEPS ------------------
+  - id: check_negative_ordering
+    type: multiple_choice
+    concepts:
+      - negative_numbers
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: conceptual_understanding
+    question: "Which is LARGER: -10 or -2?"
+    options:
+      A: "-10 (since 10 > 2)"
+      B: "-2 (since it is further to the right)"
+      C: "They are equal"
+      D: "Cannot be determined"
+    answer: "B"
+    misconceptions:
+      A: "digit-size-ordering"
+      C: "negative-equality-confusion"
+    solution_steps:
+      - "Draw a number line with -10 and -2."
+      - "-10 is further to the left than -2."
+      - "Numbers further to the right on a number line have a larger value."
+      - "Therefore, -2 is larger than -10."
+
+  # --- 6. UNIFIED REMEDIATION BLOCK (NEGATIVE NUMBERS) ----------------------
+  - id: explain_negative_remediation
+    type: remediation_block
+    concepts:
+      - negative_numbers
+    placement:
+      lesson_phase: explain
+      purpose: worked_example
+      layout_zone: center
+      memory_role: misconception_fix
+    relationships:
+      remediation_for:
+        - check_negative_ordering
+    review:
+      source_question: check_negative_ordering
+      student_answer: "A"
+      correct_answer: "B"
+    remember:
+      type: callout_box
+      title: "Comparing Negatives Rule"
+      border_color: orange
+      lines:
+        - "A negative number represents values below zero."
+        - "On a number line, values always increase from left to right."
+    solve:
+      type: hint_list
+      items:
+        - "Mark -10 and -2 on a horizontal number line."
+        - "Since -2 is to the right of -10, we know -2 > -10."
+      final: "Hence, B is correct."
+
+  # --- 7. SHORT ANSWER ALGEBRAIC EQUIVALENCE CHECK --------------------------
+  - id: simplify_expression
+    type: short_answer
+    concepts:
+      - negative_numbers
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: procedural_fluency
+    question: "Simplify the algebraic expression: 3x + 5 + 2x - 3"
+    answer: "5x + 2"
+    evaluation_mode: "algebraic"
+    solution_steps:
+      - "Group like terms together: (3x + 2x) + (5 - 3)."
+      - "Combine variable terms: 3x + 2x = 5x."
+      - "Combine constant terms: 5 - 3 = 2."
+      - "Combine into the simplified form: 5x + 2 (which is equivalent to 2 + 5x or 5*x + 2)."
+    marking_scheme:
+      - step: 0
+        pattern: "(3x + 2x) + (5 - 3)"
+        mark_type: "M"
+        weight: 1
+        description: "Grouped like terms: (3x + 2x) + (5 - 3)"
+      - step: 1
+        pattern: "5x + 2"
+        mark_type: "A"
+        weight: 1
+        depends_on: 0
+        description: "Simplified final expression: 5x + 2"
+
+  # --- 8. NEGATIVE NUMBERS SUBTRACTION CHECK ----------------------------------
+  - id: check_negative_subtraction
+    type: multiple_choice
+    concepts:
+      - negative_numbers
+    skills:
+      - subtract_negative_numbers
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: conceptual_understanding
+    question: "Evaluate the subtraction: -5 - (-3)"
+    options:
+      A: "-8 (incorrectly adding absolute values or thinking - - makes -)"
+      B: "-2 (correct, since -5 - (-3) = -5 + 3 = -2)"
+      C: "-15 (incorrectly multiplying)"
+      D: "2 (incorrect sign application)"
+    answer: "B"
+    misconceptions:
+      A: "subtract_negative_minus_negative"
+    solution_steps:
+      - "Rewrite subtraction of a negative number as addition: -5 - (-3) = -5 + 3."
+      - "Use a number line: start at -5, move 3 units to the right."
+      - "You land on -2."
+      - "Therefore, -5 - (-3) = -2."
+
+

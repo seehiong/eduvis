@@ -458,107 +458,56 @@
                         <div class="svg-label">recall 2</div>
                     </div>
                 </div>
-                <div style="text-align: center; margin-top: 15px;">
-                    <a href="lesson-negative-numbers.yaml" class="view-yaml">View YAML Spec</a>
+                 <div style="text-align: center; margin-top: 15px;">
+                    <a href="lessons/negative-numbers-confidence-ladder.yaml" class="view-yaml">View YAML Spec</a>
                 </div>
             </div>
         </div>
 
         <!-- ADAPTIVE REMEDIATION DEMO -->
-        <div class="remediation-card">
-            <h3>Adaptive Tutoring Pattern: Misconception + Remediation</h3>
-            <p>EduVis encodes intelligent tutoring system (ITS) branching <strong>without explicit if/then logic</strong>.
-            The <code>remediation_for</code> relationship tells the runtime: "If student gets this CHECK wrong, show this HINT."</p>
-
-            <h4 style="margin-top: 20px; margin-bottom: 15px;">The Pattern</h4>
-            <div class="remediation-flow">
-                <div class="remediation-box">
-                    <strong>CHECK</strong>
-                    <p>"Which is larger: -10 or -2?"</p>
-                </div>
-                <div class="arrow">→</div>
-                <div class="remediation-box">
-                    <strong style="color: #e53e3e;">Student answers -10</strong>
-                    <p>(confusing digit size with value)</p>
-                </div>
-                <div class="arrow">→</div>
-                <div class="remediation-box">
-                    <strong>HINT</strong>
-                    <p>Step-by-step scaffold to correct the misconception</p>
-                </div>
-            </div>
-
-            <p style="margin-top: 10px; color: #666;">
-                <strong>Why this matters for pedagogy engines:</strong> The progression declares "explain first, then check",
-                but the <code>remediation_for</code> relationship encodes the runtime behavior. AI lesson generators can
-                branch intelligently without hardcoding the flow.
-            </p>
-
-            <h4 style="margin-top: 20px; margin-bottom: 15px;">All 6 rendered slides:</h4>
-            <div class="svg-gallery">
-                <div class="svg-item">
-                    <img class="svg-thumbnail" src="assets/adaptive-remediation/setup_concept.svg" alt="Setup concept">
-                    <div class="svg-label">setup — concept</div>
-                </div>
-                <div class="svg-item">
-                    <img class="svg-thumbnail" src="assets/adaptive-remediation/guided_worked_example.svg" alt="Guided example">
-                    <div class="svg-label">guided — worked example</div>
-                </div>
-                <div class="svg-item">
-                    <img class="svg-thumbnail" src="assets/adaptive-remediation/check_misconception.svg" alt="Check question">
-                    <div class="svg-label">check — misconception</div>
-                </div>
-                <div class="svg-item">
-                    <img class="svg-thumbnail" src="assets/adaptive-remediation/hint_remediation.svg" alt="Hint scaffold">
-                    <div class="svg-label">hint — remediation</div>
-                </div>
-                <div class="svg-item">
-                    <img class="svg-thumbnail" src="assets/adaptive-remediation/misconception_explanation.svg" alt="Explanation">
-                    <div class="svg-label">misconception — explanation</div>
-                </div>
-                <div class="svg-item">
-                    <img class="svg-thumbnail" src="assets/adaptive-remediation/visual_number_line_comparison.svg" alt="Visual">
-                    <div class="svg-label">visual — number line</div>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="demo-adaptive-remediation.yaml" class="view-yaml" style="background: #e53e3e;">View YAML Spec</a>
-            </div>
-        </div>
-
-        <!-- LESSON: Remediation Layout & MCQ Options Demo -->
         <div class="lesson-card">
-            <div class="lesson-header" style="background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%); border-bottom: 4px solid #dd6b20;">
-                <h3>Remediation Layout &amp; MCQ Options Demo</h3>
-                <p>Demonstrating dynamic MCQ options (2 to 5 options), pill badges for True/False, and a split-screen Unified Remediation Block</p>
+            <div class="lesson-header" style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); border-bottom: 4px solid #e53e3e;">
+                <h3>Adaptive Tutoring &amp; Telemetry Event Branching</h3>
+                <p>Encoding intelligent tutoring system (ITS) branching and MCQ misconception tracking without hardcoded logic</p>
             </div>
             <div class="lesson-body">
                 <div class="spec-info">
-                    <strong style="color: #dd6b20;">Pattern:</strong> direct_instruction &nbsp;&nbsp;
-                    <strong style="color: #dd6b20;">Slides:</strong> 3 &nbsp;&nbsp;
-                    <strong style="color: #dd6b20;">Phases:</strong> explain → independent_practice
+                    <strong style="color: #e53e3e;">Pattern:</strong> direct_instruction &nbsp;&nbsp;
+                    <strong style="color: #e53e3e;">Slides:</strong> 6 &nbsp;&nbsp;
+                    <strong style="color: #e53e3e;">Phases:</strong> explain → independent_practice → explain → explain → independent_practice → explain
                 </div>
                 <p style="margin-bottom: 15px; font-size: 0.95em;">
-                    Verifies and showcases the new v0.1.x features: rendering a 2-option MCQ with pill-shaped True/False badges, a 5-option MCQ (A–E), and a split-screen <code>remediation_block</code> showing the reviewed question with red/green status highlights alongside conceptual rules and step-by-step solutions.
+                    Demonstrates how EduVis handles student MCQ answers, maps misconceptions dynamically to specific codes, and uses the <code>remediation_for</code> relationship to present a split-screen <code>remediation_block</code> showing the reviewed question, conceptual anchor, and step-by-step solutions.
                 </p>
-                <h4 style="margin-bottom: 12px; font-size: 1em;">All 3 rendered slides:</h4>
+                <h4 style="margin-bottom: 12px; font-size: 1em;">All 6 rendered slides:</h4>
                 <div class="svg-gallery">
                     <div class="svg-item">
-                        <img class="svg-thumbnail" src="assets/remediation-layout/check_true_false.svg" alt="True/False check">
+                        <img class="svg-thumbnail" src="assets/adaptive-remediation/check_true_false.svg" alt="True/False Check">
                         <div class="svg-label">check — true/false (2-option)</div>
                     </div>
                     <div class="svg-item">
-                        <img class="svg-thumbnail" src="assets/remediation-layout/check_five_options.svg" alt="5-option check">
+                        <img class="svg-thumbnail" src="assets/adaptive-remediation/check_five_options.svg" alt="5-Option Check">
                         <div class="svg-label">check — 5-option MCQ</div>
                     </div>
                     <div class="svg-item">
-                        <img class="svg-thumbnail" src="assets/remediation-layout/explain_remediation.svg" alt="Unified Remediation Block">
+                        <img class="svg-thumbnail" src="assets/adaptive-remediation/explain_prime_remediation.svg" alt="Unified Remediation Block">
                         <div class="svg-label">explain — unified remediation</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/adaptive-remediation/visual_number_line.svg" alt="Numerical Scale">
+                        <div class="svg-label">visual — number line</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/adaptive-remediation/check_negative_ordering.svg" alt="MCQ with Misconceptions">
+                        <div class="svg-label">check — misconception mapping</div>
+                    </div>
+                    <div class="svg-item">
+                        <img class="svg-thumbnail" src="assets/adaptive-remediation/explain_negative_remediation.svg" alt="MCQ Remediation">
+                        <div class="svg-label">explain — negative remediation</div>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 15px;">
-                    <a href="demo-remediation-layout.yaml" class="view-yaml" style="background: #dd6b20;">View YAML Spec</a>
+                    <a href="features/adaptive-remediation-branching.yaml" class="view-yaml" style="background: #e53e3e;">View YAML Spec</a>
                 </div>
             </div>
         </div>
@@ -626,7 +575,7 @@
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 15px;">
-                    <a href="lesson-geometry-triangles.yaml" class="view-yaml" style="background: #48bb78;">View YAML Spec</a>
+                    <a href="lessons/geometry-triangles-spatial.yaml" class="view-yaml" style="background: #48bb78;">View YAML Spec</a>
                 </div>
             </div>
         </div>

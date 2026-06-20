@@ -16,6 +16,7 @@ from .schemas.placement import (
     VALID_PHASES,
     VALID_PURPOSES,
     VALID_VISUAL_WEIGHTS,
+    VALID_ASSESSMENT_OBJECTIVES,
 )
 from .schemas.progression import VALID_PATTERNS, VALID_PEDAGOGY_FLAGS
 from .schemas.relationships import VALID_TYPES
@@ -63,6 +64,11 @@ def placement_schema() -> dict:
                 "type": "string",
                 "enum": sorted(VALID_VISUAL_WEIGHTS),
                 "description": "Whether this element is the primary focal point.",
+            },
+            "assessment_objective": {
+                "type": "string",
+                "enum": sorted(VALID_ASSESSMENT_OBJECTIVES),
+                "description": "The pedagogical skill target (only valid on assessment elements).",
             },
         },
         "additionalProperties": False,
@@ -345,6 +351,62 @@ def lesson_schema() -> dict:
     }
 
 
+def assessment_event_schema() -> dict:
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/assessment_event.schema.json",
+        "title": "EduVis Assessment Event",
+        "description": "Telemetry event for tracking student attempts on assessment elements.",
+        "type": "object",
+        "required": [
+            "student_id",
+            "element_id",
+            "attempt_number",
+            "answer_submitted",
+            "is_correct",
+            "timestamp"
+        ],
+        "properties": {
+            "student_id": {
+                "type": "string",
+                "description": "Unique identifier for the student."
+            },
+            "element_id": {
+                "type": "string",
+                "description": "Identifier of the assessment element."
+            },
+            "attempt_number": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "The 1-based attempt count for this student on this element."
+            },
+            "answer_submitted": {
+                "type": "string",
+                "description": "The raw option key or free-text response submitted by the student."
+            },
+            "is_correct": {
+                "type": "boolean",
+                "description": "Whether the student's answer was correct."
+            },
+            "misconception_detected": {
+                "type": ["string", "null"],
+                "description": "Code representing the detected misconception, if any."
+            },
+            "time_taken_seconds": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Time spent by the student on this attempt in seconds."
+            },
+            "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 formatted timestamp of the event."
+            }
+        },
+        "additionalProperties": False,
+    }
+
+
 def get_all_schemas() -> dict[str, dict]:
     """Return all EduVis JSON Schemas keyed by pillar name."""
     return {
@@ -354,4 +416,5 @@ def get_all_schemas() -> dict[str, dict]:
         "progression": progression_schema(),
         "lesson": lesson_schema(),
         "presentation": presentation_schema(),
+        "assessment_event": assessment_event_schema(),
     }

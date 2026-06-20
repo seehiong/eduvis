@@ -1,0 +1,351 @@
+# EduVis-Core: Comprehensive renderer test
+# One slide per registered element type — verifies all 13 renderers.
+# Note: summary_list is an alias for text_list and is omitted.
+
+curriculum:
+  code: SEC-math-2027
+  topic: N1.6
+
+lesson:
+  title: Renderer Test
+
+progression:
+  pattern: direct_instruction
+  phases:
+    - phase: hook
+    - phase: explore
+    - phase: explain
+    - phase: guided_practice
+    - phase: independent_practice
+
+content:
+
+  # 1 ── fact_boxes (hook) ─────────────────────────────────────────────────────
+  - id: test_fact_boxes
+    type: fact_boxes
+    placement:
+      lesson_phase: hook
+      visual_weight: primary
+      memory_role: example
+    items:
+      - text: "Singapore: 32°C"
+        color: red
+      - text: "Antarctica: -12°C"
+        color: blue
+
+  # 2 ── number_line (explore) ─────────────────────────────────────────────────
+  - id: test_number_line
+    type: number_line
+    placement:
+      lesson_phase: explore
+      visual_weight: primary
+      memory_role: example
+    range: [-5, 5]
+    highlight:
+      - value: -3
+        label: "Start"
+        color: blue
+      - value: 2
+        label: "End"
+        color: red
+
+  # 3 ── bar_model (explore) ───────────────────────────────────────────────────
+  - id: test_bar_model
+    type: bar_model
+    placement:
+      lesson_phase: explore
+      visual_weight: primary
+      memory_role: example
+    style: comparison
+    bars:
+      - label: "Singapore"
+        value: 32
+        color: red
+      - label: "Antarctica"
+        value: 12
+        color: blue
+    difference:
+      label: "20 degrees apart"
+      color: yellow
+
+  # 4 ── solid_shape (pyramid) (explore) ───────────────────────────────────────
+  - id: test_solid_pyramid
+    type: solid_shape
+    placement:
+      lesson_phase: explore
+      visual_weight: primary
+      memory_role: example
+    shape: pyramid
+    dimensions: [4, 5, 6]
+    color: orange
+    label: "Rectangular pyramid (w×d×h)"
+    show_dimensions: true
+
+  # 5 ── solid_shape (cone) (explore) ──────────────────────────────────────────
+  - id: test_solid_cone
+    type: solid_shape
+    placement:
+      lesson_phase: explore
+      visual_weight: primary
+      memory_role: example
+    shape: cone
+    dimensions: [4, 6, 4]
+    color: red
+    label: "Cone with dimensions"
+    show_dimensions: true
+
+  # 6 ── solid_shape (cylinder) (explore) ──────────────────────────────────────
+  - id: test_solid_cylinder
+    type: solid_shape
+    placement:
+      lesson_phase: explore
+      visual_weight: primary
+      memory_role: example
+    shape: cylinder
+    dimensions: [3, 5, 3]
+    color: cyan
+    label: "Cylinder with dimensions"
+    show_dimensions: true
+
+  # 7 ── text_list (explain) ───────────────────────────────────────────────────
+  - id: test_text_list
+    type: text_list
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    items:
+      - "Numbers to the left on the number line are smaller"
+      - "Numbers to the right are larger"
+      - "-7 is smaller than -2 because -7 is further left"
+      - "no-bullet: The direction is what matters, not the size of the digit"
+
+  # 8 ── callout_box (explain) ─────────────────────────────────────────────────
+  - id: test_callout_box
+    type: callout_box
+    placement:
+      lesson_phase: explain
+      visual_weight: supporting
+      memory_role: anchor
+    title: "The Rule"
+    border_color: cyan
+    lines:
+      - "A number further left on the number line is always smaller."
+      - "Example: -7 < -2 because -7 is further left."
+      - "Example: -1 > -5 because -1 is further right."
+
+  # 9 ── coordinate_plane (explain) ────────────────────────────────────────────
+  - id: test_coordinate_plane
+    type: coordinate_plane
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    x_range: [-4, 4]
+    y_range: [-4, 4]
+    grid_step: 1
+    plots:
+      - type: line
+        equation: "y = x"
+        color: cyan
+      - type: point
+        coord: [2, 2]
+        label: "(2, 2)"
+        color: green
+      - type: point
+        coord: [-3, -3]
+        label: "(-3, -3)"
+        color: red
+
+  # 10 ── fraction_model (explain) ─────────────────────────────────────────────
+  - id: test_fraction_model
+    type: fraction_model
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    shape: circle
+    total_parts: 4
+    shaded_parts: 3
+    color: green
+    label: "3 out of 4 parts shaded"
+
+  # 11 ── geometry_shape (explain) ─────────────────────────────────────────────
+  - id: test_geometry_shape
+    type: geometry_shape
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    vertices: [[100, 300], [300, 100], [500, 300]]
+    labels: ["A", "B", "C"]
+    side_labels:
+      - edge: "AB"
+        label: "5 cm"
+      - edge: "BC"
+        label: "5 cm"
+      - edge: "CA"
+        label: "8 cm"
+    angles:
+      - vertex: "A"
+        label: "∠CAB = 53°"
+      - vertex: "B"
+        label: "87°"
+      - vertex: "C"
+        label: "∠BCA = ?"
+
+  # 12 ── geometry_shape_external (explain) ────────────────────────────────────
+  - id: test_geometry_shape_external
+    type: geometry_shape
+    placement:
+      lesson_phase: explain
+      memory_role: example
+      visual_weight: primary
+    vertices: [[100, 300], [300, 100], [500, 300], [600, 300]]
+    labels:
+      - "A"
+      - "B"
+      - text: "C"
+        offset: [0, 18]
+      - "D"
+    edges: ["AB", "BC", "CA", "CD"]
+    side_labels:
+      - edge: "AB"
+        label: "5 cm"
+      - edge: "BC"
+        label: "5 cm"
+      - edge: "CA"
+        label: "8 cm"
+    angles:
+      - vertex: "C"
+        sides: ["B", "D"]
+        label: "140°"
+
+  # 13 ── factor_array (explain) ───────────────────────────────────────────────
+  - id: test_factor_array
+    type: factor_array
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    number: 12
+    color: green
+    verdict: true
+
+  # 14 ── solid_shape (cube) (explain) ─────────────────────────────────────────
+  - id: test_solid_cube
+    type: solid_shape
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    shape: cube
+    dimensions: [4]
+    color: blue
+    label: "4 cm"
+    show_dimensions: true
+
+  # 15 ── solid_shape (rectangular_prism) (explain) ────────────────────────────
+  - id: test_solid_rectangular_prism
+    type: solid_shape
+    placement:
+      lesson_phase: explain
+      visual_weight: primary
+      memory_role: example
+    shape: rectangular_prism
+    dimensions: [5, 3, 4]
+    color: green
+    label: "Rectangular Prism (w×h×d)"
+    show_dimensions: true
+
+  # 16 ── example_panel (guided_practice) ──────────────────────────────────────
+  - id: test_example_panel
+    type: example_panel
+    placement:
+      lesson_phase: guided_practice
+      visual_weight: primary
+      memory_role: example
+    items:
+      - heading: "Which is larger: -7 or -2?"
+        body: "Step 1: Plot both on a number line.\nStep 2: -2 is to the right of -7.\nAnswer: -2 > -7"
+      - heading: "Which is larger: -1 or -4?"
+        body: "Step 1: Plot both on a number line.\nStep 2: -1 is to the right of -4.\nAnswer: -1 > -4"
+
+  # 17 ── hint_list (guided_practice) ──────────────────────────────────────────
+  - id: test_hint_list
+    type: hint_list
+    placement:
+      lesson_phase: guided_practice
+      visual_weight: primary
+      memory_role: example
+    items:
+      - "Plot both numbers on a number line"
+      - "Identify which is further to the right"
+      - "The number further right is always larger"
+    final: "Remember: further right = larger value"
+
+  # 18 ── math_grid (arithmetic) (guided_practice) ─────────────────────────────
+  - id: test_math_grid
+    type: math_grid
+    placement:
+      lesson_phase: guided_practice
+      visual_weight: primary
+      memory_role: example
+    headers: ["H", "T", "U"]
+    rows:
+      - ["", "3", "7"]
+      - ["+", "1", "5"]
+      - "line"
+      - ["", "5", "2"]
+    row_colors: ["cyan", "cyan", "", "yellow"]
+
+  # 19 ── math_grid (ratio) (guided_practice) ──────────────────────────────────
+  - id: test_math_grid_ratio
+    type: math_grid
+    placement:
+      lesson_phase: guided_practice
+      visual_weight: primary
+      memory_role: example
+    mode: ratio
+    show_grid: false
+    headers: ["Concentrate", "Water"]
+    rows:
+      - ["1", "3"]
+      - ["2", "6"]
+      - ["3", "9"]
+    row_colors: ["body", "cyan", "cyan"]
+
+  # 20 ── multiple_choice (independent_practice) ───────────────────────────────
+  - id: test_multiple_choice
+    type: multiple_choice
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      visual_weight: primary
+      memory_role: practice
+      assessment_objective: conceptual_understanding   # optional — what cognitive skill this tests
+    question: "Which is larger: -1 or -5?"
+    options:
+      A: "-1"
+      B: "-5"
+      C: "They are equal"
+      D: "Cannot tell"
+    answer: "A"
+
+  # 21 ── short_answer (independent_practice) ──────────────────────────────────
+  - id: test_short_answer
+    type: short_answer
+    placement:
+      lesson_phase: independent_practice
+      difficulty: routine
+      visual_weight: primary
+      memory_role: practice
+      assessment_objective: procedural_fluency         # optional — what cognitive skill this tests
+    question: "Simplify: 3x + 5 + 2x - 3"
+    answer: "5x + 2"
+    evaluation_mode: algebraic
+    solution_steps:
+      - "Group like terms: (3x + 2x) + (5 - 3)."
+      - "Combine variable terms: 3x + 2x = 5x."
+      - "Combine constant terms: 5 - 3 = 2."
+      - "Result: 5x + 2."

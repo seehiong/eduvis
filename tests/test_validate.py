@@ -431,3 +431,118 @@ def test_presentation_svg_inline_not_starting_with_svg_tag_is_warn():
     svg_warns = [w for w in warnings if "svg_inline" in w and "WARN" in w]
     assert len(svg_warns) == 1
     assert "does not appear to start with" in svg_warns[0]
+
+
+def test_mcq_answer_not_in_options():
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "question_1",
+            "type": "multiple_choice",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Q?",
+            "options": {"A": "1", "B": "2"},
+            "answer": "C"
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("correct answer 'C' is not a key in options dictionary" in w for w in warnings)
+
+
+def test_mcq_misconceptions_not_in_options():
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "question_1",
+            "type": "multiple_choice",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Q?",
+            "options": {"A": "1", "B": "2"},
+            "answer": "A",
+            "misconceptions": {"C": "misconception-code"}
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("maps misconception for option 'C' which is not a key in options dictionary" in w for w in warnings)
+
+
+def test_remediation_block_source_question_checks():
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "rem_1",
+            "type": "remediation_block",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "review": {
+                "source_question": "nonexistent"
+            },
+            "remember": {
+                "type": "callout_box",
+                "lines": ["Remember this"]
+            },
+            "solve": {
+                "type": "text_list",
+                "items": ["Solve it"]
+            }
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("references source_question 'nonexistent' which does not exist in the lesson content" in w for w in warnings)
+
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "rem_1",
+            "type": "remediation_block",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "review": {
+                "source_question": "question_1"
+            },
+            "remember": {
+                "type": "callout_box",
+                "lines": ["Remember this"]
+            },
+            "solve": {
+                "type": "text_list",
+                "items": ["Solve it"]
+            }
+        },
+        {
+            "id": "question_1",
+            "type": "multiple_choice",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Q?",
+            "options": {"A": "1", "B": "2"},
+            "answer": "A"
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("references source_question 'question_1' which appears after it in the lesson" in w for w in warnings)
+
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "slide_1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["Point one"]
+        },
+        {
+            "id": "rem_1",
+            "type": "remediation_block",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "review": {
+                "source_question": "slide_1"
+            },
+            "remember": {
+                "type": "callout_box",
+                "lines": ["Remember this"]
+            },
+            "solve": {
+                "type": "text_list",
+                "items": ["Solve it"]
+            }
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("references source_question 'slide_1' of type 'text_list'; source_question must be an assessment element" in w for w in warnings)

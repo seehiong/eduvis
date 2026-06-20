@@ -10,12 +10,21 @@ from eduvis.core.export_schema import (
     placement_schema,
     progression_schema,
     relationships_schema,
+    assessment_event_schema,
 )
 
 
 def test_get_all_schemas_returns_all_pillars():
     schemas = get_all_schemas()
-    assert set(schemas.keys()) == {"placement", "actions", "relationships", "progression", "lesson", "presentation"}
+    assert set(schemas.keys()) == {
+        "placement",
+        "actions",
+        "relationships",
+        "progression",
+        "lesson",
+        "presentation",
+        "assessment_event",
+    }
 
 
 def test_all_schemas_are_json_serialisable():
@@ -66,3 +75,18 @@ def test_lesson_requires_top_level_keys():
 def test_schemas_have_draft_2020_12():
     for s in get_all_schemas().values():
         assert s["$schema"] == "https://json-schema.org/draft/2020-12/schema"
+
+
+def test_assessment_event_schema_has_required_fields():
+    s = assessment_event_schema()
+    expected_req = {
+        "student_id",
+        "element_id",
+        "attempt_number",
+        "answer_submitted",
+        "is_correct",
+        "timestamp"
+    }
+    assert set(s["required"]) == expected_req
+    assert "misconception_detected" in s["properties"]
+    assert "time_taken_seconds" in s["properties"]

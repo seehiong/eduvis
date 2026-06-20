@@ -1,6 +1,6 @@
 """EduVis — educational content schema."""
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 from .core import ElementRegistry, ElementSpec, FieldSpec, validate_lesson, format_prompt_docs, get_all_schemas
 

@@ -16,6 +16,7 @@ from .registry import ElementRegistry
 from .schemas.placement import (
     VALID_PHASES, VALID_MEMORY_ROLES, VALID_DIFFICULTY,
     VALID_PURPOSES, VALID_LAYOUT_ZONES, VALID_VISUAL_WEIGHTS,
+    VALID_ASSESSMENT_OBJECTIVES,
 )
 from .schemas.actions import VALID_CONCEPTUAL, VALID_PROCEDURAL
 from .schemas.relationships import VALID_TYPES as VALID_REL_TYPES
@@ -129,6 +130,7 @@ def _placement_docs() -> str:
     purposes = " | ".join(sorted(VALID_PURPOSES))
     zones = " | ".join(sorted(VALID_LAYOUT_ZONES))
     weights = " | ".join(sorted(VALID_VISUAL_WEIGHTS))
+    objectives = " | ".join(sorted(VALID_ASSESSMENT_OBJECTIVES))
 
     return f"""\
 ## Placement
@@ -172,6 +174,18 @@ Every content element MUST have a placement block with lesson_phase and memory_r
   worked_example       Shows a complete solved example
   comparison           Places two cases side-by-side
   summary              Closing recap of the lesson
+
+### assessment_objective (optional — use on multiple_choice and short_answer elements)
+{objectives}
+
+  procedural_fluency       Student executes a practiced algorithm or procedure correctly
+  conceptual_understanding Student demonstrates grasp of the underlying idea, not just the steps
+  application              Student applies the concept to an unfamiliar or real-world context
+  reasoning                Student explains, justifies, or proves — goes beyond recall
+
+IMPORTANT: assessment_objective is optional and only meaningful on assessment element types
+(multiple_choice, short_answer). It enables curriculum-level analysis of what each question tests,
+preventing every generated curriculum from inventing its own labels.
 
 ### layout_zone (optional)
 {zones}
@@ -234,12 +248,20 @@ relationships:
     - explain_concept        # this element recalls an earlier anchor
   parallels:
     - abstract_version       # two elements show the same concept at different abstraction levels
+  remediation_for:
+    - check_question_1      # this element is presented conditionally when a check fails
 ```
 
 Valid relationship types: {rel_types}
 
 Each value is a list of element id strings. Referenced IDs must exist in the
-same lesson's content list."""
+same lesson's content list.
+
+### Remediation and Hints: Inline vs. Decoupled Branching
+When specifying help and hints for questions, there are two distinct design patterns:
+1. **Inline worked hints (solution_steps field)**: Defined inside multiple_choice or short_answer elements via the solution_steps array. These are short, immediate, inline steps shown inside the same question slide (e.g. for correct answers or when showing inline hints).
+2. **Decoupled remediation routing (remediation_block & remediation_for relationship)**: Renders a dedicated remediation_block element on a separate slide containing review, remember, and solve blocks. This slide declares relationships.remediation_for pointing back to the question. It acts as a full-screen pedagogical intervention when a check is failed.
+"""
 
 
 def _elements_docs(subjects: list[str]) -> str:
