@@ -16,6 +16,20 @@
     <!-- Pyodide WASM Python -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
 
+    <!-- Mermaid JS Graph Library -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+
     <!-- Monaco Editor Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs/loader.min.js"></script>
 
@@ -43,12 +57,18 @@
                 <label for="preset-select">Preset:</label>
                 <select id="preset-select" onchange="onPresetChange(this.value)">
                     <optgroup label="Full Lessons">
-                        <option value="lessons/negative-numbers-confidence-ladder.yaml">Negative Numbers (Confidence Ladder)</option>
-                        <option value="lessons/geometry-triangles-spatial.yaml">Angle Sum of a Triangle (Spatial Geometry)</option>
+                        <option value="lessons/negative-numbers-confidence-ladder-lesson.yaml">Negative Numbers (Confidence Ladder)</option>
+                        <option value="lessons/geometry-triangles-spatial-lesson.yaml">Angle Sum of a Triangle (Spatial Geometry)</option>
                     </optgroup>
                     <optgroup label="Feature Spotlights">
-                        <option value="features/adaptive-remediation-branching.yaml">Adaptive Remediation &amp; Assessment</option>
-                        <option value="features/presentation-sequences.yaml">Presentation Reveals &amp; Camera Zooms</option>
+                        <option value="features/adaptive-remediation-branching-lesson.yaml">Adaptive Remediation &amp; Assessment</option>
+                        <option value="features/presentation-sequences-lesson.yaml">Presentation Reveals &amp; Camera Zooms</option>
+                    </optgroup>
+                    <optgroup label="Curriculum Graphs">
+                        <option value="reference/singapore-sec1-curriculum.yaml">Singapore Secondary 1 Math Curriculum</option>
+                    </optgroup>
+                    <optgroup label="Custom Sandbox">
+                        <option value="custom">-- New Custom Spec (Blank) --</option>
                     </optgroup>
                     <optgroup label="Developer Reference">
                         <option value="reference/mixed-content-card.yaml">Mixed Content Card</option>
@@ -81,6 +101,7 @@
                 <div class="preview-tabs">
                     <button class="preview-tab active" id="tab-editor-content" onclick="switchEditorTab('content')">Content (content.yaml)</button>
                     <button class="preview-tab" id="tab-editor-presentation" onclick="switchEditorTab('presentation')">Presentation (presentation.yaml)</button>
+                    <button class="preview-tab" id="tab-editor-curriculum" onclick="switchEditorTab('curriculum')">Curriculum (curriculum.yaml)</button>
                 </div>
             </div>
             <!-- Monaco Editor Container -->
@@ -105,6 +126,7 @@
                     <button class="preview-tab active" id="tab-visual" onclick="togglePreviewTab('visual')">Visual Preview</button>
                     <button class="preview-tab" id="tab-xml" onclick="togglePreviewTab('xml')">Raw SVG Source</button>
                     <button class="preview-tab" id="tab-assessment" onclick="togglePreviewTab('assessment')">Interactive Assessment</button>
+                    <button class="preview-tab" id="tab-curriculum" onclick="togglePreviewTab('curriculum')">Curriculum Analytics</button>
                 </div>
                 <div class="preview-actions">
                     <button class="btn-icon" title="Copy Raw SVG" onclick="copyRawSvg()">
@@ -137,6 +159,11 @@
                     <!-- Dynamic Interactive Assessment gets injected here -->
                 </div>
 
+                <!-- Curriculum Analytics View -->
+                <div id="curriculum-area" style="display: none; flex-direction: column; width: 100%; height: 100%; overflow-y: auto; padding: 20px; box-sizing: border-box; background: #0f172a; color: #f8fafc;">
+                    <!-- Dynamic Curriculum Map and Centrality Graph gets injected here -->
+                </div>
+
                 <!-- Subtitles Panel -->
                 <div id="narration-subtitle" style="display: none;"></div>
 
@@ -167,9 +194,9 @@
     </div>
 
     <!-- Modularized JavaScript Runners -->
-    <script src="./pyodide_runner.js"></script>
-    <script src="./assessment_sandbox.js"></script>
-    <script src="./editor.js"></script>
+    <script src="./pyodide_runner.js?v=0.5.1"></script>
+    <script src="./assessment_sandbox.js?v=0.5.1"></script>
+    <script src="./editor.js?v=0.5.1"></script>
 </body>
 
 </html>

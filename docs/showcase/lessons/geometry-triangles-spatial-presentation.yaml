@@ -1,0 +1,169 @@
+schema_version: '0.5'
+slides:
+- id: hook_roof_truss
+  advance: manual
+  reveals:
+  - target: hook_roof_truss
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: 'Let''s start with a real-world scenario: roof trusses use triangles
+        to distribute weight evenly and resist deformation.'
+      auto_advance_after: 4.0
+    - index: 1
+      visible_items:
+      - 0
+      - 1
+      caption: This rigidity makes the triangle the absolute foundation of structural
+        stability in construction.
+      auto_advance_after: 4.0
+  svg_ref: C:\project\eduvis\docs\showcase\assets\geometry-triangles\hook_roof_truss.svg
+- id: explore_isosceles_triangle
+  advance: manual
+  reveals:
+  - target: explore_isosceles_triangle
+    steps:
+    - index: 0
+      visible_items:
+      - 1
+      caption: Let's explore this right-angled isosceles triangle. Angle B is a right
+        angle, measuring 90 degrees.
+      viewport:
+        zoom: 1.5
+        center:
+        - 350.0
+        - 150.0
+      auto_advance_after: 4.0
+    - index: 1
+      visible_items:
+      - 1
+      - 0
+      caption: Angle A at the bottom left is 45 degrees.
+      viewport:
+        zoom: 1.5
+        center:
+        - 150.0
+        - 350.0
+      auto_advance_after: 4.0
+    - index: 2
+      visible_items:
+      - 1
+      - 0
+      - 2
+      caption: 'Angle C at the bottom right is also 45 degrees. Let''s add them: 45
+        + 90 + 45 = 180 degrees.'
+      viewport:
+        zoom: 1.5
+        center:
+        - 550.0
+        - 350.0
+      auto_advance_after: 5.0
+    - index: 3
+      visible_items:
+      - 1
+      - 0
+      - 2
+      caption: Let's zoom back out to see the entire triangle.
+      viewport:
+        zoom: 1.0
+        center:
+        - 400.0
+        - 300.0
+  svg_ref: C:\project\eduvis\docs\showcase\assets\geometry-triangles\explore_isosceles_triangle.svg
+- id: explain_concept_angle_sum
+  advance: manual
+  reveals:
+  - target: explain_concept_angle_sum
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: Let's look at another triangle, PQR. Angle P is 53 degrees.
+      viewport:
+        zoom: 1.5
+        center:
+        - 150.0
+        - 320.0
+      auto_advance_after: 4.0
+    - index: 1
+      visible_items:
+      - 0
+      - 1
+      caption: Angle Q at the top is 87 degrees.
+      viewport:
+        zoom: 1.5
+        center:
+        - 300.0
+        - 120.0
+      auto_advance_after: 4.0
+    - index: 2
+      visible_items:
+      - 0
+      - 1
+      - 2
+      caption: Angle R at the bottom right is 40 degrees. Notice that 53 + 87 + 40
+        = 180 degrees. The sum is the same!
+      viewport:
+        zoom: 1.5
+        center:
+        - 500.0
+        - 320.0
+      auto_advance_after: 5.0
+    - index: 3
+      visible_items:
+      - 0
+      - 1
+      - 2
+      caption: Zooming back out, we can observe that the interior angles of any triangle
+        add up to exactly 180 degrees.
+      viewport:
+        zoom: 1.0
+        center:
+        - 400.0
+        - 300.0
+  svg_ref: C:\project\eduvis\docs\showcase\assets\geometry-triangles\explain_concept_angle_sum.svg
+- id: explain_rule_angle_sum
+  advance: manual
+  reveals:
+  - target: explain_rule_angle_sum
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: 'Rule: The interior angles of any triangle always add up to exactly
+        180 deg.'
+      auto_advance_after: 3.5
+    - index: 1
+      visible_items:
+      - 0
+      - 1
+      caption: 'Formula: Angle A + Angle B + Angle C = 180 deg.'
+      auto_advance_after: 3.5
+    - index: 2
+      visible_items:
+      - 0
+      - 1
+      - 2
+      caption: To find an unknown angle, subtract the two known angles from 180 deg.
+      auto_advance_after: 3.5
+    - index: 3
+      visible_items:
+      - 0
+      - 1
+      - 2
+      - 3
+      caption: 'Example calculation structure: Unknown Angle = 180 deg - (Known 1
+        + Known 2).'
+  svg_ref: C:\project\eduvis\docs\showcase\assets\geometry-triangles\explain_rule_angle_sum.svg
+- id: guided_example_triangle
+  advance: manual
+  reveals:
+  - target: guided_example_triangle
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: Let's solve for 'x' in a triangle where the known angles are 60 deg
+        and 70 deg.
+  svg_ref: C:\project\eduvis\docs\showcase\assets\geometry-triangles\guided_example_triangle.svg

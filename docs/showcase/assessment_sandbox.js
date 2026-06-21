@@ -172,6 +172,26 @@ if (!window.learnerState) {
     };
 }
 
+function resetAssessmentSandboxState() {
+    window.studentAttemptHistory = {};
+    window.learnerState = {
+        concept_mastery: {
+            negative_numbers: { confidence: 0.5, last_seen: 'Never' },
+            prime_numbers: { confidence: 0.5, last_seen: 'Never' }
+        },
+        skill_mastery: {
+            subtract_negative_numbers: { confidence: 0.5, last_seen: 'Never' }
+        },
+        active_misconceptions: {}
+    };
+    telemetryEventsList = [];
+    activeAssessmentElement = null;
+    activeElementYaml = null;
+    revealedHintsCount = 0;
+    activeSandboxTab = 'sandbox';
+    selectedOptionKey = null;
+}
+
 function updateShowcaseLearnerState(element, isCorrect, misconceptionDetected) {
     const timestamp = new Date().toLocaleTimeString();
 
@@ -652,6 +672,31 @@ function submitAssessmentWorking() {
 }
 
 function renderEmptyAssessmentState(container) {
+    const slides = window.currentSlides || [];
+    const assessmentSlides = slides.filter(s => s.type === 'multiple_choice' || s.type === 'short_answer');
+
+    let helpText = '';
+    const presetSelect = document.getElementById('preset-select');
+    const presetName = presetSelect && presetSelect.selectedIndex >= 0 
+        ? presetSelect.options[presetSelect.selectedIndex].text 
+        : '';
+
+    if (assessmentSlides.length > 0) {
+        let formattedSlides = '';
+        if (assessmentSlides.length === 1) {
+            formattedSlides = `<strong>Slide ${assessmentSlides[0].index + 1}</strong>`;
+        } else {
+            const last = assessmentSlides[assessmentSlides.length - 1];
+            const others = assessmentSlides.slice(0, -1).map(s => `<strong>Slide ${s.index + 1}</strong>`).join(', ');
+            formattedSlides = `${others} or <strong>Slide ${last.index + 1}</strong>`;
+        }
+        const presetPart = presetName ? ` in the <em>${escapeHtml(presetName)}</em> preset` : '';
+        helpText = `Try selecting ${formattedSlides}${presetPart} to test the engine!`;
+    } else {
+        const presetPart = presetName ? ` the <em>${escapeHtml(presetName)}</em> preset` : 'this preset';
+        helpText = `No interactive assessment elements (multiple_choice or short_answer) found in ${presetPart}.<br><br>Try selecting the <strong>Adaptive Remediation & Assessment</strong> or <strong>Exhaustive Element Catalog</strong> presets to test the engine!`;
+    }
+
     container.innerHTML = `
         <div class="assessment-empty-state">
             <svg class="assessment-empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -661,7 +706,7 @@ function renderEmptyAssessmentState(container) {
             <div class="assessment-empty-title">Select an Assessment Slide</div>
             <div class="assessment-empty-text">
                 The Interactive Assessment Sandbox applies to <strong>multiple_choice</strong> and <strong>short_answer</strong> elements.<br><br>
-                Try selecting <strong>Slide 1</strong>, <strong>Slide 2</strong>, <strong>Slide 5</strong>, or <strong>Slide 7</strong> in the <em>Adaptive Remediation & Assessment</em> feature preset to test the engine!
+                ${helpText}
             </div>
         </div>
     `;

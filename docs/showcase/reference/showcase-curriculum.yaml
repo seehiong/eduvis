@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/curriculum.schema.json
+schema_version: "0.5"
+
+concepts:
+  - code: integers
+    name: Integers & Number Line
+    description: Understanding positive and negative whole numbers
+    exam_weight: 0.9
+
+  - code: negative_numbers
+    name: Negative Numbers
+    description: Operations and ordering of signed values
+    exam_weight: 0.95
+
+  - code: rational_numbers
+    name: Rational Numbers
+    description: Fractions, decimals, and basic fractions circles
+    exam_weight: 0.8
+
+  - code: real_numbers
+    name: Real Numbers & Partitioning
+    description: Square roots, irrational numbers, and real partitioning
+    exam_weight: 0.75
+
+skills:
+  - code: order_integers
+    name: Order Integers
+    concept: negative_numbers
+    exam_weight: 0.85
+
+  - code: add_negative_numbers
+    name: Add Negative Numbers
+    concept: negative_numbers
+    exam_weight: 0.9
+
+  - code: subtract_negative_numbers
+    name: Subtract Negative Numbers
+    concept: negative_numbers
+    exam_weight: 0.9
+
+  - code: simplify_expressions
+    name: Simplify Expressions
+    concept: negative_numbers
+    exam_weight: 0.8
+
+misconceptions:
+  - code: digit_size_magnitude_error
+    name: Digit Size Magnitude Error
+    concept: negative_numbers
+    remediation_weight: 1.0
+
+  - code: difference_confusion
+    name: Difference Sign Confusion
+    concept: negative_numbers
+    remediation_weight: 0.8
+
+  - code: double_negative_addition_confusion
+    name: Double Negative Addition Confusion
+    concept: negative_numbers
+    remediation_weight: 0.95
+
+  - code: subtract_negative_minus_negative
+    name: Subtract Negative Minus Negative
+    concept: negative_numbers
+    remediation_weight: 0.9
+
+dependencies:
+  - from: integers
+    to: negative_numbers
+    type: prerequisite
+  - from: negative_numbers
+    to: rational_numbers
+    type: prerequisite
+  - from: rational_numbers
+    to: real_numbers
+    type: prerequisite

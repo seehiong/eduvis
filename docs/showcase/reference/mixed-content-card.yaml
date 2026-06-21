@@ -1,6 +1,8 @@
 # EduVis-Core Example: Mixed Content Card Demo
 # Replicates the decimal subtraction "Learn with an example" layout
 
+schema_version: "0.5"
+
 curriculum:
   code: SEC-math-2027
   topic: N1.6

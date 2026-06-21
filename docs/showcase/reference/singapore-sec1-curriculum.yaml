@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/curriculum.schema.json
+schema_version: "0.5"
+
+concepts:
+  - code: integers
+    name: Integers
+    description: Whole numbers including negative integers, positive integers, and zero.
+    exam_weight: 0.8
+
+  - code: negative_numbers
+    name: Negative Numbers
+    description: Numbers less than zero, representation on number lines.
+    exam_weight: 0.9
+
+  - code: rational_numbers
+    name: Rational Numbers
+    description: Integers, fractions, and decimals that can be written as simple fractions.
+    exam_weight: 0.7
+
+skills:
+  - code: order_integers
+    name: Order Integers
+    concept: integers
+    exam_weight: 0.7
+
+  - code: add_negative_numbers
+    name: Add Negative Numbers
+    concept: negative_numbers
+    exam_weight: 0.8
+
+  - code: subtract_negative_numbers
+    name: Subtract Negative Numbers
+    concept: negative_numbers
+    exam_weight: 0.8
+
+  - code: simplify_expressions
+    name: Simplify Algebraic Expressions with Negatives
+    concept: negative_numbers
+    exam_weight: 0.9
+
+misconceptions:
+  - code: digit_size_magnitude_error
+    name: Size Magnitude Error
+    concept: negative_numbers
+    remediation_weight: 0.8
+
+  - code: difference_confusion
+    name: Addition/Subtraction Sign Confusion
+    concept: negative_numbers
+    remediation_weight: 0.7
+
+  - code: double_negative_addition_confusion
+    name: Double Negative Sign Confusions
+    concept: negative_numbers
+    remediation_weight: 0.8
+
+  - code: subtract_negative_minus_negative
+    name: Subtraction Direction Confusion
+    concept: negative_numbers
+    remediation_weight: 0.9
+
+dependencies:
+  - from: integers
+    to: negative_numbers
+    type: prerequisite
+  - from: negative_numbers
+    to: rational_numbers
+    type: prerequisite

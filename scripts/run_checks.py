@@ -54,10 +54,10 @@ def main() -> None:
     targets = ["eduvis", "tests", "scripts"]
 
     # 1. Run Ruff for style, complexity (C901), and statement counts (PLR0915)
-    ruff_ok = run_tool(["ruff", "check"] + targets, "Ruff (Linter, Complexity, & Function Length)")
+    ruff_ok = run_tool(["uv", "run", "ruff", "check"] + targets, "Ruff (Linter, Complexity, & Function Length)")
 
     # 2. Run Pylint for nesting depth, module size, and duplication
-    pylint_ok = run_tool(["pylint", "--disable=unrecognized-option"] + targets, "Pylint (Nesting Depth, Module Size, & Duplication)")
+    pylint_ok = run_tool(["uv", "run", "pylint", "--disable=unrecognized-option"] + targets, "Pylint (Nesting Depth, Module Size, & Duplication)")
 
     if ruff_ok and pylint_ok:
         print("\nAll maintainability checks passed successfully!")

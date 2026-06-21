@@ -1,11 +1,22 @@
 ## EduVis Lesson Structure
 
-Every lesson YAML has four top-level keys: curriculum, lesson, progression, content.
+Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
 ```yaml
+schema_version: "0.5"
+
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
   topic: string           # topic code e.g. "N1.6"
+  concept: string         # optional target concept name
+  requires:               # optional list of prerequisite concept names
+    - string
+  supports:               # optional list of supporting concept names
+    - string
+  learning_outcomes:      # optional list of target learning outcomes
+    - string
+  assessment_targets:     # optional list of assessment targets / objectives
+    - string
 
 lesson:
   title: string           # human-readable lesson title

@@ -11,6 +11,7 @@ from eduvis.core.export_schema import (
     progression_schema,
     relationships_schema,
     assessment_event_schema,
+    curriculum_schema,
 )
 
 
@@ -24,6 +25,7 @@ def test_get_all_schemas_returns_all_pillars():
         "lesson",
         "presentation",
         "assessment_event",
+        "curriculum",
     }
 
 
@@ -90,3 +92,13 @@ def test_assessment_event_schema_has_required_fields():
     assert set(s["required"]) == expected_req
     assert "misconception_detected" in s["properties"]
     assert "time_taken_seconds" in s["properties"]
+
+
+def test_curriculum_schema_has_required_fields():
+    s = curriculum_schema()
+    assert "schema_version" in s["properties"]
+    assert "concepts" in s["properties"]
+    assert "skills" in s["properties"]
+    assert "misconceptions" in s["properties"]
+    assert "dependencies" in s["properties"]
+    assert s["required"] == ["concepts"]

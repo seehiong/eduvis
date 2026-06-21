@@ -23,20 +23,36 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
         updateStatusCallback("Setting up Micro Pip", "Loading pip installer package...");
         await window.pyodideInstance.loadPackage("micropip");
 
-        updateStatusCallback("Installing Dependencies", "Installing PyYAML and loading local wheel...");
+        // Dynamically detect package version from main_init.py to construct wheel filename
+        let version = "0.5.0";
+        try {
+            const mainInitText = await fetch('./main_init.py').then(r => r.text());
+            const versionMatch = mainInitText.match(/__version__\s*=\s*["']([^"']+)["']/);
+            if (versionMatch) {
+                version = versionMatch[1];
+            }
+        } catch (err) {
+            console.warn("Could not determine package version from main_init.py, falling back to 0.5.0", err);
+        }
+
+        updateStatusCallback("Installing Dependencies", `Installing PyYAML and loading local wheel (v${version})...`);
+        const cb = new Date().getTime();
         await window.pyodideInstance.runPythonAsync(`
             import micropip
             await micropip.install("pyyaml")
-            await micropip.install("./eduvis-0.3.0-py3-none-any.whl")
+            await micropip.install("./eduvis-${version}-py3-none-any.whl?cb=${cb}")
         `);
 
-        updateStatusCallback("Syncing v0.4.0 Engine Updates", "Fetching local core files...");
+        updateStatusCallback("Syncing v0.5.0 Engine Updates", "Fetching local core files...");
         try {
-            const [engineCode, validatorCode, genericCode, renderersBaseCode] = await Promise.all([
+            const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode] = await Promise.all([
                 fetch('./engine.py').then(r => r.text()),
                 fetch('./validator.py').then(r => r.text()),
                 fetch('./generic.py').then(r => r.text()),
-                fetch('./renderers_base.py').then(r => r.text())
+                fetch('./renderers_base.py').then(r => r.text()),
+                fetch('./curriculum.py').then(r => r.text()),
+                fetch('./core_init.py').then(r => r.text()),
+                fetch('./main_init.py').then(r => r.text())
             ]);
 
             const ensureDir = (path) => {
@@ -53,6 +69,9 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/engine.py', engineCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/validator.py', validatorCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/elements/generic.py', genericCode);
+            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/curriculum.py', curriculumCode);
+            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/__init__.py', coreInitCode);
+            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/__init__.py', mainInitCode);
             
             ensureDir('/lib/python3.12/site-packages/eduvis/renderers/svg/renderers_base.py');
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/renderers/svg/renderers_base.py', renderersBaseCode);
@@ -323,6 +342,37 @@ def get_element_yaml_py(content_yaml_str, index):
         return yaml.dump(el, allow_unicode=True, default_flow_style=False, sort_keys=False)
     except Exception as e:
         return ""
+
+def get_curriculum_dashboard_py(content_yaml_str, curriculum_yaml_str):
+    try:
+        from eduvis.core.curriculum import CurriculumGraph
+        graph_data = yaml.safe_load(curriculum_yaml_str) or {}
+        graph = CurriculumGraph.from_dict(graph_data)
+        doc = yaml.safe_load(content_yaml_str) or {}
+        coverage = graph.analyze_coverage([doc])
+        gaps = graph.detect_dependency_gaps(coverage["covered_concepts"])
+        centrality = graph.analyze_centrality()
+        
+        return json.dumps({
+            "concepts": [c.to_dict() for c in graph.concepts.values()],
+            "skills": [s.to_dict() for s in graph.skills.values()],
+            "misconceptions": [m.to_dict() for m in graph.misconceptions.values()],
+            "dependencies": [d.to_dict() for d in graph.dependencies],
+            "coverage": coverage,
+            "gaps": gaps,
+            "centrality": centrality
+        })
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+def validate_curriculum_py(curriculum_yaml_str):
+    try:
+        from eduvis.core import validate_curriculum
+        data = yaml.safe_load(curriculum_yaml_str) or {}
+        warnings = validate_curriculum(data)
+        return json.dumps({"warnings": warnings})
+    except Exception as e:
+        return json.dumps({"error": str(e)})
         `);
 
         updateStatusCallback("Ready", "All systems operational.");
@@ -383,6 +433,16 @@ function pyGetLessonAnalytics(contentYaml) {
 function pyGetElementObjectives(contentYaml) {
     if (!window.pyodideInstance) throw new Error("Pyodide not loaded");
     return window.pyodideInstance.globals.get("get_element_objectives_py")(contentYaml);
+}
+
+function pyGetCurriculumDashboard(contentYaml, curriculumYaml) {
+    if (!window.pyodideInstance) throw new Error("Pyodide not loaded");
+    return window.pyodideInstance.globals.get("get_curriculum_dashboard_py")(contentYaml, curriculumYaml);
+}
+
+function pyValidateCurriculum(curriculumYaml) {
+    if (!window.pyodideInstance) throw new Error("Pyodide not loaded");
+    return window.pyodideInstance.globals.get("validate_curriculum_py")(curriculumYaml);
 }
 
 

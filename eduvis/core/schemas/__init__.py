@@ -1,5 +1,5 @@
 """EduVis Core — pillar schema validators."""
 
-from . import actions, placement, progression, relationships, presentation
+from . import actions, placement, progression, relationships, presentation, curriculum
 
-__all__ = ["actions", "placement", "progression", "relationships", "presentation"]
+__all__ = ["actions", "placement", "progression", "relationships", "presentation", "curriculum"]

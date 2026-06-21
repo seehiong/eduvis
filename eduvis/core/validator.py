@@ -37,6 +37,21 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
     """
     warnings: list[str] = []
 
+    # ── schema version validation ─────────────────────────────────────────────
+    version = lesson_doc.get("schema_version")
+    if version is None:
+        warnings.append(
+            "WARN: [lesson:version] missing 'schema_version' field. Assuming default \"0.5\"."
+        )
+    elif not isinstance(version, str):
+        warnings.append(
+            f"ERROR: [lesson:version] 'schema_version' must be a string, got {type(version).__name__}"
+        )
+    elif version != "0.5":
+        warnings.append(
+            f"ERROR: [lesson:version] unsupported schema version \"{version}\". Expected \"0.5\"."
+        )
+
     # ── curriculum block ──────────────────────────────────────────────────────
     curriculum = lesson_doc.get("curriculum")
     lesson = lesson_doc.get("lesson")

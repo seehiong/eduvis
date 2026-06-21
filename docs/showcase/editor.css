@@ -905,3 +905,10 @@ button.btn-primary:hover {
     color: var(--text-muted);
 }
 
+/* Disabled Preview Tabs */
+.preview-tab.disabled {
+    opacity: 0.3;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+

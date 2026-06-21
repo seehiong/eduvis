@@ -1,0 +1,176 @@
+schema_version: '0.5'
+slides:
+- id: hook_real_world
+  advance: manual
+  reveals:
+  - target: hook_real_world
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: 'Let''s look at a concrete real-world scenario: temperature at five
+        degrees below zero (-5 deg C).'
+      auto_advance_after: 4.0
+    - index: 1
+      visible_items:
+      - 0
+      - 1
+      caption: 'Another scenario is finance: when you owe someone ten dollars, we
+        write that as -$10.'
+      auto_advance_after: 4.0
+  svg_ref: C:\project\eduvis\docs\showcase\assets\negative-numbers\hook_real_world.svg
+- id: explore_temperature_scale
+  advance: manual
+  reveals:
+  - target: explore_temperature_scale
+    steps:
+    - index: 0
+      visible_items:
+      - 2
+      caption: 'Here is a temperature scale. Let''s start at the reference point:
+        zero degrees Celsius (0 deg C).'
+      viewport:
+        zoom: 1.0
+        center:
+        - 400.0
+        - 300.0
+      auto_advance_after: 4.0
+    - index: 1
+      visible_items:
+      - 2
+      - 1
+      caption: A warmer temperature, like 3 deg C, is to the right of zero.
+      viewport:
+        zoom: 1.5
+        center:
+        - 550.0
+        - 300.0
+      auto_advance_after: 4.0
+    - index: 2
+      visible_items:
+      - 2
+      - 1
+      - 0
+      caption: 'A colder temperature, like -5 deg C, sits to the left of zero. Notice
+        the directions: left is colder, right is warmer.'
+      viewport:
+        zoom: 1.5
+        center:
+        - 250.0
+        - 300.0
+      auto_advance_after: 5.0
+    - index: 3
+      visible_items:
+      - 2
+      - 1
+      - 0
+      caption: Let's zoom back out to see the entire scale from colder to warmer.
+      viewport:
+        zoom: 1.0
+        center:
+        - 400.0
+        - 300.0
+  svg_ref: C:\project\eduvis\docs\showcase\assets\negative-numbers\explore_temperature_scale.svg
+- id: explain_concept_negative
+  advance: manual
+  reveals:
+  - target: explain_concept_negative
+    steps:
+    - index: 0
+      visible_items:
+      - 1
+      caption: Let's define what these positions mean on a number line, starting with
+        our reference zero.
+      viewport:
+        zoom: 1.0
+        center:
+        - 400.0
+        - 300.0
+      auto_advance_after: 4.0
+    - index: 1
+      visible_items:
+      - 1
+      - 2
+      caption: Moving to the right gives us larger values, such as positive 3.
+      viewport:
+        zoom: 1.5
+        center:
+        - 550.0
+        - 300.0
+      auto_advance_after: 4.0
+    - index: 2
+      visible_items:
+      - 1
+      - 2
+      - 0
+      caption: Moving to the left gives us smaller values. For example, -3 is further
+        left and therefore smaller.
+      viewport:
+        zoom: 1.5
+        center:
+        - 250.0
+        - 300.0
+      auto_advance_after: 5.0
+  svg_ref: C:\project\eduvis\docs\showcase\assets\negative-numbers\explain_concept_negative.svg
+- id: explain_rule_negative
+  advance: manual
+  reveals:
+  - target: explain_rule_negative
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: 'First rule: Numbers less than zero are called negative numbers.'
+      auto_advance_after: 3.5
+    - index: 1
+      visible_items:
+      - 0
+      - 1
+      caption: 'Second rule: On a number line, negative numbers always sit to the
+        left of zero.'
+      auto_advance_after: 3.5
+    - index: 2
+      visible_items:
+      - 0
+      - 1
+      - 2
+      caption: 'Third rule: The further left a number is, the smaller it is.'
+      auto_advance_after: 3.5
+    - index: 3
+      visible_items:
+      - 0
+      - 1
+      - 2
+      - 3
+      caption: 'Fourth rule: Negative numbers are always smaller than zero and any
+        positive number.'
+  svg_ref: C:\project\eduvis\docs\showcase\assets\negative-numbers\explain_rule_negative.svg
+- id: misconception_comparing_negatives
+  advance: manual
+  reveals:
+  - target: misconception_comparing_negatives
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: Be careful! A common mistake is thinking -10 is larger than -2 because
+        10 is bigger than 2.
+      auto_advance_after: 5.0
+    - index: 1
+      visible_items:
+      - 0
+      - 1
+      caption: 'Here is the correct thinking: since -10 is further left than -2 on
+        the number line, -10 is smaller. So -10 < -2.'
+  svg_ref: C:\project\eduvis\docs\showcase\assets\negative-numbers\misconception_comparing_negatives.svg
+- id: guided_example_negative
+  advance: manual
+  reveals:
+  - target: guided_example_negative
+    steps:
+    - index: 0
+      visible_items:
+      - 0
+      caption: 'Let''s walk through a question together: Which is colder, -5 deg C
+        or -1 deg C?'
+  svg_ref: C:\project\eduvis\docs\showcase\assets\negative-numbers\guided_example_negative.svg

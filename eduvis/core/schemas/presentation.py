@@ -21,6 +21,26 @@ def validate(presentation: dict, known_ids: set[str]) -> list[str]:
         warnings.append("ERROR: [presentation] 'presentation' must be a mapping")
         return warnings
 
+    # Validate schema version
+    version = presentation.get("schema_version")
+    if version is not None:
+        if not isinstance(version, str):
+            warnings.append(
+                f"ERROR: [presentation:version] 'schema_version' must be a string, got {type(version).__name__}"
+            )
+        elif version != "0.5":
+            warnings.append(
+                f"ERROR: [presentation:version] unsupported schema version \"{version}\". Expected \"0.5\"."
+            )
+
+    # Validate top-level keys
+    allowed_keys = {"schema_version", "slides"}
+    for key in presentation:
+        if key not in allowed_keys:
+            warnings.append(
+                f"ERROR: [presentation] unexpected key '{key}' in presentation block"
+            )
+
     slides = presentation.get("slides")
     if slides is None:
         warnings.append("ERROR: [presentation] missing required 'slides' list")

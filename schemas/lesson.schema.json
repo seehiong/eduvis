@@ -10,6 +10,13 @@
     "content"
   ],
   "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "0.5"
+      ],
+      "description": "The version of the EduVis schema used by this document."
+    },
     "curriculum": {
       "type": "object",
       "required": [

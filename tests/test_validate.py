@@ -5,6 +5,7 @@ from eduvis.core import validate_lesson
 
 def _lesson(**overrides):
     doc = {
+      "schema_version": "0.5",
       "curriculum": {"code": "test", "topic": "T1"},
       "lesson": {"title": "Test Lesson"},
       "progression": {
@@ -546,3 +547,29 @@ def test_remediation_block_source_question_checks():
     ]
     warnings = validate_lesson(doc)
     assert any("references source_question 'slide_1' of type 'text_list'; source_question must be an assessment element" in w for w in warnings)
+
+
+def test_schema_version_validation():
+    # 1. Missing version should raise a WARN
+    doc = _lesson()
+    del doc["schema_version"]
+    warnings = validate_lesson(doc)
+    assert any("WARN: [lesson:version] missing 'schema_version' field" in w for w in warnings)
+
+    # 2. Incompatible version should raise an ERROR
+    doc = _lesson()
+    doc["schema_version"] = "0.4"
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [lesson:version] unsupported schema version \"0.4\"" in w for w in warnings)
+
+    # 3. Invalid version type should raise an ERROR
+    doc = _lesson()
+    doc["schema_version"] = 0.5
+    warnings = validate_lesson(doc)
+    assert any("ERROR: [lesson:version] 'schema_version' must be a string" in w for w in warnings)
+
+    # 4. Valid version "0.5" should pass cleanly
+    doc = _lesson()
+    doc["schema_version"] = "0.5"
+    warnings = validate_lesson(doc)
+    assert not any("version" in w for w in warnings)

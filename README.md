@@ -1,8 +1,8 @@
 # EduVis Schema
 
-**An open, curriculum-aware schema for educational content.**
+**An open, curriculum-aware framework and knowledge representation for learning experiences.**
 
-EduVis describes the **educational meaning** of learning experiences — what elements are, what they do, how they relate, where they belong, and how the lesson flows. Renderers translate that meaning into SVG, Canvas, React, Flutter, PDF, or animated video.
+EduVis describes the **educational meaning** of learning experiences — modeling curriculum graphs, lesson progression, student actions, assessment evidence, learner state, and presentation layers. Renderers and player engines translate that meaning into interactive lessons, SVG, React, Flutter, PDF, or animated video.
 
 Inspired by the philosophy behind Markdown, Mermaid, and Model Context Protocol (MCP):
 
@@ -36,10 +36,11 @@ uv run eduvis validate docs/showcase/lessons/negative-numbers-confidence-ladder.
 uv run eduvis validate docs/showcase/lessons/geometry-triangles-spatial.yaml
 uv run eduvis validate docs/showcase/features/adaptive-remediation-branching.yaml
 
-# Render showcase lessons to SVGs
+# Render all showcase assets to docs/showcase/assets/
+uv run python scripts/build_showcase.py
+
+# Or render a single showcase lesson to a custom directory
 uv run eduvis render docs/showcase/lessons/negative-numbers-confidence-ladder.yaml -o output/negatives/
-uv run eduvis render docs/showcase/lessons/geometry-triangles-spatial.yaml -o output/geometry/
-uv run eduvis render docs/showcase/features/adaptive-remediation-branching.yaml -o output/remediation/
 
 # Utility commands
 uv run eduvis docs --subjects math
@@ -113,7 +114,9 @@ EduVis is a machine-readable instructional model.
 
 It captures the structure of good tutoring — the same structure behind effective human instructors: no skipped steps, visual intuition before abstraction, confidence-building before challenge, and retrieval to lock it in long-term.
 
-EduVis is to educational experiences what Markdown is to documents and Mermaid is to diagrams.
+Crucially, it separates presentation (how to deliver), curriculum (what to learn), and student cognition (what is mastered) into orthogonal layers, allowing learning paths to adapt dynamically.
+
+EduVis is to educational experiences what Markdown is to documents, Mermaid is to diagrams, and Model Context Protocol (MCP) is to context.
 
 A specification can be rendered as SVG, PDF, slides, interactive lessons, or animated videos while preserving pedagogical intent.
 
@@ -135,13 +138,15 @@ highlight: [-3, 5]
 EduVis preserves the meaning that gets lost the moment most tools export to SVG:
 
 ```yaml
+id: explore_number_line
 type: number_line
 placement:
   lesson_phase: explore
   memory_role: anchor
   difficulty: starter
 actions:
-  - compare: [-3, 5]
+  conceptual:
+    - compare: [-3, 5]
 range: [-10, 10]
 ```
 
@@ -153,6 +158,10 @@ But more importantly, EduVis describes where this element sits inside a proven t
 
 This is not a theoretical schema. The placement model, element types, and LLM prompt vocabulary have been validated in real educational pipelines and are designed for production use.
 
+> [!IMPORTANT]
+> **Project Status: Beta (v0.x)**
+> The schema is actively evolving during the v0.x phase. Backward compatibility guarantees will begin at v1.0. Breaking changes may occur between minor versions, but detailed migration guidelines, deprecation warnings, and automated schema migration tooling will be provided.
+
 * **[Interactive Showcase](docs/showcase/)**: View complete, production-grade lessons rendered to SVG.
 * **[Live Schema Editor](docs/showcase/editor.html)**: Write and preview your own EduVis YAML specifications in real-time. It runs the full Python rendering library entirely client-side in the browser using WebAssembly (Pyodide).
 
@@ -160,38 +169,47 @@ This is not a theoretical schema. The placement model, element types, and LLM pr
 
 ## Orthogonal Architecture Layers
 
-To scale adaptive learning cleanly, EduVis separates delivery, curriculum representation, and student cognition into three orthogonal concern layers:
+To scale adaptive learning cleanly, EduVis separates learning content, curriculum dependencies, student assessment, and dynamic player delivery into four orthogonal concern layers:
 
+```mermaid
+graph TD
+    subgraph Knowledge Layer
+        CurriculumGraph["Curriculum Graph<br>(Concepts, Skills, Misconceptions)"]
+    end
+
+    subgraph Assessment Layer
+        AssessmentEngine["Assessment Engine<br>(Questions, Objectives, Validation)"]
+    end
+
+    subgraph Learner State Layer
+        LearnerState["Learner State Model<br>(Mastery, Confidence, Gaps)"]
+    end
+
+    subgraph Presentation Layer
+        PresentationSpec["Presentation Layer<br>(Slides, Narration, Viewport)"]
+    end
+
+    CurriculumGraph --> LearnerState
+    AssessmentEngine -->|Evidence Bridge| LearnerState
+    LearnerState -->|Adaptive Routing| PresentationSpec
 ```
-Presentation Layer (How to teach)
-        ↓
-Curriculum Graph (What to teach - Static Map)
-        ↓
-Learner State (What the learner knows - Dynamic GPS)
-```
 
-### 1. Presentation Layer (Delivery)
-*Companion specification (`presentation.yaml`)*. Answers: **How should this lesson be delivered?**
-Covers: viewport zoom/pan, pause, reveal sequencing, highlight animations, audio/narration syncing.
+### 1. Knowledge Layer (What to teach - Static Map)
+*Schema definitions (`curriculum_graph`)*. Defines concepts, skills, misconceptions, dependency weights, and prerequisites statically before any student data is recorded.
 
-### 2. Curriculum Graph (Curriculum Map - Static)
-*Schema definitions (`curriculum_graph`)*. Answers: **What should be learned? What depends on what?**
-Covers:
-* **Taxonomy**: Concepts, Skills, and Misconceptions.
-* **Dependencies**: Prerequisite and support relationships between concepts.
-* **Importance Weighting**: High/Medium/Low indicators for exams and prerequisites to prioritize revision paths.
-* *Note: This layer exists statically, even before any student data is recorded.*
+### 2. Assessment Layer (Evidence & Verification)
+*Schema definitions (`multiple_choice`, `short_answer`)*. Specifies how to check understanding cleanly (symbolic/numeric solvers, misconceptions mapping, multi-step checking) and maps assessment events to curriculum objectives.
 
-### 3. Learner State (Cognition - Dynamic)
-*Schema definitions (`learner_state`)*. Answers: **What does this specific learner know? Where are the gaps?**
-Covers:
-* **Mastery tracking**: Learner confidence ratings mapped to specific concepts, skills, and misconceptions.
-* **Recency & Review history**: Last seen timestamps and retention metrics.
+### 3. Learner State Layer (What the learner knows - Dynamic GPS)
+*Schema definitions (`learner_state`)*. Tracks dynamic mastery, confidence ratings, misconception states, and spaced repetition history for an individual student.
+
+### 4. Presentation Layer (How to teach - Delivery)
+*Companion specification (`presentation.yaml`)*. Controls reveal sequences, highlights, panning/viewport zoom, audio narration, and interactive player playback without altering the core pedagogical structure.
 
 ---
 
 ### The Mastery Graph View (Static Map + Dynamic GPS)
-The real magic of adaptive learning comes from combining the static **Curriculum Graph** and the dynamic **Learner State**:
+The real magic of adaptive learning comes from combining the static **Knowledge Layer (Curriculum Graph)** and the dynamic **Learner State**:
 
 $$\text{Curriculum Graph} + \text{Learner State} = \text{Mastery Graph View}$$
 
@@ -206,7 +224,11 @@ Overlaying a student's current mastery levels onto the prerequisite map allows a
 The content types. Educational primitives, not drawing primitives.
 
 ```yaml
+id: temperature_comparison
 type: number_line
+placement:
+  lesson_phase: explore
+  memory_role: example
 range: [-10, 10]
 highlight:
   - value: -3
@@ -521,11 +543,22 @@ The vocabulary covers all five pillars in one block: lesson skeleton, progressio
 ```
 ## EduVis Lesson Structure
 
-Every lesson YAML has four top-level keys: curriculum, lesson, progression, content.
+Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
+
+schema_version: "0.5"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
   topic: string           # topic code e.g. "N1.6"
+  concept: string         # optional target concept name
+  requires:               # optional list of prerequisite concept names
+    - string
+  supports:               # optional list of supporting concept names
+    - string
+  learning_outcomes:      # optional list of target learning outcomes
+    - string
+  assessment_targets:     # optional list of assessment targets / objectives
+    - string
 
 lesson:
   title: string           # human-readable lesson title
@@ -570,7 +603,7 @@ content:
       remediation_for: [check_element_id]
     <element-specific fields...>
 
-## Element types (math, v0.4.0)
+## Element types (math, v0.5.0)
   number_line      range, highlight, direction_labels, caption
   fraction_model   shape: circle|bar|grid, total_parts, shaded_parts
   bar_model        bars: [{label, value, color}], difference
@@ -692,9 +725,10 @@ Science and Humanities element types and renderers are planned for a future rele
 | `summary_list` | `items: [strings]` — use on closing elements |
 | `multiple_choice` | `question, options: {A, B, C, D}` |
 | `short_answer` | `question, answer, evaluation_mode` |
-| `remediation_block` | `review: {source_question}, concept_card, step_by_step` |
+| `remediation_block` | `review: {source_question}, remember: {type, ...}, solve: {type, ...}` |
 | `hint_list` | `items: [strings], final: string` |
 | `number_line` | `range, highlight, direction_labels, caption` |
+| `mixed_card` | `ribbon_type: solve\|remember\|review, ribbon_label, items: [{type, ...}]` — mixed layout |
 
 ### Mathematics
 
@@ -706,6 +740,8 @@ Science and Humanities element types and renderers are planned for a future rele
 | `geometry_shape` | `vertices, labels, side_labels, angles` |
 | `factor_array` | `number: N` — dot grid for factors and primes |
 | `math_grid` | `rows: [[cells]], headers` — column arithmetic |
+| `fraction_equation` | `terms: [strings\|objects]` — vertical fractions equation layout |
+| `solid_shape` | `shape: cube\|prism\|pyramid\|cone\|cylinder, dimensions, color, label` — isometric 3D geometry |
 
 ---
 
@@ -764,7 +800,7 @@ slides:
 
 ## Roadmap
 
-### v0.1 — Core Schema and SVG Renderer
+### - [x] v0.1 — Core Schema and SVG Renderer
 - Formal JSON Schema for all element types
 - Placement model: all three layers, including `difficulty`
 - Actions vocabulary: initial set including step-by-step transformation actions
@@ -772,7 +808,7 @@ slides:
 - Built-in SVG reference renderer
 - Secondary Mathematics examples
 
-### v0.2 — Curriculum Knowledge Model
+### - [x] v0.2 — Curriculum Knowledge Model
 - Relationships between elements within a lesson
 - Curriculum metadata block (`code`, `topic`)
 - Lesson-level pedagogical validation (chronological sequence, progression coverage, concepts coherence, anchor density limits)
@@ -781,13 +817,13 @@ slides:
 - Assessment objectives
 - Curriculum graph validation
 
-### v0.3 — EduVis-Presentation
+### - [x] v0.3 — EduVis-Presentation
 - Interactive presentation mode (v0.3.0 player)
 - Companion `presentation` schema layered cleanly over Core
 - Reveal sequencing, highlight/zoom annotations, and viewport commands
 - Narration timing hooks
 
-### v0.4 — Assessment and Validation Engine (Current)
+### - [x] v0.4 — Assessment and Validation Engine
 - Canonical action validation model
 - Step-by-step solution representation
 - Rule-based answer checking (client-side, no LLM inference)
@@ -796,9 +832,9 @@ slides:
 - Assessment event schema
 - Canonical assessment objective vocabulary (`procedural_fluency`, `conceptual_understanding`, `application`, `reasoning`)
 - Mastery model and Assessment objective mapping
-- **Assessment Evidence Bridge**: Framework for aggregating assessment events (e.g. `objective: procedural_fluency`, `score: 0.8`) to update the `learner_state` (e.g. `skill_mastery`, `concept_mastery`, active misconceptions)
+- **Assessment Evidence Bridge**: Framework for aggregating assessment events (e.g. `objective: procedural_fluency`, `score: 0.8`) to update the `learner_state` (e.g. skill_mastery, concept_mastery, active misconceptions)
 
-### v0.5 — Curriculum Graph and Knowledge Engine (Upcoming)
+### - [/] v0.5 — Curriculum Graph and Knowledge Engine (Current Release)
 - **Static Curriculum Graph Representation**:
   - Explicit taxonomy mapping: Concepts, Skills, and Misconceptions
   - Concept Dependency Maps: Prerequisite (`from` / `to`) and support relationships
@@ -810,7 +846,7 @@ slides:
   - Curriculum completeness validation
 - **Curriculum Traversal APIs** to query relationships programmatically
 
-### v0.6 — Learner State and Mastery Engine (Upcoming)
+### - [ ] v0.6 — Learner State and Mastery Engine (Upcoming)
 - **Dynamic Learner State representation**:
   - Separate `learner_state` companion schema containing student-specific confidence, history, and active misconceptions
   - Granular mastery tracking for all three levels: Concepts, Skills, and Misconceptions (e.g. tracking if a student understands a concept, performs a skill, or holds a misconception)
@@ -827,11 +863,12 @@ slides:
   - Revision pathway generation (e.g. `mode: lesson | revision | exam_prep | crash_course`) using knowledge importance weights and learner mastery levels
   - Formalized memory role capabilities: `encode`, `retrieve`, `reinforce`, `remediate`, and `compress` (for exam preparation)
 
-### v0.7 — AI Generation and Tutoring
+### - [ ] v0.7 — AI Generation and Tutoring (Upcoming)
 - **Graph-Driven Lesson Generation**: Automatically generate EduVis lesson specs directly from the Curriculum Graph (Curriculum Graph $\to$ Lesson Generator $\to$ EduVis Lesson) rather than simple text prompting
 - Tutoring workflows and visual asset generation
+- **Migration CLI & Upgrades**: Introduction of migration tooling framework and automated schema upgrade paths (`eduvis migrate`) to upgrade schemas between versions.
 
-### v1.0 — Autonomous Curriculum Factory
+### - [ ] v1.0 — Autonomous Curriculum Factory (Upcoming)
 - Agent-based curriculum generation
 - Curriculum review workflows
 - Standards mapping and multi-framework support
@@ -841,12 +878,20 @@ slides:
 
 ### Governance and Quality (Parallel Track)
 
-- **RFC Process**: Managed schema evolution through structured requests for comments
-- **Schema Stability Policy**: Explicit lifecycle labeling per block (`experimental`, `stable`, `deprecated`, `removed`)
-- **Compatibility Guarantees**: Semantic versioning guidelines (v0.x allows breaking changes, v1.x expects backward compatibility)
-- **Validation Suites**: Automated schema test suites
-- **Contributor Guidelines**: Clear instructions for extending schema features and renderers
-- **Reference Implementations**: Canonical lesson and topic specifications
+To keep the EduVis ecosystem stable for downstream renderers and player platforms, we adhere to the following governance frameworks:
+
+* **Schema Versioning**: Starting in `v0.5.0`, documents should include a top-level `schema_version` property (e.g., `schema_version: "0.5"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
+* **Schema Stability Lifecycle**: All schema fields are categorized under one of four lifecycle tiers:
+  * **Experimental**: Active beta iteration. Fields may change or be removed at any minor version.
+  * **Stable**: Production-ready. Backwards compatibility is guaranteed.
+  * **Deprecated**: Scheduled for removal. Emits warnings directing users to newer fields.
+  * **Removed**: Excised from the parser.
+* **RFC Process**: Any change to **Stable** fields, new top-level schema blocks, or relationship modifications must go through a Request for Comments (RFC) process. Use the template in `docs/rfcs/template.md` to submit proposals.
+* **Deprecation and Aliasing Strategy**: When updating the schema, the parser will support legacy keys (with warnings) for at least one minor version before they are retired.
+* **Migration CLI**: Prior to `v1.0.0`, a migration tool (`eduvis migrate`) will be introduced to automatically rewrite legacy document schemas using comment-preserving parsers.
+* **Validation Suites**: Automated schema test suites to prevent regression.
+* **Contributor Guidelines**: Clear instructions for extending schema features and renderers.
+* **Reference Implementations**: Canonical lesson and topic specifications.
 
 ---
 

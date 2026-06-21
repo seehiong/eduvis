@@ -260,6 +260,11 @@ def presentation_schema() -> dict:
         "type": "object",
         "required": ["slides"],
         "properties": {
+            "schema_version": {
+                "type": "string",
+                "enum": ["0.5"],
+                "description": "The version of the EduVis schema used by this document.",
+            },
             "slides": {"type": "array", "items": slide_entry},
         },
         "additionalProperties": False,
@@ -290,6 +295,11 @@ def lesson_schema() -> dict:
         "type": "object",
         "required": ["lesson", "progression", "content"],
         "properties": {
+            "schema_version": {
+                "type": "string",
+                "enum": ["0.5"],
+                "description": "The version of the EduVis schema used by this document.",
+            },
             "curriculum": {
                 "type": "object",
                 "required": ["code", "topic"],
@@ -407,6 +417,72 @@ def assessment_event_schema() -> dict:
     }
 
 
+def curriculum_schema() -> dict:
+    concept_item = {
+        "type": "object",
+        "required": ["code", "name"],
+        "properties": {
+            "code": {"type": "string"},
+            "name": {"type": "string"},
+            "description": {"type": "string"},
+            "exam_weight": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        },
+        "additionalProperties": False,
+    }
+    skill_item = {
+        "type": "object",
+        "required": ["code", "name", "concept"],
+        "properties": {
+            "code": {"type": "string"},
+            "name": {"type": "string"},
+            "concept": {"type": "string"},
+            "exam_weight": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        },
+        "additionalProperties": False,
+    }
+    misconception_item = {
+        "type": "object",
+        "required": ["code", "name", "concept"],
+        "properties": {
+            "code": {"type": "string"},
+            "name": {"type": "string"},
+            "concept": {"type": "string"},
+            "remediation_weight": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        },
+        "additionalProperties": False,
+    }
+    dependency_item = {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+            "from": {"type": "string"},
+            "to": {"type": "string"},
+            "type": {"type": "string", "enum": ["prerequisite", "support"]},
+        },
+        "additionalProperties": False,
+    }
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/curriculum.schema.json",
+        "title": "EduVis Curriculum Graph",
+        "description": "A standalone master curriculum graph representing subject concepts, skills, misconceptions, and dependencies.",
+        "type": "object",
+        "required": ["concepts"],
+        "properties": {
+            "schema_version": {
+                "type": "string",
+                "enum": ["0.5"],
+                "description": "The version of the EduVis schema used by this document.",
+            },
+            "concepts": {"type": "array", "items": concept_item},
+            "skills": {"type": "array", "items": skill_item},
+            "misconceptions": {"type": "array", "items": misconception_item},
+            "dependencies": {"type": "array", "items": dependency_item},
+        },
+        "additionalProperties": False,
+    }
+
+
 def get_all_schemas() -> dict[str, dict]:
     """Return all EduVis JSON Schemas keyed by pillar name."""
     return {
@@ -417,4 +493,5 @@ def get_all_schemas() -> dict[str, dict]:
         "lesson": lesson_schema(),
         "presentation": presentation_schema(),
         "assessment_event": assessment_event_schema(),
+        "curriculum": curriculum_schema(),
     }

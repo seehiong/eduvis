@@ -22,7 +22,7 @@ _PACKAGE_ROOT = Path(__file__).resolve().parent.parent   # project root
 if str(_PACKAGE_ROOT) not in sys.path:
     sys.path.insert(0, str(_PACKAGE_ROOT))
 
-from eduvis.core import validate_lesson, format_prompt_docs, get_all_schemas  # noqa: E402
+from eduvis.core import validate_lesson, format_prompt_docs, get_all_schemas, validate_curriculum  # noqa: E402
 
 # ── EduVis SVG renderer ──────────────────────────────────────────────────────
 
@@ -162,6 +162,37 @@ def _load_renderer():
         ) from exc
 
 
+def _get_sidecar_path(lesson_path: Path) -> Path:
+    """Determine the sidecar presentation file path based on suffix pattern matching."""
+    stem = lesson_path.stem
+    has_suffix = False
+    for suffix in ["-lesson", "-content"]:
+        if stem.endswith(suffix):
+            stem = stem[:-len(suffix)]
+            has_suffix = True
+            break
+
+    # 1. Check if <prefix>-presentation.yaml exists
+    prefix_pres = lesson_path.parent / f"{stem}-presentation.yaml"
+    if prefix_pres.is_file():
+        return prefix_pres
+
+    # 2. Check if <lesson_stem>-presentation.yaml exists
+    stem_pres = lesson_path.parent / f"{lesson_path.stem}-presentation.yaml"
+    if stem_pres.is_file():
+        return stem_pres
+
+    # 3. Check if presentation.yaml exists
+    default_pres = lesson_path.parent / "presentation.yaml"
+    if default_pres.is_file():
+        return default_pres
+
+    # Fallback for creation
+    if has_suffix:
+        return prefix_pres
+    return default_pres
+
+
 # ── Sidecar presentation.yaml helpers ───────────────────────────────────────
 
 
@@ -267,7 +298,7 @@ def schema(output: str) -> None:
 @cli.command()
 @click.argument("lesson_file", type=click.Path(exists=True, dir_okay=False))
 def validate(lesson_file: str) -> None:
-    """Validate an EduVis lesson YAML file against all five pillars."""
+    """Validate an EduVis lesson or curriculum YAML file."""
     with open(lesson_file, encoding="utf-8") as f:
         try:
             doc = yaml.safe_load(f)
@@ -275,26 +306,33 @@ def validate(lesson_file: str) -> None:
             raise click.ClickException(f"YAML parse error: {exc}") from exc
 
     if not isinstance(doc, dict):
-        raise click.ClickException("Lesson file must be a YAML mapping at the top level.")
+        raise click.ClickException("File must be a YAML mapping at the top level.")
 
-    # Load optional sidecar presentation.yaml
-    lesson_path = Path(lesson_file)
-    sidecar_path = lesson_path.parent / "presentation.yaml"
-    if sidecar_path.is_file():
-        try:
-            with open(sidecar_path, encoding="utf-8") as f_sidecar:
-                presentation_doc = yaml.safe_load(f_sidecar)
-                if isinstance(presentation_doc, dict):
-                    doc["presentation"] = presentation_doc
-        except yaml.YAMLError as exc:
-            raise click.ClickException(f"Sidecar presentation.yaml parse error: {exc}") from exc
+    if "concepts" in doc and "content" not in doc:
+        # Standalone curriculum validation
+        warnings = validate_curriculum(doc)
+        is_curriculum = True
+    else:
+        # Lesson validation
+        is_curriculum = False
+        lesson_path = Path(lesson_file)
+        sidecar_path = _get_sidecar_path(lesson_path)
+        if sidecar_path.is_file():
+            try:
+                with open(sidecar_path, encoding="utf-8") as f_sidecar:
+                    presentation_doc = yaml.safe_load(f_sidecar)
+                    if isinstance(presentation_doc, dict):
+                        doc["presentation"] = presentation_doc
+            except yaml.YAMLError as exc:
+                raise click.ClickException(f"Sidecar presentation.yaml parse error: {exc}") from exc
 
-    warnings = validate_lesson(doc)
+        warnings = validate_lesson(doc)
 
     if not warnings:
         click.secho(f"OK  {lesson_file} -- valid, no warnings", fg="green")
     else:
-        click.secho(f"WARN  {lesson_file} -- {len(warnings)} warning(s):", fg="yellow")
+        file_type = "curriculum" if is_curriculum else "lesson"
+        click.secho(f"WARN  {lesson_file} ({file_type}) -- {len(warnings)} warning(s):", fg="yellow")
         for w in warnings:
             click.echo(f"   {w}")
         sys.exit(1)
@@ -344,7 +382,7 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
 
     # Load optional sidecar presentation.yaml
     lesson_path = Path(lesson_file)
-    sidecar_path = lesson_path.parent / "presentation.yaml"
+    sidecar_path = _get_sidecar_path(lesson_path)
     if sidecar_path.is_file():
         try:
             with open(sidecar_path, encoding="utf-8") as f_sidecar:
