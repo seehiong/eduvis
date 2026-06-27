@@ -1,11 +1,11 @@
 """Smoke tests for the EduVis lesson validator."""
 
-from eduvis.core import validate_lesson
+from eduvis.core import SCHEMA_VERSION, validate_lesson
 
 
 def _lesson(**overrides):
     doc = {
-      "schema_version": "0.5",
+      "schema_version": SCHEMA_VERSION,
       "curriculum": {"code": "test", "topic": "T1"},
       "lesson": {"title": "Test Lesson"},
       "progression": {
@@ -558,18 +558,293 @@ def test_schema_version_validation():
 
     # 2. Incompatible version should raise an ERROR
     doc = _lesson()
-    doc["schema_version"] = "0.4"
+    incompatible_version = "99.9"
+    doc["schema_version"] = incompatible_version
     warnings = validate_lesson(doc)
-    assert any("ERROR: [lesson:version] unsupported schema version \"0.4\"" in w for w in warnings)
+    assert any(f"ERROR: [lesson:version] unsupported schema version \"{incompatible_version}\"" in w for w in warnings)
 
     # 3. Invalid version type should raise an ERROR
     doc = _lesson()
-    doc["schema_version"] = 0.5
+    doc["schema_version"] = 99.9
     warnings = validate_lesson(doc)
     assert any("ERROR: [lesson:version] 'schema_version' must be a string" in w for w in warnings)
 
-    # 4. Valid version "0.5" should pass cleanly
+    # 4. Valid version should pass cleanly
     doc = _lesson()
-    doc["schema_version"] = "0.5"
+    doc["schema_version"] = SCHEMA_VERSION
     warnings = validate_lesson(doc)
     assert not any("version" in w for w in warnings)
+
+
+def test_structured_response_element():
+    # Valid structured_response
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "q5",
+            "type": "structured_response",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Structured Question Context",
+            "parts": [
+                {
+                    "id": "q5a",
+                    "question": "Part a?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                },
+                {
+                    "id": "q5b",
+                    "question": "Part b?",
+                    "answer_type": "numeric",
+                    "answer": "4",
+                    "marks": 3,
+                    "depends_on": "q5a",
+                }
+            ],
+        }
+    ]
+    assert not validate_lesson(doc)
+
+    # Less than 2 parts error
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "q5",
+            "type": "structured_response",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Structured Question Context",
+            "parts": [
+                {
+                    "id": "q5a",
+                    "question": "Part a?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                }
+            ],
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("must have at least 2 parts" in w for w in warnings)
+
+    # Duplicate part IDs
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "q5",
+            "type": "structured_response",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Structured Question Context",
+            "parts": [
+                {
+                    "id": "q5a",
+                    "question": "Part a?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                },
+                {
+                    "id": "q5a",
+                    "question": "Part b?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                }
+            ],
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("duplicate part id 'q5a'" in w for w in warnings)
+
+    # Self dependency
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "q5",
+            "type": "structured_response",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Structured Question Context",
+            "parts": [
+                {
+                    "id": "q5a",
+                    "question": "Part a?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                    "depends_on": "q5a",
+                },
+                {
+                    "id": "q5b",
+                    "question": "Part b?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                }
+            ],
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("cannot depend on itself" in w for w in warnings)
+
+    # Forward dependency
+    doc = _lesson()
+    doc["content"] = [
+        {
+            "id": "q5",
+            "type": "structured_response",
+            "placement": {"lesson_phase": "explain", "memory_role": "practice"},
+            "question": "Structured Question Context",
+            "parts": [
+                {
+                    "id": "q5a",
+                    "question": "Part a?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                    "depends_on": "q5b",
+                },
+                {
+                    "id": "q5b",
+                    "question": "Part b?",
+                    "answer_type": "algebraic",
+                    "answer": "x = 2",
+                    "marks": 2,
+                }
+            ],
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("appears after or at the same position" in w for w in warnings)
+
+
+def test_pedagogical_intent_validation():
+    # Valid pedagogical intent
+    doc = _lesson()
+    doc["content"][0]["placement"]["pedagogical_intent"] = {
+        "intent": "reduce_anxiety",
+        "scaffolding_level": "high",
+    }
+    assert not validate_lesson(doc)
+
+    # Invalid intent
+    doc = _lesson()
+    doc["content"][0]["placement"]["pedagogical_intent"] = {
+        "intent": "invalid_intent",
+    }
+    warnings = validate_lesson(doc)
+    assert any("pedagogical_intent.intent 'invalid_intent' is not valid" in w for w in warnings)
+
+    # Unexpected key
+    doc = _lesson()
+    doc["content"][0]["placement"]["pedagogical_intent"] = {
+        "tone": "encouraging",
+    }
+    warnings = validate_lesson(doc)
+    assert any("placement.pedagogical_intent unexpected key 'tone'" in w for w in warnings)
+
+
+def test_phase_specific_scaffolding_constraints():
+    # scaffolding high on recall (contradictory) -> invalid
+    doc = _lesson()
+    doc["progression"]["phases"] = [{"phase": "recall"}]
+    doc["content"][0]["placement"]["lesson_phase"] = "recall"
+    doc["content"][0]["placement"]["pedagogical_intent"] = {
+        "scaffolding_level": "high",
+    }
+    warnings = validate_lesson(doc)
+    assert any("lesson_phase 'recall' cannot have scaffolding_level 'high'" in w for w in warnings)
+
+    # scaffolding low on recall -> valid
+    doc = _lesson()
+    doc["progression"]["phases"] = [{"phase": "recall"}]
+    doc["content"][0]["placement"]["lesson_phase"] = "recall"
+    doc["content"][0]["placement"]["pedagogical_intent"] = {
+        "scaffolding_level": "low",
+    }
+    assert not validate_lesson(doc)
+
+
+def test_assessment_objective_constraint():
+    # assessment_objective on non-assessment element -> invalid
+    doc = _lesson()
+    doc["content"][0]["placement"]["assessment_objective"] = "conceptual_understanding"
+    warnings = validate_lesson(doc)
+    assert any("placement.assessment_objective' is only allowed on assessment elements" in w for w in warnings)
+
+    # assessment_objective on assessment element -> valid
+    doc = _lesson()
+    doc["content"][0]["type"] = "multiple_choice"
+    doc["content"][0]["question"] = "Q?"
+    doc["content"][0]["options"] = {"A": "1", "B": "2"}
+    doc["content"][0]["answer"] = "A"
+    doc["content"][0]["placement"]["assessment_objective"] = "conceptual_understanding"
+    assert not validate_lesson(doc)
+
+
+def test_transitive_concept_prerequisites():
+    # concept_a is core, requires concept_b, supports concept_c
+    # progression: concept_b -> concept_a -> concept_c
+    doc = _lesson()
+    doc["curriculum"] = {
+        "code": "test",
+        "topic": "T1",
+        "concept": "concept_a",
+        "requires": ["concept_b"],
+        "supports": ["concept_c"]
+    }
+    doc["lesson"]["concepts"] = ["concept_a", "concept_b", "concept_c"]
+    # If concept_a (core) is introduced before concept_b (prerequisite) -> invalid
+    doc["content"] = [
+        {
+            "id": "el1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["a"],
+            "concepts": ["concept_a"],
+        },
+        {
+            "id": "el2",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["b"],
+            "concepts": ["concept_b"],
+            "relationships": {
+                "reinforces": ["el1"],
+            }
+        }
+    ]
+    warnings = validate_lesson(doc)
+    assert any("[curriculum:prerequisite] concept 'concept_a' (first seen at element 'el1') cannot appear before or at the same element as its prerequisite concept 'concept_b'" in w for w in warnings)
+
+    # If ordered concept_b -> concept_a -> concept_c -> valid
+    doc["content"] = [
+        {
+            "id": "el1",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["b"],
+            "concepts": ["concept_b"],
+        },
+        {
+            "id": "el2",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["a"],
+            "concepts": ["concept_a"],
+            "relationships": {
+                "reinforces": ["el1"],
+            }
+        },
+        {
+            "id": "el3",
+            "type": "text_list",
+            "placement": {"lesson_phase": "explain", "memory_role": "example"},
+            "items": ["c"],
+            "concepts": ["concept_c"],
+            "relationships": {
+                "reinforces": ["el2"],
+            }
+        }
+    ]
+    assert not validate_lesson(doc)

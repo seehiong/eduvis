@@ -2,13 +2,16 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#1565C0" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
   <text x="80" y="24" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Adaptive Remediation &amp; Telemetry Event Branching -</text>
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: check true false</text>
+  </g>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
   <line x1="80" y1="65" x2="720" y2="65" stroke="#fde047" stroke-width="1.5" />
   <rect x="80" y="65" width="52" height="16" rx="3" fill="#fef3c7" stroke="#fde047" stroke-width="1.2" />
   <text x="106" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#78350f" text-anchor="middle">ANCHOR</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="multiple_choice">
   <rect x="80" y="90" width="640" height="154" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
   <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 236 A 7 7 0 0 0 88 243 L 105 243 Z" fill="#ffedd5" />
   <line x1="105" y1="91" x2="105" y2="243" stroke="#fdba74" stroke-width="1" />
@@ -26,4 +29,5 @@
   <circle cx="140" cy="225" r="9" fill="#10b981" />
   <path d="M 136 225 L 139 228 L 144 222" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
   <text x="160" y="228" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#15803d" text-anchor="start">Correct, 1 is not a prime number.</text>
+  </g>
 </svg>

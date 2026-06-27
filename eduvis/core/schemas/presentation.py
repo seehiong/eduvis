@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from ..constants import SCHEMA_VERSION
 
 VALID_ADVANCE_MODES = frozenset({"manual", "auto"})
 VALID_ACTIONS = frozenset({"pause", "resume"})
@@ -28,9 +29,9 @@ def validate(presentation: dict, known_ids: set[str]) -> list[str]:
             warnings.append(
                 f"ERROR: [presentation:version] 'schema_version' must be a string, got {type(version).__name__}"
             )
-        elif version != "0.5":
+        elif version != SCHEMA_VERSION:
             warnings.append(
-                f"ERROR: [presentation:version] unsupported schema version \"{version}\". Expected \"0.5\"."
+                f"ERROR: [presentation:version] unsupported schema version \"{version}\". Expected \"{SCHEMA_VERSION}\"."
             )
 
     # Validate top-level keys

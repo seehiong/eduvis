@@ -3,7 +3,7 @@
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
 ```yaml
-schema_version: "0.5"
+schema_version: "0.6"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -47,6 +47,9 @@ content:
       purpose: <purpose>         # optional
       visual_weight: primary | supporting  # optional
       layout_zone: center | left | right | full | bottom  # optional
+      pedagogical_intent:       # optional, guides generation and support
+        intent: confidence_building | reduce_anxiety | curiosity | productive_struggle
+        scaffolding_level: high | medium | low
     actions:               # optional
       conceptual:
         - <action>: <target>
@@ -133,6 +136,11 @@ bottom | center | full | left | right
 
 ### visual_weight (optional)
 primary | supporting
+
+### pedagogical_intent (optional)
+Pedagogical intent metadata to guide content generation and support. Contains fields:
+  intent               confidence_building | reduce_anxiety | curiosity | productive_struggle
+  scaffolding_level    high | medium | low
 
 ## Actions
 
@@ -228,6 +236,18 @@ required/optional fields are listed below.
                   correct_answer (optional): string  # Optional correct answer key for review screens
                   misconceptions (optional): object  # Mapping of incorrect option keys to misconception codes
                   solution_steps (optional): array  # Step-by-step worked solution steps shown inline on the same slide (contrast with dedicated remediation_block slides)
+                  assesses (optional): object  # Mapping of concept IDs to weight values
+                  cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
+                  challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
+                  evidence_targets (optional): array  # Skills or concepts for which success provides evidence
+                  reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                  evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
+                  rubric (optional, object):  # Structured step criteria
+                    total_marks (optional): integer
+                    criteria: array
+                  marking_policy (optional, object):  # Marking policy rules
+                    error_carry_forward (optional): boolean
+                    partial_credit (optional): boolean
   short_answer    question: string, answer: string, evaluation_mode: string — open-ended text input entry
                   question (required): string  # The open-ended question stem
                   answer (required): string  # The correct answer value (e.g. '50 deg' or 'x + 2')
@@ -237,6 +257,18 @@ required/optional fields are listed below.
                   student_working (optional): array  # Step-by-step working input from student
                   student_answer (optional): string
                   correct_answer (optional): string
+                  assesses (optional): object  # Mapping of concept IDs to weight values
+                  cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
+                  challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
+                  evidence_targets (optional): array  # Skills or concepts for which success provides evidence
+                  reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                  evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
+                  rubric (optional, object):  # Structured step criteria
+                    total_marks (optional): integer
+                    criteria: array
+                  marking_policy (optional, object):  # Marking policy rules
+                    error_carry_forward (optional): boolean
+                    partial_credit (optional): boolean
   hint_list       items: [strings], final: string  — numbered hints
                   items (required): array  # Hint steps (auto-numbered unless item starts with a digit or 'Step')
                   final (optional): string  # Confirmation method shown in a box at the bottom
@@ -268,6 +300,40 @@ required/optional fields are listed below.
                     correct_answer (optional): string
                   remember (required): object  # The conceptual anchor element definition (e.g. callout_box, fact_boxes, number_line)
                   solve (required): object  # The step-by-step solution element definition (e.g. hint_list, text_list, math_grid)
+  structured_response question: string, parts: [{id, question, answer_type, answer, marks, depends_on, skills}] — multi-part question layout
+                  question (required): string  # The overall question stem or context info
+                  skills (optional): array  # General skills tested across the entire problem
+                  parts (required, array):  # The sub-question parts
+                    - id: string  # Unique part identifier within the question (e.g. q5a)
+                    - question: string  # The sub-question stem
+                    - answer_type: algebraic|exact|numeric|reasoning  # Evaluation type check standard
+                    - answer: string  # Correct answer string value
+                    - marks: integer  # Marks allocated for this part
+                    - depends_on (optional): string  # ID of a previous part that this part relies on
+                    - skills (optional): array  # Specific skills tested by this part
+                    - assesses (optional): object  # Mapping of concept IDs to weight values
+                    - cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
+                    - challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
+                    - evidence_targets (optional): array  # Skills or concepts for which success provides evidence
+                    - reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                    - evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
+                    - rubric (optional): object  # Structured step criteria
+                    - marking_policy (optional): object  # Marking policy rules
+                  marking (optional, object):  # Marking options like error carry forward and detailed rubrics
+                    error_carry_forward (optional): boolean
+                    rubrics (optional): object
+                  assesses (optional): object  # Mapping of concept IDs to weight values
+                  cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
+                  challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
+                  evidence_targets (optional): array  # Skills or concepts for which success provides evidence
+                  reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                  evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
+                  rubric (optional, object):  # Structured step criteria
+                    total_marks (optional): integer
+                    criteria: array
+                  marking_policy (optional, object):  # Marking policy rules
+                    error_carry_forward (optional): boolean
+                    partial_credit (optional): boolean
   fraction_model  shape: circle|bar|grid, total_parts, shaded_parts, color, label
                   shape (optional): circle|bar|grid, default: circle  # Visual representation style
                   total_parts (required): integer  # Total number of equal parts

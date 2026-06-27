@@ -281,9 +281,10 @@ def test_coverage_analysis_with_real_lesson():
 
 
 def test_validate_curriculum_schema():
+    from eduvis.core import SCHEMA_VERSION
     # 1. Valid curriculum dict
     valid_data = {
-        "schema_version": "0.5",
+        "schema_version": SCHEMA_VERSION,
         "concepts": [
             {"code": "neg_nums", "name": "Negative Numbers", "description": "Intro", "exam_weight": 0.9}
         ],

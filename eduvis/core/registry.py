@@ -267,6 +267,53 @@ class _ElementRegistry:
                     msg += f" — {prop.constraint}"
                 warnings.append(msg)
                 logger.warning(msg)
+            elif prop.enum and item_val not in prop.enum:
+                msg = (
+                    f"[{element_name}] {field_spec.name}[{i}].{prop.name}: "
+                    f"expected one of {prop.enum!r}, got {item_val!r}"
+                )
+                warnings.append(msg)
+                logger.warning(msg)
+        return warnings
+
+    def _validate_single_field(self, element_name: str, field_spec: FieldSpec, value: Any) -> list[str]:
+        warnings: list[str] = []
+        if value is None:
+            if field_spec.required:
+                msg = f"[{element_name}] missing required field '{field_spec.name}'"
+                warnings.append(msg)
+                logger.warning(msg)
+            return warnings
+
+        if not _check_type(field_spec, value):
+            msg = (
+                f"[{element_name}] field '{field_spec.name}': "
+                f"expected {field_spec.type}, got {type(value).__name__} {value!r}"
+            )
+            if field_spec.constraint:
+                msg += f" — {field_spec.constraint}"
+            warnings.append(msg)
+            logger.warning(msg)
+        elif field_spec.enum and value not in field_spec.enum:
+            msg = (
+                f"[{element_name}] field '{field_spec.name}': "
+                f"expected one of {field_spec.enum!r}, got {value!r}"
+            )
+            warnings.append(msg)
+            logger.warning(msg)
+
+        # Array-of-object item validation
+        if (
+            field_spec.type == "array"
+            and field_spec.items
+            and field_spec.items.properties
+            and isinstance(value, list)
+        ):
+            for i, item in enumerate(value):
+                if isinstance(item, dict):
+                    warnings.extend(
+                        self._validate_array_item(element_name, field_spec, i, item)
+                    )
         return warnings
 
     def validate_fields(self, element_name: str, content_data: dict) -> list[str]:
@@ -285,36 +332,7 @@ class _ElementRegistry:
 
         for field_spec in spec.fields:
             value = content_data.get(field_spec.name)
-
-            if value is None:
-                if field_spec.required:
-                    msg = f"[{element_name}] missing required field '{field_spec.name}'"
-                    warnings.append(msg)
-                    logger.warning(msg)
-                continue
-
-            if not _check_type(field_spec, value):
-                msg = (
-                    f"[{element_name}] field '{field_spec.name}': "
-                    f"expected {field_spec.type}, got {type(value).__name__} {value!r}"
-                )
-                if field_spec.constraint:
-                    msg += f" — {field_spec.constraint}"
-                warnings.append(msg)
-                logger.warning(msg)
-
-            # Array-of-object item validation
-            if (
-                field_spec.type == "array"
-                and field_spec.items
-                and field_spec.items.properties
-                and isinstance(value, list)
-            ):
-                for i, item in enumerate(value):
-                    if isinstance(item, dict):
-                        warnings.extend(
-                            self._validate_array_item(element_name, field_spec, i, item)
-                        )
+            warnings.extend(self._validate_single_field(element_name, field_spec, value))
 
         return warnings
 

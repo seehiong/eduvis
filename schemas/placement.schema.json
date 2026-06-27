@@ -83,6 +83,32 @@
         "reasoning"
       ],
       "description": "The pedagogical skill target (only valid on assessment elements)."
+    },
+    "pedagogical_intent": {
+      "type": "object",
+      "properties": {
+        "intent": {
+          "type": "string",
+          "enum": [
+            "confidence_building",
+            "curiosity",
+            "productive_struggle",
+            "reduce_anxiety"
+          ],
+          "description": "The target pedagogical intent."
+        },
+        "scaffolding_level": {
+          "type": "string",
+          "enum": [
+            "high",
+            "low",
+            "medium"
+          ],
+          "description": "The level of instructional support."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Pedagogical intent metadata to guide content generation and support."
     }
   },
   "additionalProperties": false

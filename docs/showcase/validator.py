@@ -11,6 +11,7 @@ import logging
 from typing import Any
 
 from .registry import ElementRegistry
+from .constants import SCHEMA_VERSION
 from .schemas import actions as actions_schema
 from .schemas import placement as placement_schema
 from .schemas import progression as progression_schema
@@ -41,15 +42,15 @@ def validate_lesson(lesson_doc: dict) -> list[str]:
     version = lesson_doc.get("schema_version")
     if version is None:
         warnings.append(
-            "WARN: [lesson:version] missing 'schema_version' field. Assuming default \"0.5\"."
+            f"WARN: [lesson:version] missing 'schema_version' field. Assuming default \"{SCHEMA_VERSION}\"."
         )
     elif not isinstance(version, str):
         warnings.append(
             f"ERROR: [lesson:version] 'schema_version' must be a string, got {type(version).__name__}"
         )
-    elif version != "0.5":
+    elif version != SCHEMA_VERSION:
         warnings.append(
-            f"ERROR: [lesson:version] unsupported schema version \"{version}\". Expected \"0.5\"."
+            f"ERROR: [lesson:version] unsupported schema version \"{version}\". Expected \"{SCHEMA_VERSION}\"."
         )
 
     # ── curriculum block ──────────────────────────────────────────────────────

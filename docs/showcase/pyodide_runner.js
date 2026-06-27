@@ -43,16 +43,17 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             await micropip.install("./eduvis-${version}-py3-none-any.whl?cb=${cb}")
         `);
 
-        updateStatusCallback("Syncing v0.5.0 Engine Updates", "Fetching local core files...");
+        updateStatusCallback(`Syncing v${version} Engine Updates`, "Fetching local core files...");
         try {
-            const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode] = await Promise.all([
+            const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode, constantsCode] = await Promise.all([
                 fetch('./engine.py').then(r => r.text()),
                 fetch('./validator.py').then(r => r.text()),
                 fetch('./generic.py').then(r => r.text()),
                 fetch('./renderers_base.py').then(r => r.text()),
                 fetch('./curriculum.py').then(r => r.text()),
                 fetch('./core_init.py').then(r => r.text()),
-                fetch('./main_init.py').then(r => r.text())
+                fetch('./main_init.py').then(r => r.text()),
+                fetch('./constants.py').then(r => r.text())
             ]);
 
             const ensureDir = (path) => {
@@ -70,13 +71,14 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/validator.py', validatorCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/elements/generic.py', genericCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/curriculum.py', curriculumCode);
+            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/constants.py', constantsCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/__init__.py', coreInitCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/__init__.py', mainInitCode);
             
             ensureDir('/lib/python3.12/site-packages/eduvis/renderers/svg/renderers_base.py');
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/renderers/svg/renderers_base.py', renderersBaseCode);
         } catch (syncErr) {
-            console.warn("Could not sync local v0.4.0 code. Using wheel version.", syncErr);
+            console.warn(`Could not sync local v${version} code. Using wheel version.`, syncErr);
         }
 
         updateStatusCallback("Configuring Render Engine", "Importing Python libraries...");

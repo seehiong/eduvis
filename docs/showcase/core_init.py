@@ -12,6 +12,7 @@ from .validator import validate_lesson
 from .prompt import format_prompt_docs
 from .export_schema import get_all_schemas
 from .curriculum import CurriculumGraph, ConceptNode, SkillNode, MisconceptionNode, validate_curriculum
+from .constants import SCHEMA_VERSION
 
 __all__ = [
     "ElementRegistry",
@@ -25,4 +26,5 @@ __all__ = [
     "SkillNode",
     "MisconceptionNode",
     "validate_curriculum",
+    "SCHEMA_VERSION",
 ]

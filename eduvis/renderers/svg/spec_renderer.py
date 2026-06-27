@@ -162,7 +162,7 @@ class SVGSpecRenderer:
         width: int = CANVAS_W,
         height: int = CANVAS_H,
         posting_group: str = "G1",
-        group_elements: bool = False,
+        group_elements: bool = True,
         dynamic_height: bool = True,
     ) -> str:
         """Render svg_spec YAML to SVG string."""
@@ -184,7 +184,7 @@ class SVGSpecRenderer:
         width: int = CANVAS_W,
         height: int = CANVAS_H,
         posting_group: str = "G1",
-        group_elements: bool = False,
+        group_elements: bool = True,
         dynamic_height: bool = True,
     ) -> tuple[str, list[dict]]:
         """Render svg_spec YAML and return (svg_string, ordered_unit_list)."""

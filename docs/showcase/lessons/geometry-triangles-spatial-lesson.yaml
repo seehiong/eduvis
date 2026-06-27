@@ -3,7 +3,7 @@
 # Topic: Angle Sum of a Triangle (finding the unknown angle)
 # Demonstrates: hook -> explore -> explain -> guided -> starter -> routine -> challenge -> recall
 
-schema_version: "0.5"
+schema_version: "0.6"
 
 curriculum:
   code: showcase

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from eduvis.core import validate_lesson
+from eduvis.core import SCHEMA_VERSION, validate_lesson
 
 
 def _lesson_with_presentation(presentation_doc: dict) -> dict:
     return {
-        "schema_version": "0.5",
+        "schema_version": SCHEMA_VERSION,
         "curriculum": {"code": "test", "topic": "T1"},
         "lesson": {"title": "Test Lesson"},
         "progression": {

@@ -2,12 +2,15 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#004D40" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Independent Practice: simplify expression</text>
+  </g>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ROUTINE</text>
   <line x1="80" y1="65" x2="720" y2="65" stroke="#bbf7d0" stroke-width="1.5" />
   <rect x="80" y="65" width="64" height="16" rx="3" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.2" />
   <text x="112" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#14532d" text-anchor="middle">PRACTICE</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="short_answer">
   <rect x="80" y="90" width="640" height="106" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
   <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 188 A 7 7 0 0 0 88 195 L 105 195 Z" fill="#ffedd5" />
   <line x1="105" y1="91" x2="105" y2="195" stroke="#fdba74" stroke-width="1" />
@@ -15,4 +18,5 @@
   <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">Simplify the algebraic expression: 3x + 5 + 2x - 3</text>
   <rect x="116" y="149" width="588" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
   <text x="130" y="176" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#94a3b8" text-anchor="start">Type your answer here...</text>
+  </g>
 </svg>

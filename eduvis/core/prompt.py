@@ -21,6 +21,7 @@ from .schemas.placement import (
 from .schemas.actions import VALID_CONCEPTUAL, VALID_PROCEDURAL
 from .schemas.relationships import VALID_TYPES as VALID_REL_TYPES
 from .schemas.progression import VALID_PHASES as PROG_PHASES
+from .constants import SCHEMA_VERSION
 
 
 def format_prompt_docs(subjects: list[str]) -> str:
@@ -58,7 +59,7 @@ def _lesson_skeleton() -> str:
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
 ```yaml
-schema_version: "0.5"
+schema_version: "VERSION"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -102,6 +103,9 @@ content:
       purpose: <purpose>         # optional
       visual_weight: primary | supporting  # optional
       layout_zone: center | left | right | full | bottom  # optional
+      pedagogical_intent:       # optional, guides generation and support
+        intent: confidence_building | reduce_anxiety | curiosity | productive_struggle
+        scaffolding_level: high | medium | low
     actions:               # optional
       conceptual:
         - <action>: <target>
@@ -111,7 +115,7 @@ content:
       <rel_type>:
         - <other_element_id>
     <element-specific fields...>
-```"""
+```""".replace("VERSION", SCHEMA_VERSION)
 
 
 def _progression_docs() -> str:
@@ -202,7 +206,12 @@ preventing every generated curriculum from inventing its own labels.
 {zones}
 
 ### visual_weight (optional)
-{weights}"""
+{weights}
+
+### pedagogical_intent (optional)
+Pedagogical intent metadata to guide content generation and support. Contains fields:
+  intent               confidence_building | reduce_anxiety | curiosity | productive_struggle
+  scaffolding_level    high | medium | low"""
 
 
 def _actions_docs() -> str:

@@ -162,8 +162,8 @@ This is not a theoretical schema. The placement model, element types, and LLM pr
 > **Project Status: Beta (v0.x)**
 > The schema is actively evolving during the v0.x phase. Backward compatibility guarantees will begin at v1.0. Breaking changes may occur between minor versions, but detailed migration guidelines, deprecation warnings, and automated schema migration tooling will be provided.
 
-* **[Interactive Showcase](docs/showcase/)**: View complete, production-grade lessons rendered to SVG.
-* **[Live Schema Editor](docs/showcase/editor.html)**: Write and preview your own EduVis YAML specifications in real-time. It runs the full Python rendering library entirely client-side in the browser using WebAssembly (Pyodide).
+* **[Interactive Showcase](https://seehiong.github.io/eduvis/showcase/)**: View complete, production-grade lessons rendered to SVG.
+* **[Live Schema Editor](https://seehiong.github.io/eduvis/showcase/editor.html)**: Write and preview your own EduVis YAML specifications in real-time. It runs the full Python rendering library entirely client-side in the browser using WebAssembly (Pyodide).
 
 ---
 
@@ -545,7 +545,7 @@ The vocabulary covers all five pillars in one block: lesson skeleton, progressio
 
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
-schema_version: "0.5"
+schema_version: "0.6"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -603,7 +603,7 @@ content:
       remediation_for: [check_element_id]
     <element-specific fields...>
 
-## Element types (math, v0.5.0)
+## Element types (math, v0.6.0)
   number_line      range, highlight, direction_labels, caption
   fraction_model   shape: circle|bar|grid, total_parts, shaded_parts
   bar_model        bars: [{label, value, color}], difference
@@ -613,6 +613,7 @@ content:
   factor_array     number: N
   math_grid        rows: [[cells]], headers
   text_list        items: [strings]
+  structured_response question, parts: [{id, question, answer_type: algebraic|exact|numeric|reasoning, answer, marks, depends_on, skills}], marking: {error_carry_forward, rubrics}
   fact_boxes       items: [{text, border_color}]
   example_panel    items: [{heading, body}]
   callout_box      title, lines, border_color
@@ -832,9 +833,9 @@ slides:
 - Assessment event schema
 - Canonical assessment objective vocabulary (`procedural_fluency`, `conceptual_understanding`, `application`, `reasoning`)
 - Mastery model and Assessment objective mapping
-- **Assessment Evidence Bridge**: Framework for aggregating assessment events (e.g. `objective: procedural_fluency`, `score: 0.8`) to update the `learner_state` (e.g. skill_mastery, concept_mastery, active misconceptions)
+- **Assessment Evidence Bridge (Static Mapping)**: Static metadata framework mapping assessment events (e.g. `objective: procedural_fluency`) to the concepts, skills, or misconceptions they produce evidence for.
 
-### - [/] v0.5 — Curriculum Graph and Knowledge Engine (Current Release)
+### - [x] v0.5 — Curriculum Graph and Knowledge Engine
 - **Static Curriculum Graph Representation**:
   - Explicit taxonomy mapping: Concepts, Skills, and Misconceptions
   - Concept Dependency Maps: Prerequisite (`from` / `to`) and support relationships
@@ -846,10 +847,40 @@ slides:
   - Curriculum completeness validation
 - **Curriculum Traversal APIs** to query relationships programmatically
 
-### - [ ] v0.6 — Learner State and Mastery Engine (Upcoming)
-- **Dynamic Learner State representation**:
-  - Separate `learner_state` companion schema containing student-specific confidence, history, and active misconceptions
-  - Granular mastery tracking for all three levels: Concepts, Skills, and Misconceptions (e.g. tracking if a student understands a concept, performs a skill, or holds a misconception)
+### - [x] v0.6 — Assessment Reasoning, Pedagogical Intent, and Diagnostic Evidencing
+- **Diagnostic Assessment & Evidence Modeling**:
+  - Standardized diagnostic metadata fields inside MCQ, short-answer, and structured-response elements.
+  - Weighted concept mapping (`assesses: {concept_id: weight}`) for multi-concept questions.
+  - Static diagnostic reliability metadata (`evidence_strength: high | medium | low`) placed directly on the assessment elements to represent their inherent diagnostic weight.
+  - Multi-dimensional cognitive challenge profiling (replacing flat difficulty with `cognitive_skills` e.g., recall/apply/reason and `challenge_factors` e.g., multi-step/unfamiliar context).
+  - Explicit step-by-step rubrics linking criteria to expected evidence targets, marks, and specific misconceptions.
+  - Declarative marking policies supporting partial credit and Error Carry Forward (ECF) dependencies.
+- **Assessment Reasoning & Multi-part Problems**:
+  - `structured_response` element type for multi-part structured questions.
+  - Validation of part-level dependencies (`depends_on`) to enable Error Carry Forward (ECF) marking.
+  - Precedence constraints to prevent circular or forward-referencing dependencies.
+  - `reasoning_path` sequence (e.g., `represent` -> `formulate` -> `transform` -> `solve` -> `verify`) to map the expected cognitive/thinking path assessed, distinct from the rubric's marking criteria.
+- **Pedagogical Intent Modeling (Reduced Scope)**:
+  - `pedagogical_intent` configuration block inside placement specifications to guide lesson generation and adaptivity (e.g., `intent: confidence_building`).
+  - `scaffolding_level` configuration to specify content support depth (e.g., `high`, `medium`, `low`).
+  - *Note: Presentation-level details (such as narrative tone/theme) are cleanly deferred to the presentation/renderer layers.*
+- **Decoupled Learner State**:
+  - Decoupled dynamic runtime telemetry models (`learner_state` / mastery logs) from static content definitions to maintain a pure core schema definition layer.
+
+### - [ ] v0.7 — Learner State, Mastery, and Assessment Orchestration (Upcoming)
+- **EduVis-Assessment wrapper package**:
+  - Separate `assessment_paper.schema.json` container mapping exam/quiz structures (sections, question lists, calculator guidelines) without polluting the foundational Core question elements.
+  - Standalone `paper_blueprint.schema.json` mapping concept and cognitive skill targets to exam mark allocations.
+  - Automated blueprint generation (generating paper blueprints dynamically from the Curriculum Graph).
+  - Paper coverage validation and blueprint analytics comparing actual generated exam papers against target blueprints.
+  - Automated exam/paper assembly using graph traversals and target blueprints.
+- **Dynamic Learner State Representation**:
+  - Separate `learner_state.json` runtime sidecar mapping dynamically onto the static `curriculum.yaml` graph nodes.
+  - Granular, session-transient mastery tracking for all three levels: Concepts, Skills, and Misconceptions.
+  - Strict demarcation between **Static Content Specs** (YAML) and **Dynamic Runtime State** (JSON).
+- **Stateless Transition Engine (Runtime)**:
+  - Pure Evidence Bridge logic: stateless function evaluating `Transition(current_state, event, curriculum) -> new_state` (updating learner state based on incoming evidence).
+  - Conformance schemas for telemetry and events, delegating actual database persistence/storage adapters to target host LMS systems.
 - **Mastery Graph Projection**:
   - Combining static Curriculum Graph with dynamic Learner State to generate real-time Mastery views (the core of the adaptive engine)
 - **Revision & Knowledge Condensation Engine**:
@@ -863,9 +894,21 @@ slides:
   - Revision pathway generation (e.g. `mode: lesson | revision | exam_prep | crash_course`) using knowledge importance weights and learner mastery levels
   - Formalized memory role capabilities: `encode`, `retrieve`, `reinforce`, `remediate`, and `compress` (for exam preparation)
 
-### - [ ] v0.7 — AI Generation and Tutoring (Upcoming)
-- **Graph-Driven Lesson Generation**: Automatically generate EduVis lesson specs directly from the Curriculum Graph (Curriculum Graph $\to$ Lesson Generator $\to$ EduVis Lesson) rather than simple text prompting
-- Tutoring workflows and visual asset generation
+### - [ ] v0.8 — Tooling, Interactive Visualizations, and Multi-Lens Explorer (Upcoming)
+- **Interactive Curriculum Graph Explorer**:
+  - Transition the Live Editor's static Mermaid diagram into an interactive graph canvas (e.g., force-directed layout using Cytoscape.js or D3.js).
+  - **Local Dependency Inspector**: Implement a slide-out/inspector panel to detail prerequisites, successors, associated skills, and misconceptions when clicking a node.
+- **Workspace of Projections (Tabbed Interfaces)**:
+  - *Lesson View*: Visual preview canvas and interactive presentation player.
+  - *Curriculum View*: Graph-wide dependency map with automated coverage and gap alerts.
+  - *Assessment View*: Question alignment checker mapping assessment elements to target concept and skill nodes.
+  - *Learner View*: Visual mastery/gap heatmap overlay projected on top of the curriculum graph using the dynamic `learner_state` sidecar.
+- **Bidirectional Visual Editing (Long-Term)**:
+  - Enable dragging and connecting nodes in the interactive explorer to automatically update YAML schemas in the code editor.
+
+### - [ ] v0.9 — AI Generation, Tutoring, and Schema Migration (Upcoming)
+- **Graph-Driven Lesson Generation**: Automatically generate EduVis lesson specs directly from the Curriculum Graph (Curriculum Graph $\to$ Lesson Generator $\to$ EduVis Lesson) rather than simple text prompting.
+- Tutoring workflows and visual asset generation.
 - **Migration CLI & Upgrades**: Introduction of migration tooling framework and automated schema upgrade paths (`eduvis migrate`) to upgrade schemas between versions.
 
 ### - [ ] v1.0 — Autonomous Curriculum Factory (Upcoming)
@@ -880,7 +923,7 @@ slides:
 
 To keep the EduVis ecosystem stable for downstream renderers and player platforms, we adhere to the following governance frameworks:
 
-* **Schema Versioning**: Starting in `v0.5.0`, documents should include a top-level `schema_version` property (e.g., `schema_version: "0.5"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
+* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.6.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.6"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
 * **Schema Stability Lifecycle**: All schema fields are categorized under one of four lifecycle tiers:
   * **Experimental**: Active beta iteration. Fields may change or be removed at any minor version.
   * **Stable**: Production-ready. Backwards compatibility is guaranteed.

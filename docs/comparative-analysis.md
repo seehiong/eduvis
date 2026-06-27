@@ -56,7 +56,7 @@ To avoid overlapping models and maintain strict separation of concerns, the EduV
 * **What it does**: ALEKS is a web-based, artificially intelligent assessment and learning system. It is built on **Knowledge Space Theory (KST)**. It uses a series of questions to dynamically assess a student's exact "knowledge state" (the subset of all topics a student has mastered). It maps out the "knowledge structure"—a network of feasible states constrained by prerequisites—to determine what topics a student is "ready to learn."
 * **What EduVis already covers**: 
   - **Prerequisite mapping**: The static curriculum graph (`requires` and `supports` fields in [curriculum.py](file:///c:/project/eduvis/eduvis/core/curriculum.py)) maps the relationships between concepts similar to KST's prerequisite structures.
-  - **Mastery Graph Projection**: The upcoming v0.6 Mastery engine combines the static concept map and the dynamic learner state, mirroring ALEKS's concept of isolating what a student is ready to learn next.
+  - **Mastery Graph Projection**: The upcoming v0.7 Mastery engine combines the static concept map and the dynamic learner state, mirroring ALEKS's concept of isolating what a student is ready to learn next.
 * **What EduVis deliberately does not cover**:
   - **Bayesian inference engine**: EduVis does not implement the statistical probabilities or the algorithms used to select the next question during assessment.
   - **Closed Content Database**: ALEKS embeds its proprietary questions directly inside its engine. EduVis defines a public, standard, portable schema for elements and metadata.

@@ -2,6 +2,50 @@
 
 from ..registry import ElementSpec, FieldSpec
 
+DIAGNOSTIC_ASSESSMENT_FIELDS = [
+    FieldSpec("assesses", type="object", required=False,
+              description="Mapping of concept IDs to weight values"),
+    FieldSpec("cognitive_skills", type="array", required=False,
+              items=FieldSpec("skill", type="string"),
+              description="Cognitive skill tags (e.g. recall, apply, reason)"),
+    FieldSpec("challenge_factors", type="array", required=False,
+              items=FieldSpec("factor", type="string"),
+              description="Factors increasing difficulty (e.g. multi_step, unfamiliar_context)"),
+    FieldSpec("evidence_targets", type="array", required=False,
+              items=FieldSpec("target", type="string"),
+              description="Skills or concepts for which success provides evidence"),
+    FieldSpec("reasoning_path", type="array", required=False,
+              items=FieldSpec("milestone", type="string"),
+              description="Sequential milestones expected (e.g. formulate, solve)"),
+    FieldSpec("evidence_strength", type="string", required=False,
+              enum=["high", "medium", "low"],
+              description="Static diagnostic reliability of this assessment item"),
+    FieldSpec("rubric", type="object", required=False,
+              description="Structured step criteria",
+              properties=[
+                  FieldSpec("total_marks", type="integer", required=False,
+                            description="Total marks allocated for the question/part"),
+                  FieldSpec("criteria", type="array", required=True,
+                            description="List of step marking criteria",
+                            items=FieldSpec("criterion", type="object", properties=[
+                                FieldSpec("id", type="string", required=True, description="Unique criterion ID"),
+                                FieldSpec("marks", type="integer", required=True, description="Marks for this step"),
+                                FieldSpec("description", type="string", required=True, description="Step requirement description"),
+                                FieldSpec("evidence_target", type="string", required=False, description="Evidence generated if successful"),
+                                FieldSpec("misconception", type="string", required=False, description="Misconception triggered if failed"),
+                                FieldSpec("depends_on", type="string", required=False, description="Prerequisite step ID for Error Carry Forward")
+                            ]))
+              ]),
+    FieldSpec("marking_policy", type="object", required=False,
+              description="Marking policy rules",
+              properties=[
+                  FieldSpec("error_carry_forward", type="boolean", required=False, default=False,
+                            description="Whether to carry errors forward across steps"),
+                  FieldSpec("partial_credit", type="boolean", required=False, default=True,
+                            description="Whether partial credit is awarded")
+              ])
+]
+
 ELEMENT_SPECS: list[ElementSpec] = [
     ElementSpec(
         name="text_list",
@@ -83,7 +127,7 @@ ELEMENT_SPECS: list[ElementSpec] = [
             FieldSpec("solution_steps", type="array", required=False,
                       items=FieldSpec("step", type="string"),
                       description="Step-by-step worked solution steps shown inline on the same slide (contrast with dedicated remediation_block slides)"),
-        ],
+        ] + DIAGNOSTIC_ASSESSMENT_FIELDS,
     ),
     ElementSpec(
         name="short_answer",
@@ -107,7 +151,7 @@ ELEMENT_SPECS: list[ElementSpec] = [
                       description="Step-by-step working input from student"),
             FieldSpec("student_answer", type="string", required=False),
             FieldSpec("correct_answer", type="string", required=False),
-        ],
+        ] + DIAGNOSTIC_ASSESSMENT_FIELDS,
     ),
     ElementSpec(
         name="hint_list",
@@ -187,5 +231,45 @@ ELEMENT_SPECS: list[ElementSpec] = [
             FieldSpec("solve", type="object", required=True,
                       description="The step-by-step solution element definition (e.g. hint_list, text_list, math_grid)"),
         ],
+    ),
+    ElementSpec(
+        name="structured_response",
+        subjects=["*"],
+        synopsis="question: string, parts: [{id, question, answer_type, answer, marks, depends_on, skills}] — multi-part question layout",
+        fields=[
+            FieldSpec("question", type="string", required=True,
+                      description="The overall question stem or context info"),
+            FieldSpec("skills", type="array", required=False,
+                      items=FieldSpec("skill", type="string"),
+                      description="General skills tested across the entire problem"),
+            FieldSpec("parts", type="array", required=True,
+                      description="The sub-question parts",
+                      items=FieldSpec("part", type="object", properties=[
+                          FieldSpec("id", type="string", required=True,
+                                    description="Unique part identifier within the question (e.g. q5a)"),
+                          FieldSpec("question", type="string", required=True,
+                                    description="The sub-question stem"),
+                          FieldSpec("answer_type", type="string", required=True,
+                                    enum=["algebraic", "exact", "numeric", "reasoning"],
+                                    description="Evaluation type check standard"),
+                          FieldSpec("answer", type="string", required=True,
+                                    description="Correct answer string value"),
+                          FieldSpec("marks", type="integer", required=True,
+                                    description="Marks allocated for this part"),
+                          FieldSpec("depends_on", type="string", required=False,
+                                    description="ID of a previous part that this part relies on"),
+                          FieldSpec("skills", type="array", required=False,
+                                    items=FieldSpec("part_skill", type="string"),
+                                    description="Specific skills tested by this part"),
+                      ] + DIAGNOSTIC_ASSESSMENT_FIELDS)),
+            FieldSpec("marking", type="object", required=False,
+                      description="Marking options like error carry forward and detailed rubrics",
+                      properties=[
+                          FieldSpec("error_carry_forward", type="boolean", required=False, default=False,
+                                    description="If true, allow carrying errors forward based on dependencies"),
+                          FieldSpec("rubrics", type="object", required=False,
+                                    description="Detailed marking rubric mappings per part"),
+                      ]),
+        ] + DIAGNOSTIC_ASSESSMENT_FIELDS,
     ),
 ]

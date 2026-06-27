@@ -2,12 +2,15 @@
 <svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="480" fill="#f8fafc" />
   <rect width="800" height="65" fill="#1565C0" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
   <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Composite Numbers</text>
+  </g>
   <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
   <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
   <line x1="80" y1="65" x2="720" y2="65" stroke="#fde047" stroke-width="1.5" />
   <rect x="80" y="65" width="52" height="16" rx="3" fill="#fef3c7" stroke="#fde047" stroke-width="1.2" />
   <text x="106" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#78350f" text-anchor="middle">ANCHOR</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="callout_box">
   <rect x="80" y="90" width="640" height="106" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
   <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 188 A 7 7 0 0 0 88 195 L 105 195 Z" fill="#dbeafe" />
   <line x1="105" y1="91" x2="105" y2="195" stroke="#93c5fd" stroke-width="1" />
@@ -16,4 +19,5 @@
   <text x="116" y="138" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Whole numbers greater than 1 that are NOT prime are called COMPOSITE NUMBERS.</text>
   <text x="116" y="156" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">A composite number has more than two factors (divisors).</text>
   <text x="116" y="174" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">For example, 4 has factors 1, 2, and 4 (three factors). Thus, 4 is composite.</text>
+  </g>
 </svg>

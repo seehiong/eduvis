@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/curriculum.schema.json
-schema_version: "0.5"
+schema_version: "0.6"
 
 concepts:
   - code: integers

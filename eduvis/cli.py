@@ -23,6 +23,7 @@ if str(_PACKAGE_ROOT) not in sys.path:
     sys.path.insert(0, str(_PACKAGE_ROOT))
 
 from eduvis.core import validate_lesson, format_prompt_docs, get_all_schemas, validate_curriculum  # noqa: E402
+from eduvis.core.schemas.placement import VALID_MEMORY_ROLES, VALID_PHASES, VALID_DIFFICULTY  # noqa: E402
 
 # ── EduVis SVG renderer ──────────────────────────────────────────────────────
 
@@ -75,6 +76,29 @@ _ROLE_COLOR: dict[str, str] = {
     "retrieval":        "#FFA726",
     "review":           "#9E9E9E",
 }
+
+
+# Validate CLI style mappings cover all placement schema enum values.
+missing_roles = VALID_MEMORY_ROLES - set(_ROLE_COLOR.keys())
+if missing_roles:
+    raise RuntimeError(
+        f"Developer Error: CLI _ROLE_COLOR mapping is incomplete. "
+        f"Missing roles: {', '.join(sorted(missing_roles))}"
+    )
+
+missing_phases = VALID_PHASES - set(_PHASE_STYLE.keys())
+if missing_phases:
+    raise RuntimeError(
+        f"Developer Error: CLI _PHASE_STYLE mapping is incomplete. "
+        f"Missing phases: {', '.join(sorted(missing_phases))}"
+    )
+
+missing_difficulties = VALID_DIFFICULTY - set(_DIFFICULTY_STYLE.keys())
+if missing_difficulties:
+    raise RuntimeError(
+        f"Developer Error: CLI _DIFFICULTY_STYLE mapping is incomplete. "
+        f"Missing difficulties: {', '.join(sorted(missing_difficulties))}"
+    )
 
 
 # ── Bridge helpers ────────────────────────────────────────────────────────────

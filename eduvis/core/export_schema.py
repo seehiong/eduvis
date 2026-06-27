@@ -1,6 +1,9 @@
 """
 EduVis Core — JSON Schema export.
 
+JSON Schema export is a first-class API contract for external consumers to integrate
+and validate content models downstream.
+
 Derives all schemas from the same constants used by the Python validator so
 they are always in sync. Call get_all_schemas() to get a name→dict mapping,
 or each individual function for a single pillar.
@@ -17,10 +20,13 @@ from .schemas.placement import (
     VALID_PURPOSES,
     VALID_VISUAL_WEIGHTS,
     VALID_ASSESSMENT_OBJECTIVES,
+    VALID_INTENTS,
+    VALID_SCAFFOLDING_LEVELS,
 )
 from .schemas.progression import VALID_PATTERNS, VALID_PEDAGOGY_FLAGS
 from .schemas.relationships import VALID_TYPES
 from .schemas.presentation import VALID_ADVANCE_MODES, VALID_ACTIONS
+from .constants import SCHEMA_VERSION
 
 _BASE = "https://eduvis.dev/schemas"
 _DRAFT = "https://json-schema.org/draft/2020-12/schema"
@@ -69,6 +75,23 @@ def placement_schema() -> dict:
                 "type": "string",
                 "enum": sorted(VALID_ASSESSMENT_OBJECTIVES),
                 "description": "The pedagogical skill target (only valid on assessment elements).",
+            },
+            "pedagogical_intent": {
+                "type": "object",
+                "properties": {
+                    "intent": {
+                        "type": "string",
+                        "enum": sorted(VALID_INTENTS),
+                        "description": "The target pedagogical intent.",
+                    },
+                    "scaffolding_level": {
+                        "type": "string",
+                        "enum": sorted(VALID_SCAFFOLDING_LEVELS),
+                        "description": "The level of instructional support.",
+                    },
+                },
+                "additionalProperties": False,
+                "description": "Pedagogical intent metadata to guide content generation and support.",
             },
         },
         "additionalProperties": False,
@@ -262,7 +285,7 @@ def presentation_schema() -> dict:
         "properties": {
             "schema_version": {
                 "type": "string",
-                "enum": ["0.5"],
+                "enum": [SCHEMA_VERSION],
                 "description": "The version of the EduVis schema used by this document.",
             },
             "slides": {"type": "array", "items": slide_entry},
@@ -297,7 +320,7 @@ def lesson_schema() -> dict:
         "properties": {
             "schema_version": {
                 "type": "string",
-                "enum": ["0.5"],
+                "enum": [SCHEMA_VERSION],
                 "description": "The version of the EduVis schema used by this document.",
             },
             "curriculum": {
@@ -471,7 +494,7 @@ def curriculum_schema() -> dict:
         "properties": {
             "schema_version": {
                 "type": "string",
-                "enum": ["0.5"],
+                "enum": [SCHEMA_VERSION],
                 "description": "The version of the EduVis schema used by this document.",
             },
             "concepts": {"type": "array", "items": concept_item},
@@ -484,7 +507,13 @@ def curriculum_schema() -> dict:
 
 
 def get_all_schemas() -> dict[str, dict]:
-    """Return all EduVis JSON Schemas keyed by pillar name."""
+    """
+    Return all active EduVis JSON Schemas keyed by pillar name.
+
+    This is a first-class API representing the core schemas for placement,
+    actions, relationships, progression, lesson, presentation,
+    assessment_event, and curriculum.
+    """
     return {
         "placement": placement_schema(),
         "actions": actions_schema(),

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from ..constants import SCHEMA_VERSION
 
 
 def validate(curriculum: dict) -> list[str]:
@@ -23,9 +24,9 @@ def validate(curriculum: dict) -> list[str]:
             warnings.append(
                 f"ERROR: [curriculum:version] 'schema_version' must be a string, got {type(version).__name__}"
             )
-        elif version != "0.5":
+        elif version != SCHEMA_VERSION:
             warnings.append(
-                f"ERROR: [curriculum:version] unsupported schema version \"{version}\". Expected \"0.5\"."
+                f"ERROR: [curriculum:version] unsupported schema version \"{version}\". Expected \"{SCHEMA_VERSION}\"."
             )
 
     # 2. Validate top-level keys

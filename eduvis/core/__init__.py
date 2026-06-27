@@ -5,6 +5,7 @@ Public API:
   ElementRegistry        — query element specs, generate prompt docs, validate fields
   validate_lesson()      — validate a complete lesson document (all five pillars)
   format_prompt_docs()   — full five-pillar vocabulary for LLM system prompts
+  get_all_schemas()      — export JSON schemas for external consumer integrations
 """
 
 from .registry import ElementRegistry, ElementSpec, FieldSpec
@@ -12,6 +13,7 @@ from .validator import validate_lesson
 from .prompt import format_prompt_docs
 from .export_schema import get_all_schemas
 from .curriculum import CurriculumGraph, ConceptNode, SkillNode, MisconceptionNode, validate_curriculum
+from .constants import SCHEMA_VERSION
 
 __all__ = [
     "ElementRegistry",
@@ -25,4 +27,5 @@ __all__ = [
     "SkillNode",
     "MisconceptionNode",
     "validate_curriculum",
+    "SCHEMA_VERSION",
 ]

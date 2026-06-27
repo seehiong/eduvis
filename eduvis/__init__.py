@@ -1,6 +1,6 @@
 """EduVis — educational content schema."""
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 from .core import (
     ElementRegistry,
@@ -14,6 +14,7 @@ from .core import (
     SkillNode,
     MisconceptionNode,
     validate_curriculum,
+    SCHEMA_VERSION,
 )
 
 __all__ = [
@@ -29,4 +30,5 @@ __all__ = [
     "SkillNode",
     "MisconceptionNode",
     "validate_curriculum",
+    "SCHEMA_VERSION",
 ]
