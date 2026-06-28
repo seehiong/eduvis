@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#4A148C" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Guided Practice: geometry shape external angle</text>
+  </g>
+  <rect x="658" y="23" width="62" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="689" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GUIDED</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#a5f3fc" stroke-width="1.5" />
+  <rect x="80" y="65" width="58" height="16" rx="3" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" />
+  <text x="109" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#083344" text-anchor="middle">EXAMPLE</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="geometry_shape">
+  <line x1="240.0" y1="274.0" x2="368.0" y2="146.0" stroke="#334155" stroke-width="2" />
+  <line x1="368.0" y1="146.0" x2="496.0" y2="274.0" stroke="#334155" stroke-width="2" />
+  <line x1="496.0" y1="274.0" x2="240.0" y2="274.0" stroke="#334155" stroke-width="2" />
+  <line x1="496.0" y1="274.0" x2="560.0" y2="274.0" stroke="#334155" stroke-width="2" />
+  <text x="226.2" y="280.5" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">A</text>
+  <text x="361.7" y="137.5" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">B</text>
+  <text x="496.0" y="292.0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">C</text>
+  <text x="573.7" y="281.0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">D</text>
+  <text x="291.3" y="201.3" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#15803d" text-anchor="end">5 cm</text>
+  <text x="444.7" y="201.3" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#15803d" text-anchor="start">5 cm</text>
+  <path d="M 484.7,262.7 A 16,16 0 0,1 512.0,274.0" fill="none" stroke="#eab308" stroke-width="1.5" />
+  <text x="507.5" y="250.3" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#a16207" text-anchor="start">140°</text>
+  </g>
+</svg>

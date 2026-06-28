@@ -3,7 +3,7 @@
 # Demonstrates: hook -> explore -> explain -> guided -> starter -> routine -> challenge -> recall
 # This lesson builds from concrete scenarios (temperature, money) through abstract rules
 
-schema_version: "0.6"
+schema_version: "0.7"
 
 curriculum:
   code: "SEC-math-2027"

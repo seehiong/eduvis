@@ -50,17 +50,17 @@
   <path d="M 415 231 L 398 231 A 7 7 0 0 0 391 238 L 391 414 A 7 7 0 0 0 398 421 L 415 421 Z" fill="#ffedd5" />
   <line x1="415" y1="231" x2="415" y2="421" stroke="#fdba74" stroke-width="1" />
   <text x="403" y="326.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 403, 326.0)">SOLVE</text>
-  <circle cx="441" cy="257" r="11" fill="#f97316" opacity="0.15" />
-  <circle cx="441" cy="257" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
-  <text x="441" y="261" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
-  <text x="464" y="249" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: List all factors of 12: 1, 2,</text>
-  <text x="464" y="267" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">3, 4, 6, 12.</text>
-  <line x1="441" y1="268" x2="441" y2="290" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
-  <circle cx="441" cy="301" r="11" fill="#f97316" opacity="0.15" />
-  <circle cx="441" cy="301" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
-  <text x="441" y="305" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
-  <text x="464" y="293" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: Identify prime numbers among</text>
-  <text x="464" y="311" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">them. Only 2 and 3 are prime.</text>
+  <circle cx="441" cy="261" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="441" cy="261" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="441" y="265" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
+  <text x="464" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: List all factors of 12: 1, 2,</text>
+  <text x="464" y="282" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">3, 4, 6, 12.</text>
+  <line x1="441" y1="272" x2="441" y2="294" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="441" cy="305" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="441" cy="305" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="441" y="309" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
+  <text x="464" y="308" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: Identify prime numbers among</text>
+  <text x="464" y="326" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">them. Only 2 and 3 are prime.</text>
   <rect x="426" y="344" width="278" height="66" rx="6" fill="#f97316" opacity="0.08" />
   <rect x="426" y="344" width="278" height="66" rx="6" fill="none" stroke="#f97316" stroke-width="1.2" opacity="0.4" />
   <text x="440" y="363" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="start">Therefore, the prime factors of 12 are 2</text>

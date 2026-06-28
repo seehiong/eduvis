@@ -506,13 +506,286 @@ def curriculum_schema() -> dict:
     }
 
 
+def learner_state_schema() -> dict:
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/learner_state.schema.json",
+        "title": "EduVis Learner State",
+        "description": "Transient learner state mapping concept, skill, and misconception mastery levels.",
+        "type": "object",
+        "required": ["learner_id", "concepts"],
+        "properties": {
+            "schema_version": {
+                "type": "string",
+                "enum": [SCHEMA_VERSION],
+                "description": "The version of the EduVis schema used by this document."
+            },
+            "learner_id": {
+                "type": "string",
+                "description": "Unique identifier for the student."
+            },
+            "last_updated": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO timestamp indicating when the state was last calculated."
+            },
+            "concepts": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "required": ["mastery"],
+                    "properties": {
+                        "mastery": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "maximum": 1.0,
+                            "description": "Current mastery level of the concept."
+                        },
+                        "confidence": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "maximum": 1.0,
+                            "description": "Self-reported or student confidence."
+                        }
+                    },
+                    "additionalProperties": False
+                },
+                "description": "Map of concept codes to mastery objects."
+            },
+            "skills": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "required": ["mastery"],
+                    "properties": {
+                        "mastery": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "maximum": 1.0,
+                            "description": "Current mastery level of the skill."
+                        }
+                    },
+                    "additionalProperties": False
+                },
+                "description": "Map of skill codes to mastery objects."
+            },
+            "misconceptions": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "required": ["state"],
+                    "properties": {
+                        "state": {
+                            "type": "string",
+                            "enum": ["active", "remediated"],
+                            "description": "Status of the misconception."
+                        },
+                        "attempts": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Number of times this misconception was triggered."
+                        }
+                    },
+                    "additionalProperties": False
+                },
+                "description": "Map of misconception codes to active/remediated states."
+            }
+        },
+        "additionalProperties": False
+    }
+
+
+def telemetry_event_schema() -> dict:
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/telemetry_event.schema.json",
+        "title": "EduVis Telemetry Event",
+        "description": "Interaction telemetry event from the student player interface.",
+        "type": "object",
+        "required": ["event_id", "timestamp", "learner_id", "event_type", "payload"],
+        "properties": {
+            "event_id": {
+                "type": "string",
+                "description": "Unique identifier for this event."
+            },
+            "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO timestamp indicating when the event occurred."
+            },
+            "learner_id": {
+                "type": "string",
+                "description": "Unique identifier for the student."
+            },
+            "event_type": {
+                "type": "string",
+                "enum": ["assessment_attempt", "lesson_reveal", "help_request"],
+                "description": "Category of student interaction."
+            },
+            "payload": {
+                "type": "object",
+                "required": ["element_id"],
+                "properties": {
+                    "element_id": {
+                        "type": "string",
+                        "description": "The lesson element ID related to the action."
+                    },
+                    "answer_submitted": {
+                        "type": "string",
+                        "description": "Option key or text submitted."
+                    },
+                    "is_correct": {
+                        "type": "boolean",
+                        "description": "Correctness flag."
+                    },
+                    "misconception_detected": {
+                        "type": ["string", "null"],
+                        "description": "Detected misconception code, if any."
+                    },
+                    "time_taken_seconds": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "description": "Duration spent on interaction."
+                    }
+                },
+                "additionalProperties": True,
+                "description": "Payload containing event-specific properties."
+            }
+        },
+        "additionalProperties": False
+    }
+
+
+def assessment_paper_schema() -> dict:
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/assessment_paper.schema.json",
+        "title": "EduVis Assessment Paper",
+        "description": "Structure of an exam or formal quiz containing multiple assessment elements.",
+        "type": "object",
+        "required": ["title", "sections"],
+        "properties": {
+            "schema_version": {
+                "type": "string",
+                "enum": [SCHEMA_VERSION],
+                "description": "The schema version used."
+            },
+            "title": {
+                "type": "string",
+                "description": "Title of the assessment paper."
+            },
+            "instructions": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Student-facing instructions."
+            },
+            "time_limit_minutes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Duration of the exam in minutes."
+            },
+            "calculator": {
+                "type": "string",
+                "enum": ["allowed", "prohibited", "scientific_only"],
+                "description": "Calculator usage policy."
+            },
+            "sections": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["name", "questions"],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the section (e.g., Section A)."
+                        },
+                        "instructions": {
+                            "type": "string",
+                            "description": "Section-specific instructions."
+                        },
+                        "questions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["id"],
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Reference to the element ID in lesson content or standalone content."
+                                    },
+                                    "marks": {
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "description": "Allocated mark weight for this item."
+                                    }
+                                },
+                                "additionalProperties": False
+                            }
+                        }
+                    },
+                    "additionalProperties": False
+                }
+            }
+        },
+        "additionalProperties": False
+    }
+
+
+def paper_blueprint_schema() -> dict:
+    return {
+        "$schema": _DRAFT,
+        "$id": f"{_BASE}/paper_blueprint.schema.json",
+        "title": "EduVis Assessment Blueprint",
+        "description": "Assessment specifications targeting concept mastery and cognitive dimensions.",
+        "type": "object",
+        "required": ["total_marks", "targets"],
+        "properties": {
+            "schema_version": {
+                "type": "string",
+                "enum": [SCHEMA_VERSION]
+            },
+            "total_marks": {
+                "type": "integer",
+                "minimum": 1
+            },
+            "targets": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["type", "code", "weight"],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["concept", "cognitive_skill"],
+                            "description": "Dimension being targeted."
+                        },
+                        "code": {
+                            "type": "string",
+                            "description": "Concept code or cognitive skill name (e.g., reasoning)."
+                        },
+                        "weight": {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "maximum": 1.0,
+                            "description": "Proportional mark weight target."
+                        }
+                    },
+                    "additionalProperties": False
+                }
+            }
+        },
+        "additionalProperties": False
+    }
+
+
 def get_all_schemas() -> dict[str, dict]:
     """
     Return all active EduVis JSON Schemas keyed by pillar name.
 
     This is a first-class API representing the core schemas for placement,
     actions, relationships, progression, lesson, presentation,
-    assessment_event, and curriculum.
+    assessment_event, curriculum, learner_state, telemetry_event,
+    assessment_paper, and paper_blueprint.
     """
     return {
         "placement": placement_schema(),
@@ -523,4 +796,8 @@ def get_all_schemas() -> dict[str, dict]:
         "presentation": presentation_schema(),
         "assessment_event": assessment_event_schema(),
         "curriculum": curriculum_schema(),
+        "learner_state": learner_state_schema(),
+        "telemetry_event": telemetry_event_schema(),
+        "assessment_paper": assessment_paper_schema(),
+        "paper_blueprint": paper_blueprint_schema(),
     }

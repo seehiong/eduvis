@@ -255,6 +255,9 @@ function renderAssessmentSandbox(element, elementYaml, curriculumCode, lessonTit
         return;
     }
 
+    if (!activeAssessmentElement || activeAssessmentElement.id !== element.id) {
+        revealedHintsCount = 0;
+    }
     activeAssessmentElement = element;
     activeElementYaml = elementYaml;
 
@@ -639,6 +642,17 @@ function submitAssessmentWorking() {
                 <span>Full Marks Awarded!</span>
             `;
             bodyContainer.innerHTML = `Excellent step-by-step working. Awarded <strong>${awardedScore}/${maxScore} marks</strong> under Method/Accuracy dependency rules.`;
+        } else if (awardedScore === 0) {
+            panel.classList.add('incorrect');
+            titleContainer.innerHTML = `
+                <svg class="feedback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-red, #ff6b6b);">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>No Marks Awarded</span>
+            `;
+            bodyContainer.innerHTML = `Your working scored <strong>0/${maxScore} marks</strong>. Check that your steps match the required method and that dependencies are satisfied (M marks must be correct before A marks are earned).`;
         } else {
             panel.classList.add('incorrect');
             titleContainer.innerHTML = `

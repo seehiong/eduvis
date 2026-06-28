@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#1565C0" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explain: factor array demo</text>
+  </g>
+  <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLAIN</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#a5f3fc" stroke-width="1.5" />
+  <rect x="80" y="65" width="58" height="16" rx="3" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" />
+  <text x="109" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#083344" text-anchor="middle">EXAMPLE</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="factor_array">
+  <circle cx="361.0" cy="113.0" r="8.3" fill="#22c55e" />
+  <circle cx="387.0" cy="113.0" r="8.3" fill="#22c55e" />
+  <circle cx="413.0" cy="113.0" r="8.3" fill="#22c55e" />
+  <circle cx="439.0" cy="113.0" r="8.3" fill="#22c55e" />
+  <circle cx="361.0" cy="139.0" r="8.3" fill="#22c55e" />
+  <circle cx="387.0" cy="139.0" r="8.3" fill="#22c55e" />
+  <circle cx="413.0" cy="139.0" r="8.3" fill="#22c55e" />
+  <circle cx="439.0" cy="139.0" r="8.3" fill="#22c55e" />
+  <circle cx="361.0" cy="165.0" r="8.3" fill="#22c55e" />
+  <circle cx="387.0" cy="165.0" r="8.3" fill="#22c55e" />
+  <circle cx="413.0" cy="165.0" r="8.3" fill="#22c55e" />
+  <circle cx="439.0" cy="165.0" r="8.3" fill="#22c55e" />
+  <text x="400.0" y="200.0" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#15803d" text-anchor="middle">12 = 3 × 4</text>
+  <text x="400.0" y="220.0" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#0e7490" text-anchor="middle">Composite — 6 factors</text>
+  </g>
+</svg>

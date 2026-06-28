@@ -61,19 +61,19 @@
   <path d="M 415 231 L 398 231 A 7 7 0 0 0 391 238 L 391 432 A 7 7 0 0 0 398 439 L 415 439 Z" fill="#ffedd5" />
   <line x1="415" y1="231" x2="415" y2="439" stroke="#fdba74" stroke-width="1" />
   <text x="403" y="335.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 403, 335.0)">SOLVE</text>
-  <circle cx="441" cy="257" r="11" fill="#f97316" opacity="0.15" />
-  <circle cx="441" cy="257" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
-  <text x="441" y="261" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
-  <text x="464" y="240" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: Write down factors of Option</text>
-  <text x="464" y="258" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">C (6): 1, 2, 3, 6 (four factors). Not</text>
-  <text x="464" y="276" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">prime.</text>
-  <line x1="441" y1="268" x2="441" y2="308" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
-  <circle cx="441" cy="319" r="11" fill="#f97316" opacity="0.15" />
-  <circle cx="441" cy="319" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
-  <text x="441" y="323" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
-  <text x="464" y="302" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: Write down factors of Option</text>
-  <text x="464" y="320" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">E (2): 1, 2 (exactly two factors).</text>
-  <text x="464" y="338" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Prime!</text>
+  <circle cx="441" cy="261" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="441" cy="261" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="441" y="265" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
+  <text x="464" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: Write down factors of Option</text>
+  <text x="464" y="282" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">C (6): 1, 2, 3, 6 (four factors). Not</text>
+  <text x="464" y="300" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">prime.</text>
+  <line x1="441" y1="272" x2="441" y2="312" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="441" cy="323" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="441" cy="323" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="441" y="327" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
+  <text x="464" y="326" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: Write down factors of Option</text>
+  <text x="464" y="344" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">E (2): 1, 2 (exactly two factors).</text>
+  <text x="464" y="362" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Prime!</text>
   <rect x="426" y="380" width="278" height="48" rx="6" fill="#f97316" opacity="0.08" />
   <rect x="426" y="380" width="278" height="48" rx="6" fill="none" stroke="#f97316" stroke-width="1.2" opacity="0.4" />
   <text x="440" y="399" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="start">Therefore, E is the correct answer.</text>

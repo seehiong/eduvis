@@ -1,6 +1,6 @@
 """EduVis — educational content schema."""
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 from .core import (
     ElementRegistry,
@@ -14,21 +14,93 @@ from .core import (
     SkillNode,
     MisconceptionNode,
     validate_curriculum,
+    LearnerState,
+    ConceptState,
+    SkillState,
+    MisconceptionState,
+    validate_learner_state,
+    apply_telemetry_event,
+    default_decay_fn,
+    DEFAULT_ENGINE_CONFIG,
+    MasteryGraphView,
+    ConceptMasteryInfo,
+    generate_blueprint,
+    validate_paper_coverage,
+    assemble_paper,
+    DEFAULT_COGNITIVE_WEIGHTS,
+    get_top_concepts,
+    get_top_misconceptions,
+    generate_study_plan,
+    StudyPlan,
+    StudyTopic,
+    VALID_REVISION_MODES,
+    trace_prerequisite_failure_root,
+    select_next_element,
+    generate_hint,
+    RemediationPath,
+    HintResult,
+    update_review_schedule,
+    get_due_elements,
+    get_schedule_summary,
+    SpacedRepetitionSchedule,
+    SpacedRepetitionRecord,
     SCHEMA_VERSION,
+    DEFAULT_MASTERY_THRESHOLD,
 )
 
 __all__ = [
     "__version__",
+    # Core schema
     "ElementRegistry",
     "ElementSpec",
     "FieldSpec",
     "validate_lesson",
     "format_prompt_docs",
     "get_all_schemas",
+    # Curriculum
     "CurriculumGraph",
     "ConceptNode",
     "SkillNode",
     "MisconceptionNode",
     "validate_curriculum",
+    # Learner state
+    "LearnerState",
+    "ConceptState",
+    "SkillState",
+    "MisconceptionState",
+    "validate_learner_state",
+    # Transition engine
+    "apply_telemetry_event",
+    "default_decay_fn",
+    "DEFAULT_ENGINE_CONFIG",
+    # Mastery projection
+    "MasteryGraphView",
+    "ConceptMasteryInfo",
+    # Assessment paper tooling
+    "generate_blueprint",
+    "validate_paper_coverage",
+    "assemble_paper",
+    "DEFAULT_COGNITIVE_WEIGHTS",
+    # Revision engine
+    "get_top_concepts",
+    "get_top_misconceptions",
+    "generate_study_plan",
+    "StudyPlan",
+    "StudyTopic",
+    "VALID_REVISION_MODES",
+    # Remediation engine
+    "trace_prerequisite_failure_root",
+    "select_next_element",
+    "generate_hint",
+    "RemediationPath",
+    "HintResult",
+    # Spaced repetition
+    "update_review_schedule",
+    "get_due_elements",
+    "get_schedule_summary",
+    "SpacedRepetitionSchedule",
+    "SpacedRepetitionRecord",
+    # Constants
     "SCHEMA_VERSION",
+    "DEFAULT_MASTERY_THRESHOLD",
 ]

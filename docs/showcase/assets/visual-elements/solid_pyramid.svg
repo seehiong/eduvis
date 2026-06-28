@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#00695C" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Explore: solid pyramid</text>
+  </g>
+  <rect x="651" y="23" width="69" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="685" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EXPLORE</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#a5f3fc" stroke-width="1.5" />
+  <rect x="80" y="65" width="58" height="16" rx="3" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" />
+  <text x="109" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#083344" text-anchor="middle">EXAMPLE</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="solid_shape">
+  <polygon points="308.03999999999996,210.0 388.03999999999996,210.0 284.11999999999995,270.0 204.11999999999995,270.0" fill="#3b82f6" opacity="0.2" stroke="#64748b" stroke-width="0.8" />
+  <polygon points="308.03999999999996,210.0 388.03999999999996,210.0 296.08,140.0" fill="#3b82f6" opacity="0.25" stroke="#64748b" stroke-width="0.8" />
+  <polygon points="388.03999999999996,210.0 284.11999999999995,270.0 296.08,140.0" fill="#3b82f6" opacity="0.25" stroke="#64748b" stroke-width="0.8" />
+  <polygon points="284.11999999999995,270.0 204.11999999999995,270.0 296.08,140.0" fill="#3b82f6" opacity="0.25" stroke="#64748b" stroke-width="0.8" />
+  <polygon points="204.11999999999995,270.0 308.03999999999996,210.0 296.08,140.0" fill="#3b82f6" opacity="0.25" stroke="#64748b" stroke-width="0.8" />
+  <line x1="308.03999999999996" y1="210.0" x2="388.03999999999996" y2="210.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="388.03999999999996" y1="210.0" x2="284.11999999999995" y2="270.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="284.11999999999995" y1="270.0" x2="204.11999999999995" y2="270.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="204.11999999999995" y1="270.0" x2="308.03999999999996" y2="210.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="308.03999999999996" y1="210.0" x2="296.08" y2="140.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="388.03999999999996" y1="210.0" x2="296.08" y2="140.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="284.11999999999995" y1="270.0" x2="296.08" y2="140.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="204.11999999999995" y1="270.0" x2="296.08" y2="140.0" stroke="#64748b" stroke-width="0.8" />
+  <line x1="313.03999999999996" y1="210.0" x2="383.03999999999996" y2="210.0" stroke="#ef4444" stroke-width="1.8" />
+  <polygon points="308.03999999999996,210.0 313.03999999999996,213.0 313.03999999999996,207.0" fill="#ef4444" />
+  <polygon points="388.03999999999996,210.0 383.03999999999996,213.0 383.03999999999996,207.0" fill="#ef4444" />
+  <text x="348.03999999999996" y="228.0" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#b91c1c" text-anchor="middle">w: 4</text>
+  <line x1="383.7099047368563" y1="212.50005500181507" x2="288.4500952631436" y2="267.49994499818496" stroke="#22c55e" stroke-width="1.8" />
+  <polygon points="388.03999999999996,210.0 382.20987173576725,209.90199784392885 385.2099377379453,215.0981121597013" fill="#22c55e" />
+  <polygon points="284.11999999999995,270.0 286.9500622620546,264.90188784029874 289.95012826423266,270.0980021560712" fill="#22c55e" />
+  <text x="356.0799999999999" y="240.0" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#15803d" text-anchor="middle">d: 6</text>
+  <line x1="296.08" y1="145.0" x2="296.0799999999999" y2="235.0" stroke="#334155" stroke-width="1.8" />
+  <polygon points="296.08,140.0 293.08,145.0 299.08,145.0" fill="#334155" />
+  <polygon points="296.0799999999999,240.0 293.0799999999999,235.0 299.0799999999999,235.0" fill="#334155" />
+  <text x="268.0799999999999" y="190.0" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#334155" text-anchor="middle">h: 5</text>
+  <text x="400.0" y="290.0" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">Rectangular Pyramid (w×d×h)</text>
+  </g>
+</svg>

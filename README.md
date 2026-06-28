@@ -32,15 +32,16 @@ Then prefix commands with `uv run` (or use the globally installed `eduvis` if in
 
 ```bash
 # Validate showcase lessons
-uv run eduvis validate docs/showcase/lessons/negative-numbers-confidence-ladder.yaml
-uv run eduvis validate docs/showcase/lessons/geometry-triangles-spatial.yaml
-uv run eduvis validate docs/showcase/features/adaptive-remediation-branching.yaml
+uv run eduvis validate docs/showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml
+uv run eduvis validate docs/showcase/features/adaptive-remediation-branching-lesson.yaml
+uv run eduvis validate docs/showcase/features/visual-elements-catalog-lesson.yaml
+uv run eduvis validate docs/showcase/features/assessment-schemas-lesson.yaml
 
 # Render all showcase assets to docs/showcase/assets/
 uv run python scripts/build_showcase.py
 
 # Or render a single showcase lesson to a custom directory
-uv run eduvis render docs/showcase/lessons/negative-numbers-confidence-ladder.yaml -o output/negatives/
+uv run eduvis render docs/showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml -o output/negatives/
 
 # Utility commands
 uv run eduvis docs --subjects math
@@ -545,7 +546,7 @@ The vocabulary covers all five pillars in one block: lesson skeleton, progressio
 
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
-schema_version: "0.6"
+schema_version: "0.7"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -603,7 +604,7 @@ content:
       remediation_for: [check_element_id]
     <element-specific fields...>
 
-## Element types (math, v0.6.0)
+## Element types (math, v0.7.0)
   number_line      range, highlight, direction_labels, caption
   fraction_model   shape: circle|bar|grid, total_parts, shaded_parts
   bar_model        bars: [{label, value, color}], difference
@@ -867,32 +868,34 @@ slides:
 - **Decoupled Learner State**:
   - Decoupled dynamic runtime telemetry models (`learner_state` / mastery logs) from static content definitions to maintain a pure core schema definition layer.
 
-### - [ ] v0.7 — Learner State, Mastery, and Assessment Orchestration (Upcoming)
+### - [x] v0.7 — Learner State, Mastery, and Assessment Orchestration
 - **EduVis-Assessment wrapper package**:
-  - Separate `assessment_paper.schema.json` container mapping exam/quiz structures (sections, question lists, calculator guidelines) without polluting the foundational Core question elements.
-  - Standalone `paper_blueprint.schema.json` mapping concept and cognitive skill targets to exam mark allocations.
-  - Automated blueprint generation (generating paper blueprints dynamically from the Curriculum Graph).
-  - Paper coverage validation and blueprint analytics comparing actual generated exam papers against target blueprints.
-  - Automated exam/paper assembly using graph traversals and target blueprints.
+  - `assessment_paper.schema.json` container mapping exam/quiz structures (sections, question lists, calculator guidelines).
+  - `paper_blueprint.schema.json` mapping concept and cognitive skill targets to exam mark allocations.
+  - `generate_blueprint()` — automated blueprint generation from the Curriculum Graph (blended exam_weight + centrality_weight).
+  - `validate_paper_coverage()` — paper coverage validation and blueprint analytics comparing actual exam papers against target blueprints.
+  - `assemble_paper()` — automated exam/paper assembly using graph-scored element selection against blueprint targets.
 - **Dynamic Learner State Representation**:
-  - Separate `learner_state.json` runtime sidecar mapping dynamically onto the static `curriculum.yaml` graph nodes.
+  - `learner_state.json` runtime sidecar (+ `LearnerState` Python class) mapping dynamically onto the static `curriculum.yaml` graph nodes.
   - Granular, session-transient mastery tracking for all three levels: Concepts, Skills, and Misconceptions.
   - Strict demarcation between **Static Content Specs** (YAML) and **Dynamic Runtime State** (JSON).
 - **Stateless Transition Engine (Runtime)**:
-  - Pure Evidence Bridge logic: stateless function evaluating `Transition(current_state, event, curriculum) -> new_state` (updating learner state based on incoming evidence).
-  - Conformance schemas for telemetry and events, delegating actual database persistence/storage adapters to target host LMS systems.
+  - `apply_telemetry_event()` — pure Evidence Bridge: `Transition(current_state, event, curriculum) -> new_state`.
+  - `telemetry_event.schema.json` conformance schema; temporal mastery decay built in.
 - **Mastery Graph Projection**:
-  - Combining static Curriculum Graph with dynamic Learner State to generate real-time Mastery views (the core of the adaptive engine)
+  - `MasteryGraphView` — combines static Curriculum Graph with dynamic LearnerState for real-time mastery views with prerequisite gap detection.
 - **Revision & Knowledge Condensation Engine**:
-  - Graph traversal and weight-based analysis to automatically extract top target concepts, top active misconceptions, and optimal revision/exam preparation patterns (e.g. compressing a large concept graph into a high-impact 2-hour study plan)
+  - `get_top_concepts()` — weight-ranked concepts to study next (exam_weight × centrality × mastery gap).
+  - `get_top_misconceptions()` — active misconceptions ranked by remediation_weight.
+  - `generate_study_plan()` — time-bounded study plan with four modes: `lesson`, `revision`, `exam_prep`, `crash_course`.
 - **Adaptive Remediation & Paths**:
-  - Prerequisite check & remediation routing (inferring prerequisite failure roots)
-  - Multi-path solution support and branch-on-fail assessment flows
-  - Hint generation from failed actions
-- **Spaced Repetition & Revision Workflows**:
-  - Spaced-repetition metadata and retrieval practice scheduler
-  - Revision pathway generation (e.g. `mode: lesson | revision | exam_prep | crash_course`) using knowledge importance weights and learner mastery levels
-  - Formalized memory role capabilities: `encode`, `retrieve`, `reinforce`, `remediate`, and `compress` (for exam preparation)
+  - `trace_prerequisite_failure_root()` — traces prerequisite dependency graph backward to the deepest unmastered root.
+  - `select_next_element()` — scores available lesson elements against learner state and picks the best next element.
+  - `generate_hint()` — derives a targeted hint from element's `misconceptions` + `solution_steps` matched to the wrong answer.
+- **Spaced Repetition (SM-2)**:
+  - `update_review_schedule()` — SM-2 algorithm: updates interval, ease_factor, and next_review_at after each review.
+  - `get_due_elements()` — returns element IDs due for review on a given date.
+  - `get_schedule_summary()` — aggregate stats: total tracked, due today, overdue, upcoming, average ease.
 
 ### - [ ] v0.8 — Tooling, Interactive Visualizations, and Multi-Lens Explorer (Upcoming)
 - **Interactive Curriculum Graph Explorer**:
@@ -923,7 +926,7 @@ slides:
 
 To keep the EduVis ecosystem stable for downstream renderers and player platforms, we adhere to the following governance frameworks:
 
-* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.6.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.6"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
+* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.7.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.7"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
 * **Schema Stability Lifecycle**: All schema fields are categorized under one of four lifecycle tiers:
   * **Experimental**: Active beta iteration. Fields may change or be removed at any minor version.
   * **Stable**: Production-ready. Backwards compatibility is guaranteed.
@@ -957,6 +960,14 @@ eduvis/ (repository root)
 │   │   ├── registry.py       ← ElementRegistry (specifications list + prompt docs)
 │   │   ├── validator.py      ← five-pillar lesson validator
 │   │   ├── prompt.py         ← format_prompt_docs() for LLM prompts
+│   │   ├── curriculum.py     ← CurriculumGraph, dependency traversal, coverage analytics
+│   │   ├── learner_state.py  ← LearnerState — concept/skill/misconception mastery
+│   │   ├── transition_engine.py ← apply_telemetry_event() — stateless SM evidence bridge
+│   │   ├── mastery_projection.py ← MasteryGraphView — curriculum graph + learner state
+│   │   ├── blueprint_engine.py  ← generate_blueprint / validate_paper_coverage / assemble_paper
+│   │   ├── revision_engine.py   ← get_top_concepts / get_top_misconceptions / generate_study_plan
+│   │   ├── remediation_engine.py ← trace_prerequisite_failure_root / select_next_element / generate_hint
+│   │   ├── spaced_repetition.py ← SM-2 scheduler: update_review_schedule / get_due_elements
 │   │   ├── elements/
 │   │   │   ├── generic.py    ← generic element field definitions
 │   │   │   └── math.py       ← mathematics element field definitions
@@ -974,21 +985,25 @@ eduvis/ (repository root)
 │   │       └── renderers_math/   ← mathematics element renderers
 │   │
 │   └── schemas/              ← pre-generated JSON Schema files packaged with the library
+│       ├── lesson.schema.json
 │       ├── placement.schema.json
 │       ├── actions.schema.json
 │       ├── relationships.schema.json
 │       ├── progression.schema.json
-│       └── lesson.schema.json
+│       ├── learner_state.schema.json
+│       ├── telemetry_event.schema.json
+│       ├── assessment_paper.schema.json
+│       └── paper_blueprint.schema.json
 │
 ├── docs/                     ← Documentation and showcase files
 │   ├── llm_system_prompt.md  ← generated vocabulary reference for LLMs
 │   └── showcase/
-│       ├── lessons/               ← complete teaching flows
-│       │   ├── negative-numbers-confidence-ladder.yaml
-│       │   └── geometry-triangles-spatial.yaml
-│       ├── features/              ← spotlight features (remediation, sequences)
-│       │   ├── adaptive-remediation-branching.yaml
-│       │   └── presentation-sequences.yaml
+│       ├── lessons/               ← complete teaching flows (one pattern per file)
+│       │   └── negative-numbers-confidence-ladder-lesson.yaml
+│       ├── features/              ← one feature family per file
+│       │   ├── adaptive-remediation-branching-lesson.yaml
+│       │   ├── visual-elements-catalog-lesson.yaml
+│       │   └── assessment-schemas-lesson.yaml
 │       └── reference/             ← reference catalogs
 │           ├── exhaustive-element-catalog.yaml
 │           └── mixed-content-card.yaml

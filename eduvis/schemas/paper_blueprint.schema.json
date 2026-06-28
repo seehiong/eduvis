@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/paper_blueprint.schema.json",
+  "title": "EduVis Assessment Blueprint",
+  "description": "Assessment specifications targeting concept mastery and cognitive dimensions.",
+  "type": "object",
+  "required": [
+    "total_marks",
+    "targets"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "0.7"
+      ]
+    },
+    "total_marks": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "code",
+          "weight"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "concept",
+              "cognitive_skill"
+            ],
+            "description": "Dimension being targeted."
+          },
+          "code": {
+            "type": "string",
+            "description": "Concept code or cognitive skill name (e.g., reasoning)."
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Proportional mark weight target."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

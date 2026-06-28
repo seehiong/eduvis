@@ -3,7 +3,7 @@
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
 ```yaml
-schema_version: "0.6"
+schema_version: "0.7"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"

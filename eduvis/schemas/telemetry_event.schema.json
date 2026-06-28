@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/telemetry_event.schema.json",
+  "title": "EduVis Telemetry Event",
+  "description": "Interaction telemetry event from the student player interface.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "timestamp",
+    "learner_id",
+    "event_type",
+    "payload"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Unique identifier for this event."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp indicating when the event occurred."
+    },
+    "learner_id": {
+      "type": "string",
+      "description": "Unique identifier for the student."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "assessment_attempt",
+        "lesson_reveal",
+        "help_request"
+      ],
+      "description": "Category of student interaction."
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "element_id"
+      ],
+      "properties": {
+        "element_id": {
+          "type": "string",
+          "description": "The lesson element ID related to the action."
+        },
+        "answer_submitted": {
+          "type": "string",
+          "description": "Option key or text submitted."
+        },
+        "is_correct": {
+          "type": "boolean",
+          "description": "Correctness flag."
+        },
+        "misconception_detected": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Detected misconception code, if any."
+        },
+        "time_taken_seconds": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Duration spent on interaction."
+        }
+      },
+      "additionalProperties": true,
+      "description": "Payload containing event-specific properties."
+    }
+  },
+  "additionalProperties": false
+}

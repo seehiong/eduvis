@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/learner_state.schema.json",
+  "title": "EduVis Learner State",
+  "description": "Transient learner state mapping concept, skill, and misconception mastery levels.",
+  "type": "object",
+  "required": [
+    "learner_id",
+    "concepts"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "0.7"
+      ],
+      "description": "The version of the EduVis schema used by this document."
+    },
+    "learner_id": {
+      "type": "string",
+      "description": "Unique identifier for the student."
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp indicating when the state was last calculated."
+    },
+    "concepts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "mastery"
+        ],
+        "properties": {
+          "mastery": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Current mastery level of the concept."
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Self-reported or student confidence."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Map of concept codes to mastery objects."
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "mastery"
+        ],
+        "properties": {
+          "mastery": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Current mastery level of the skill."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Map of skill codes to mastery objects."
+    },
+    "misconceptions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "remediated"
+            ],
+            "description": "Status of the misconception."
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of times this misconception was triggered."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Map of misconception codes to active/remediated states."
+    }
+  },
+  "additionalProperties": false
+}

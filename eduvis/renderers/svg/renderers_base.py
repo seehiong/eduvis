@@ -1137,7 +1137,7 @@ def _render_hint_list(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[st
     for i, (lines, row_h) in enumerate(row_heights, start=1):
         step_cx = zx + pad + step_r + 4
         text_x  = step_cx + step_r + 12
-        step_y  = cy + step_r
+        step_y  = cy + 15
         
         if last_bottom is not None:
             out.append(
@@ -1150,7 +1150,7 @@ def _render_hint_list(spec, zx, zy, zw, zh, posting_group="G1") -> tuple[list[st
         out.append(_text(step_cx, step_y + 4, str(i), size=size - 1, color=step_col,
                           weight="bold", anchor="middle"))
                           
-        text_start_y = step_y - ((len(lines) - 1) * lead) // 2 + 1
+        text_start_y = cy + 18
         for j, ln in enumerate(lines):
             out.append(_text(text_x, text_start_y + j * lead, ln, size=size, color=COLORS["body"]))
             

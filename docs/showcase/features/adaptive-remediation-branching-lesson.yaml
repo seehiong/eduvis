@@ -4,7 +4,7 @@
 # 2. MCQ misconception tracking & solution steps
 # 3. Unified Remediation block (Review - Remember - Solve) and relationship target constraints
 
-schema_version: "0.6"
+schema_version: "0.7"
 
 curriculum:
   code: showcase

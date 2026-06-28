@@ -35,25 +35,26 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             console.warn("Could not determine package version from main_init.py, falling back to 0.5.0", err);
         }
 
-        updateStatusCallback("Installing Dependencies", `Installing PyYAML and loading local wheel (v${version})...`);
+        updateStatusCallback("Installing Dependencies", `Installing PyYAML, SymPy and loading local wheel (v${version})...`);
         const cb = new Date().getTime();
         await window.pyodideInstance.runPythonAsync(`
             import micropip
             await micropip.install("pyyaml")
+            await micropip.install("sympy")
             await micropip.install("./eduvis-${version}-py3-none-any.whl?cb=${cb}")
         `);
 
         updateStatusCallback(`Syncing v${version} Engine Updates`, "Fetching local core files...");
         try {
             const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode, constantsCode] = await Promise.all([
-                fetch('./engine.py').then(r => r.text()),
-                fetch('./validator.py').then(r => r.text()),
-                fetch('./generic.py').then(r => r.text()),
-                fetch('./renderers_base.py').then(r => r.text()),
-                fetch('./curriculum.py').then(r => r.text()),
-                fetch('./core_init.py').then(r => r.text()),
-                fetch('./main_init.py').then(r => r.text()),
-                fetch('./constants.py').then(r => r.text())
+                fetch(`./engine.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./validator.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./generic.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./renderers_base.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./curriculum.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./core_init.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./main_init.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./constants.py?cb=${cb}`).then(r => r.text())
             ]);
 
             const ensureDir = (path) => {

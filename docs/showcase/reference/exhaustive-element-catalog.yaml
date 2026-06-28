@@ -2,7 +2,7 @@
 # One slide per registered element type — verifies all 13 renderers.
 # Note: summary_list is an alias for text_list and is omitted.
 
-schema_version: "0.6"
+schema_version: "0.7"
 
 curriculum:
   code: SEC-math-2027

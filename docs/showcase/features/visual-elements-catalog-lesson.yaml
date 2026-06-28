@@ -1,0 +1,241 @@
+# EduVis Showcase: Visual Elements Catalog
+# Demonstrates all visual element types not covered in the main lessons:
+#   bar_model, solid_shape (5 variants), coordinate_plane, fraction_model,
+#   factor_array, hint_list (standalone), math_grid (arithmetic + ratio),
+#   geometry_shape (external angle variant)
+#
+# Each element appears exactly once so readers can see every available type.
+
+schema_version: "0.7"
+
+curriculum:
+  code: showcase
+  topic: visual-elements
+
+lesson:
+  title: "EduVis Visual Elements Catalog"
+
+progression:
+  pattern: direct_instruction
+  pedagogy: {}
+  phases:
+    - phase: explore
+    - phase: explain
+    - phase: guided_practice
+
+content:
+
+  # 1 ── bar_model (comparison) ─────────────────────────────────────────────────
+  - id: bar_model_comparison
+    type: bar_model
+    placement:
+      lesson_phase: explore
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    style: comparison
+    bars:
+      - label: "Singapore"
+        value: 32
+        color: red
+      - label: "Antarctica"
+        value: 12
+        color: blue
+    difference:
+      label: "20°C warmer"
+      color: yellow
+
+  # 2 ── solid_shape (pyramid) ──────────────────────────────────────────────────
+  - id: solid_pyramid
+    type: solid_shape
+    placement:
+      lesson_phase: explore
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    shape: pyramid
+    dimensions: [4, 5, 6]
+    color: orange
+    label: "Rectangular Pyramid (w×d×h)"
+    show_dimensions: true
+
+  # 3 ── solid_shape (cone) ─────────────────────────────────────────────────────
+  - id: solid_cone
+    type: solid_shape
+    placement:
+      lesson_phase: explore
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    shape: cone
+    dimensions: [4, 6, 4]
+    color: red
+    label: "Cone"
+    show_dimensions: true
+
+  # 4 ── solid_shape (cylinder) ─────────────────────────────────────────────────
+  - id: solid_cylinder
+    type: solid_shape
+    placement:
+      lesson_phase: explore
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    shape: cylinder
+    dimensions: [3, 5, 3]
+    color: cyan
+    label: "Cylinder"
+    show_dimensions: true
+
+  # 5 ── solid_shape (cube) ─────────────────────────────────────────────────────
+  - id: solid_cube
+    type: solid_shape
+    placement:
+      lesson_phase: explain
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    shape: cube
+    dimensions: [4]
+    color: blue
+    label: "Cube (4 cm)"
+    show_dimensions: true
+
+  # 6 ── solid_shape (rectangular_prism) ────────────────────────────────────────
+  - id: solid_rectangular_prism
+    type: solid_shape
+    placement:
+      lesson_phase: explain
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    shape: rectangular_prism
+    dimensions: [5, 3, 4]
+    color: green
+    label: "Rectangular Prism (w×h×d)"
+    show_dimensions: true
+
+  # 7 ── coordinate_plane ───────────────────────────────────────────────────────
+  - id: coordinate_plane_demo
+    type: coordinate_plane
+    placement:
+      lesson_phase: explain
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    x_range: [-4, 4]
+    y_range: [-4, 4]
+    grid_step: 1
+    plots:
+      - type: line
+        equation: "y = x"
+        color: cyan
+      - type: point
+        coord: [2, 2]
+        label: "(2, 2)"
+        color: green
+      - type: point
+        coord: [-3, -3]
+        label: "(-3, -3)"
+        color: red
+
+  # 8 ── fraction_model (circle) ────────────────────────────────────────────────
+  - id: fraction_model_circle
+    type: fraction_model
+    placement:
+      lesson_phase: explain
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    shape: circle
+    total_parts: 4
+    shaded_parts: 3
+    color: green
+    label: "3/4 shaded"
+
+  # 9 ── factor_array ───────────────────────────────────────────────────────────
+  - id: factor_array_demo
+    type: factor_array
+    placement:
+      lesson_phase: explain
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    number: 12
+    color: green
+    verdict: true
+
+  # 10 ── hint_list (standalone) ────────────────────────────────────────────────
+  - id: hint_list_standalone
+    type: hint_list
+    placement:
+      lesson_phase: guided_practice
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    items:
+      - "Step 1: Identify the shape type."
+      - "Step 2: Write the formula for its area or volume."
+      - "Step 3: Substitute known values and calculate."
+    final: "Always include units in your final answer."
+
+  # 11 ── math_grid (arithmetic — column addition) ──────────────────────────────
+  - id: math_grid_arithmetic
+    type: math_grid
+    placement:
+      lesson_phase: guided_practice
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    headers: ["H", "T", "U"]
+    rows:
+      - ["", "3", "7"]
+      - ["+", "1", "5"]
+      - "line"
+      - ["", "5", "2"]
+    row_colors: ["cyan", "cyan", "", "yellow"]
+
+  # 12 ── math_grid (ratio table) ───────────────────────────────────────────────
+  - id: math_grid_ratio
+    type: math_grid
+    placement:
+      lesson_phase: guided_practice
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    mode: ratio
+    show_grid: false
+    headers: ["Concentrate", "Water"]
+    rows:
+      - ["1", "3"]
+      - ["2", "6"]
+      - ["3", "9"]
+    row_colors: ["body", "cyan", "cyan"]
+
+  # 13 ── geometry_shape (external angle variant) ───────────────────────────────
+  - id: geometry_shape_external_angle
+    type: geometry_shape
+    placement:
+      lesson_phase: guided_practice
+      layout_zone: center
+      visual_weight: primary
+      memory_role: example
+    vertices: [[100, 300], [300, 100], [500, 300], [600, 300]]
+    labels:
+      - "A"
+      - "B"
+      - text: "C"
+        offset: [0, 18]
+      - "D"
+    edges: ["AB", "BC", "CA", "CD"]
+    side_labels:
+      - edge: "AB"
+        label: "5 cm"
+      - edge: "BC"
+        label: "5 cm"
+      - edge: "CA"
+        label: "8 cm"
+    angles:
+      - vertex: "C"
+        sides: ["B", "D"]
+        label: "140°"

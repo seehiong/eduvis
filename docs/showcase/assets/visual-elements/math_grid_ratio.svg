@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="480" fill="#f8fafc" />
+  <rect width="800" height="65" fill="#4A148C" />
+  <g id="u0" data-reveal-order="0" data-ref="title" data-type="title">
+  <text x="80" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="start">Guided Practice: math grid ratio</text>
+  </g>
+  <rect x="658" y="23" width="62" height="18" rx="4" fill="#000000" opacity="0.35" />
+  <text x="689" y="36" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GUIDED</text>
+  <line x1="80" y1="65" x2="720" y2="65" stroke="#a5f3fc" stroke-width="1.5" />
+  <rect x="80" y="65" width="58" height="16" rx="3" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" />
+  <text x="109" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#083344" text-anchor="middle">EXAMPLE</text>
+  <g id="u1" data-reveal-order="1" data-ref="center" data-type="math_grid">
+  <text x="358" y="105" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">Concentrate</text>
+  <text x="442" y="105" font-family="Arial, sans-serif" font-size="10" font-weight="normal" fill="#334155" text-anchor="middle">Water</text>
+  <text x="358" y="155" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#334155" text-anchor="middle">1</text>
+  <text x="400" y="155" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#0e7490" text-anchor="middle">:</text>
+  <text x="442" y="155" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#334155" text-anchor="middle">3</text>
+  <text x="358" y="207" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0e7490" text-anchor="middle">2</text>
+  <text x="400" y="207" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#0e7490" text-anchor="middle">:</text>
+  <text x="442" y="207" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0e7490" text-anchor="middle">6</text>
+  <text x="358" y="259" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0e7490" text-anchor="middle">3</text>
+  <text x="400" y="259" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#0e7490" text-anchor="middle">:</text>
+  <text x="442" y="259" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0e7490" text-anchor="middle">9</text>
+  </g>
+</svg>

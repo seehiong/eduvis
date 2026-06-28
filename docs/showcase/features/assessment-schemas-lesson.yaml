@@ -1,0 +1,174 @@
+# EduVis Showcase: Assessment Schema Features
+# Demonstrates the assessment annotation layer:
+#   assessment_objective   — tags cognitive demand (conceptual_understanding |
+#                            procedural_fluency | problem_solving)
+#   misconceptions         — maps wrong options to misconception codes for
+#                            targeted remediation and telemetry
+#   solution_steps         — step-by-step worked solution for feedback
+#   marking_scheme         — M (method) and A (accuracy) marks with
+#                            dependency chains (depends_on)
+#   evaluation_mode: algebraic — equivalence checking for open algebra answers
+#
+# These annotations feed the engine:
+#   telemetry_event  → captures learner_id, element_id, answer, is_correct
+#   LearnerState     → updates concept/skill/misconception mastery on each event
+#   TransitionEngine → uses relationships + telemetry to select next element
+#   MasteryProjection → projects readiness across the concept map
+
+schema_version: "0.7"
+
+curriculum:
+  code: showcase
+  topic: assessment-schemas
+
+lesson:
+  title: "Assessment Schema — Marking, Misconceptions & Mastery"
+  concepts:
+    - linear_equations
+    - algebra
+    - factorisation
+
+progression:
+  pattern: direct_instruction
+  pedagogy:
+    explain_why: true
+  phases:
+    - phase: explain
+      purpose: conceptual_model
+    - phase: independent_practice
+      difficulty: starter
+    - phase: independent_practice
+      difficulty: routine
+    - phase: independent_practice
+      difficulty: challenge
+
+content:
+
+  # --- WHAT ASSESSMENT ANNOTATIONS DO ------------------------------------
+  - id: assessment_schema_overview
+    type: callout_box
+    placement:
+      lesson_phase: explain
+      purpose: conceptual_model
+      layout_zone: center
+      visual_weight: primary
+      memory_role: anchor
+    relationships:
+      precedes:
+        - assess_mcq_linear
+    title: "Assessment Annotation Fields"
+    border_color: cyan
+    lines:
+      - "assessment_objective: conceptual_understanding | procedural_fluency | application | reasoning"
+      - "misconceptions: maps each wrong option to a named misconception code"
+      - "solution_steps: ordered worked solution for post-attempt feedback"
+      - "marking_scheme: M-marks (method) and A-marks (accuracy) with depends_on chains"
+      - "evaluation_mode: algebraic — smart equivalence check for open-answer questions"
+
+  # --- MCQ: FULL ANNOTATION (conceptual_understanding) ------------------------
+  - id: assess_mcq_linear
+    type: multiple_choice
+    concepts:
+      - linear_equations
+    skills:
+      - solve_linear_one_step
+    relationships:
+      precedes:
+        - assess_expand_simplify
+    placement:
+      lesson_phase: independent_practice
+      difficulty: starter
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: conceptual_understanding
+    question: "Solve for x:  3x = 12"
+    options:
+      A: "x = 4"
+      B: "x = 9  (subtracted 3 instead of dividing)"
+      C: "x = 36 (multiplied instead of dividing)"
+      D: "x = 15 (added 3 instead of dividing)"
+    answer: "A"
+    misconceptions:
+      B: "subtraction_instead_of_division"
+      C: "multiplication_inverse_confusion"
+      D: "addition_instead_of_division"
+    solution_steps:
+      - "Write the equation: 3x = 12."
+      - "Divide both sides by 3 to isolate x."
+      - "x = 12 ÷ 3 = 4."
+
+  # --- SHORT ANSWER: M-mark + A-mark chain (procedural_fluency) ---------------
+  - id: assess_expand_simplify
+    type: short_answer
+    concepts:
+      - algebra
+    skills:
+      - expand_brackets
+      - collect_like_terms
+    relationships:
+      precedes:
+        - assess_factorise
+    placement:
+      lesson_phase: independent_practice
+      difficulty: routine
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: procedural_fluency
+    question: "Expand and simplify:  2(3x + 4) + x"
+    answer: "7x + 8"
+    evaluation_mode: algebraic
+    solution_steps:
+      - "Expand the bracket: 2(3x + 4) = 6x + 8."
+      - "Add the remaining term: 6x + 8 + x."
+      - "Combine like terms: 6x + x = 7x, constant stays 8."
+      - "Final answer: 7x + 8."
+    marking_scheme:
+      - step: 0
+        pattern: "6x + 8 + x"
+        mark_type: "M"
+        step_type: "expanded"
+        weight: 1
+        description: "Correctly expanded 2(3x + 4) → 6x + 8"
+      - step: 1
+        pattern: "7x + 8"
+        mark_type: "A"
+        step_type: "collected"
+        weight: 1
+        depends_on: 0
+        description: "Correctly collected like terms to reach 7x + 8"
+
+  # --- SHORT ANSWER: multi-step M/A chain (problem_solving) -------------------
+  - id: assess_factorise
+    type: short_answer
+    concepts:
+      - algebra
+      - factorisation
+    skills:
+      - factorise_common_factor
+    placement:
+      lesson_phase: independent_practice
+      difficulty: challenge
+      layout_zone: center
+      memory_role: practice
+      assessment_objective: reasoning
+    question: "Factorise fully:  6x² + 9x"
+    answer: "3x(2x + 3)"
+    evaluation_mode: algebraic
+    solution_steps:
+      - "Find the HCF of 6x² and 9x: the HCF is 3x."
+      - "Divide each term by 3x:  6x² ÷ 3x = 2x  and  9x ÷ 3x = 3."
+      - "Write the factorised form: 3x(2x + 3)."
+    marking_scheme:
+      - step: 0
+        pattern: "3x"
+        mark_type: "M"
+        step_type: "extract_factor"
+        weight: 1
+        description: "Identified correct common factor 3x"
+      - step: 1
+        pattern: "3x(2x + 3)"
+        mark_type: "A"
+        step_type: "fully_factorised"
+        weight: 1
+        depends_on: 0
+        description: "Expressed the fully factorised form correctly"

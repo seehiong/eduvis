@@ -12,6 +12,10 @@ from eduvis.core.export_schema import (
     relationships_schema,
     assessment_event_schema,
     curriculum_schema,
+    learner_state_schema,
+    telemetry_event_schema,
+    assessment_paper_schema,
+    paper_blueprint_schema,
 )
 
 
@@ -26,6 +30,10 @@ def test_get_all_schemas_returns_all_pillars():
         "presentation",
         "assessment_event",
         "curriculum",
+        "learner_state",
+        "telemetry_event",
+        "assessment_paper",
+        "paper_blueprint",
     }
 
 
@@ -102,3 +110,30 @@ def test_curriculum_schema_has_required_fields():
     assert "misconceptions" in s["properties"]
     assert "dependencies" in s["properties"]
     assert s["required"] == ["concepts"]
+
+
+def test_learner_state_schema_has_required_fields():
+    s = learner_state_schema()
+    assert s["required"] == ["learner_id", "concepts"]
+    assert "concepts" in s["properties"]
+    assert "skills" in s["properties"]
+    assert "misconceptions" in s["properties"]
+
+
+def test_telemetry_event_schema_has_required_fields():
+    s = telemetry_event_schema()
+    assert set(s["required"]) == {"event_id", "timestamp", "learner_id", "event_type", "payload"}
+    assert "payload" in s["properties"]
+
+
+def test_assessment_paper_schema_has_required_fields():
+    s = assessment_paper_schema()
+    assert set(s["required"]) == {"title", "sections"}
+    assert "sections" in s["properties"]
+
+
+def test_paper_blueprint_schema_has_required_fields():
+    s = paper_blueprint_schema()
+    assert set(s["required"]) == {"total_marks", "targets"}
+    assert "total_marks" in s["properties"]
+    assert "targets" in s["properties"]

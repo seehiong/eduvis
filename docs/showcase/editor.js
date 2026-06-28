@@ -2,7 +2,7 @@
  * EduVis Live Editor — Main UI Controller & Script Coordinator
  */
 
-const SCHEMA_VERSION = "0.6";
+const SCHEMA_VERSION = "0.7";
 
 let selectedSlideIndex = 0;
 window.currentSlides = [];

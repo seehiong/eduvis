@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduvis.dev/schemas/assessment_paper.schema.json",
+  "title": "EduVis Assessment Paper",
+  "description": "Structure of an exam or formal quiz containing multiple assessment elements.",
+  "type": "object",
+  "required": [
+    "title",
+    "sections"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "0.7"
+      ],
+      "description": "The schema version used."
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the assessment paper."
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Student-facing instructions."
+    },
+    "time_limit_minutes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Duration of the exam in minutes."
+    },
+    "calculator": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "prohibited",
+        "scientific_only"
+      ],
+      "description": "Calculator usage policy."
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "questions"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the section (e.g., Section A)."
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Section-specific instructions."
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Reference to the element ID in lesson content or standalone content."
+                },
+                "marks": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Allocated mark weight for this item."
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
