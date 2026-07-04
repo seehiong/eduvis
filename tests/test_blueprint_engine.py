@@ -7,6 +7,7 @@ from eduvis.core.blueprint_engine import (
     DEFAULT_COGNITIVE_WEIGHTS,
 )
 from eduvis.core.curriculum import CurriculumGraph
+from eduvis.core.constants import SCHEMA_VERSION
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +80,7 @@ class TestGenerateBlueprint:
     def test_returns_schema_version(self):
         curriculum = _make_curriculum()
         bp = generate_blueprint(curriculum, 40)
-        assert bp["schema_version"] == "0.7"
+        assert bp["schema_version"] == SCHEMA_VERSION
 
     def test_total_marks_preserved(self):
         curriculum = _make_curriculum()
@@ -165,7 +166,7 @@ class TestValidatePaperCoverage:
 
     def _make_blueprint(self) -> dict:
         return {
-            "schema_version": "0.7",
+            "schema_version": SCHEMA_VERSION,
             "total_marks": 40,
             "targets": [
                 {"type": "concept", "code": "integers", "weight": 0.25},
@@ -189,7 +190,7 @@ class TestValidatePaperCoverage:
             "title": "Test",
             "sections": [{"name": "A", "questions": [{"id": "q1", "marks": 5}]}],
         }
-        blueprint = {"schema_version": "0.7", "total_marks": 40, "targets": []}
+        blueprint = {"schema_version": SCHEMA_VERSION, "total_marks": 40, "targets": []}
         elements = {"q1": _make_elements()[0]}
         warnings = validate_paper_coverage(paper, blueprint, elements)
         assert any("total marks" in w for w in warnings)
@@ -200,7 +201,7 @@ class TestValidatePaperCoverage:
             "sections": [{"name": "A", "questions": [{"id": "q2", "marks": 40}]}],
         }
         blueprint = {
-            "schema_version": "0.7",
+            "schema_version": SCHEMA_VERSION,
             "total_marks": 40,
             "targets": [
                 {"type": "concept", "code": "integers", "weight": 0.5},
@@ -220,7 +221,7 @@ class TestValidatePaperCoverage:
             ]}],
         }
         blueprint = {
-            "schema_version": "0.7",
+            "schema_version": SCHEMA_VERSION,
             "total_marks": 40,
             "targets": [
                 {"type": "concept", "code": "integers", "weight": 0.10},
@@ -233,7 +234,7 @@ class TestValidatePaperCoverage:
 
     def test_empty_paper_sections_warns_only_about_total(self):
         paper = {"title": "Empty", "sections": []}
-        blueprint = {"schema_version": "0.7", "total_marks": 40, "targets": [
+        blueprint = {"schema_version": SCHEMA_VERSION, "total_marks": 40, "targets": [
             {"type": "concept", "code": "integers", "weight": 1.0}
         ]}
         warnings = validate_paper_coverage(paper, blueprint, {})
@@ -248,7 +249,7 @@ class TestValidatePaperCoverage:
 class TestAssemblePaper:
     def _make_blueprint(self) -> dict:
         return {
-            "schema_version": "0.7",
+            "schema_version": SCHEMA_VERSION,
             "total_marks": 6,
             "targets": [
                 {"type": "concept", "code": "algebra", "weight": 0.6},
@@ -307,7 +308,7 @@ class TestAssemblePaper:
         assert not paper["sections"]
 
     def test_fallback_marks_per_element_applied(self):
-        bp = {"schema_version": "0.7", "total_marks": 10, "targets": []}
+        bp = {"schema_version": SCHEMA_VERSION, "total_marks": 10, "targets": []}
         elements = [
             {"id": "x1", "concepts": [], "placement": {"memory_role": "practice"}},
             {"id": "x2", "concepts": [], "placement": {"memory_role": "practice"}},

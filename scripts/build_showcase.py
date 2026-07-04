@@ -2,10 +2,12 @@
 """
 Build Showcase Assets Script.
 
-Automatically renders all showcase lesson YAML files directly to their
-respective docs/showcase/assets/ target directories.
+1. Syncs Python source files into showcase/ so Pyodide always loads
+   the latest code — showcase/*.py are auto-generated, never hand-edited.
+2. Renders all showcase lesson YAML files to their showcase/assets/ dirs.
 """
 
+import shutil
 import sys
 import subprocess
 from pathlib import Path
@@ -13,18 +15,54 @@ from pathlib import Path
 # Workspace root is the parent of the scripts directory
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
+# Maps showcase flat filename -> source path within the repo.
+# Pyodide fetches these files by name and writes them into its virtual FS.
+# The source files in eduvis/ are the single source of truth.
+PYODIDE_SOURCE_MAP = {
+    "engine.py":        "eduvis/core/engine.py",
+    "validator.py":     "eduvis/core/validator.py",
+    "generic.py":       "eduvis/core/elements/generic.py",
+    "renderers_base.py":"eduvis/renderers/svg/renderers_base.py",
+    "curriculum.py":    "eduvis/core/curriculum.py",
+    "core_init.py":     "eduvis/core/__init__.py",
+    "main_init.py":     "eduvis/__init__.py",
+    "constants.py":     "eduvis/core/constants.py",
+}
+
+SHOWCASE_DIR = ROOT_DIR / "showcase"
+
 SHOWCASE_MAP = {
     # Lesson showcases — full pedagogical flow
-    "docs/showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml": "docs/showcase/assets/negative-numbers",
+    "showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml": "showcase/assets/negative-numbers",
     # Feature showcases — one feature or element family per file
-    "docs/showcase/features/adaptive-remediation-branching-lesson.yaml": "docs/showcase/assets/adaptive-remediation",
-    "docs/showcase/features/visual-elements-catalog-lesson.yaml": "docs/showcase/assets/visual-elements",
-    "docs/showcase/features/assessment-schemas-lesson.yaml": "docs/showcase/assets/assessment-schemas",
+    "showcase/features/adaptive-remediation-branching-lesson.yaml": "showcase/assets/adaptive-remediation",
+    "showcase/features/visual-elements-catalog-lesson.yaml": "showcase/assets/visual-elements",
+    "showcase/features/assessment-schemas-lesson.yaml": "showcase/assets/assessment-schemas",
 }
+
+
+def sync_pyodide_sources() -> bool:
+    """Copy source files into showcase/ so Pyodide loads the latest code."""
+    print("Syncing Pyodide source files to showcase/...")
+    ok = True
+    for dest_name, src_rel in PYODIDE_SOURCE_MAP.items():
+        src = ROOT_DIR / src_rel
+        dest = SHOWCASE_DIR / dest_name
+        if not src.is_file():
+            print(f"  MISSING  {src_rel}", file=sys.stderr)
+            ok = False
+            continue
+        shutil.copy2(src, dest)
+        print(f"  OK  {src_rel} -> showcase/{dest_name}")
+    return ok
 
 
 def main() -> None:
     print("Building showcase assets...")
+    if not sync_pyodide_sources():
+        print("\nAborting: source sync failed.", file=sys.stderr)
+        sys.exit(1)
+    print()
     success = True
 
     for src_rel, dest_rel in SHOWCASE_MAP.items():

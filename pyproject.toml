@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eduvis"
-version = "0.7.0"
+version = "0.8.0"
 description = "An open, curriculum-aware schema for educational content"
 readme = "README.md"
 license = "Apache-2.0"
@@ -34,7 +34,7 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "ruff>=0.3.0",
-    "pylint>=3.0.0",
+    "pylint>=3.2.0",
 ]
 
 [project.urls]

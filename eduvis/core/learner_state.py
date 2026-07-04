@@ -54,7 +54,7 @@ class LearnerState:
     def __init__(
         self,
         learner_id: str,
-        schema_version: str = "0.7",
+        schema_version: str = "0.8",
         last_updated: str | None = None,
     ) -> None:
         self.learner_id = str(learner_id).strip()
@@ -80,7 +80,7 @@ class LearnerState:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> LearnerState:
         """Construct a LearnerState instance from a dictionary."""
-        version = data.get("schema_version", "0.7")
+        version = data.get("schema_version", "0.8")
         state = cls(
             learner_id=data.get("learner_id", "anonymous"),
             schema_version=version,

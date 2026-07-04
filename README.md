@@ -32,20 +32,32 @@ Then prefix commands with `uv run` (or use the globally installed `eduvis` if in
 
 ```bash
 # Validate showcase lessons
-uv run eduvis validate docs/showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml
-uv run eduvis validate docs/showcase/features/adaptive-remediation-branching-lesson.yaml
-uv run eduvis validate docs/showcase/features/visual-elements-catalog-lesson.yaml
-uv run eduvis validate docs/showcase/features/assessment-schemas-lesson.yaml
+uv run eduvis validate showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml
+uv run eduvis validate showcase/features/adaptive-remediation-branching-lesson.yaml
+uv run eduvis validate showcase/features/visual-elements-catalog-lesson.yaml
+uv run eduvis validate showcase/features/assessment-schemas-lesson.yaml
 
-# Render all showcase assets to docs/showcase/assets/
+# Render all showcase assets to showcase/assets/
 uv run python scripts/build_showcase.py
 
 # Or render a single showcase lesson to a custom directory
-uv run eduvis render docs/showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml -o output/negatives/
+uv run eduvis render showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml -o output/negatives/
 
 # Utility commands
 uv run eduvis docs --subjects math
-uv run eduvis schema -o schemas/
+uv run eduvis schema -o eduvis/schemas/
+
+# Curriculum graph inspection (v0.8)
+uv run eduvis graph inspect showcase/reference/showcase-curriculum.yaml
+uv run eduvis graph prereqs showcase/reference/showcase-curriculum.yaml rational_numbers --transitive
+uv run eduvis graph dependents showcase/reference/showcase-curriculum.yaml integers
+uv run eduvis graph path showcase/reference/showcase-curriculum.yaml integers real_numbers
+
+# Mastery projection (v0.8)
+uv run eduvis mastery project showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml
+
+# Study plan generation (v0.8)
+uv run eduvis study-plan showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml --mode exam_prep --hours 2
 ```
 
 
@@ -96,11 +108,14 @@ uv run ruff check eduvis tests scripts
 uv run pylint eduvis tests scripts
 ```
 
+> [!TIP]
+> **Troubleshooting Pylint Crashes:** If Pylint crashes with an `astroid` error or reports bogus `wrong-import-position` errors on every file (especially common on Python 3.12+), it usually means `uv run` is falling back to an outdated global installation. Force an update of your local virtual environment by running `uv sync --all-extras` to fix this.
+
 
 To see every registered element type rendered to SVG in one pass:
 
 ```bash
-uv run eduvis render docs/showcase/reference/exhaustive-element-catalog.yaml -o output/exhaustive_catalog/
+uv run eduvis render showcase/reference/exhaustive-element-catalog.yaml -o output/exhaustive_catalog/
 ```
 
 This produces one SVG per element type (`test_number_line.svg`, `test_text_list.svg`, `test_math_grid.svg`, `test_solid_cube.svg`, … `test_solid_cylinder.svg`) — useful for checking renderer output after code changes.
@@ -486,7 +501,7 @@ A single element from the Negative Numbers lesson — `explore` phase, number li
 
 This element sits inside a `confidence_ladder` lesson that progresses through hook → explore → explain → guided practice → starter problems → routine problems → challenge → recall.
 
-See [docs/showcase/lessons/negative-numbers-confidence-ladder.yaml](docs/showcase/lessons/negative-numbers-confidence-ladder.yaml) for the full lesson spec.
+See [showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml](showcase/lessons/negative-numbers-confidence-ladder-lesson.yaml) for the full lesson spec.
 
 ---
 
@@ -546,7 +561,7 @@ The vocabulary covers all five pillars in one block: lesson skeleton, progressio
 
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
-schema_version: "0.7"
+schema_version: "0.8"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -661,7 +676,7 @@ show_dimensions: true             # optional: overlay radius/height measurements
 - All 16 vertical edges visible
 - Bold top edge outline
 
-See `docs/showcase/reference/exhaustive-element-catalog.yaml` for live examples: `test_solid_cube.svg`, `test_solid_cone.svg`, `test_solid_cylinder.svg`, etc.
+See `showcase/reference/exhaustive-element-catalog.yaml` for live examples: `test_solid_cube.svg`, `test_solid_cone.svg`, `test_solid_cylinder.svg`, etc.
 
 ---
 
@@ -714,7 +729,7 @@ chain = prompt | llm
 
 Science and Humanities element types and renderers are planned for a future release.
 
-> [docs/showcase/reference/exhaustive-element-catalog.yaml](docs/showcase/reference/exhaustive-element-catalog.yaml) contains one working slide per element type. Run it with `eduvis render` to get a visual catalog of every renderer.
+> [showcase/reference/exhaustive-element-catalog.yaml](showcase/reference/exhaustive-element-catalog.yaml) contains one working slide per element type. Run it with `eduvis render` to get a visual catalog of every renderer.
 
 ### Generic — all subjects
 
@@ -747,7 +762,7 @@ Science and Humanities element types and renderers are planned for a future rele
 
 ---
 
-## EduVis-Presentation (v0.3)
+## EduVis-Presentation
 
 The presentation layer is a companion specification that sits on top of EduVis-Core. It controls the animation, reveal sequencing, and interactive player behavior without modifying the underlying pedagogical meaning.
 
@@ -785,14 +800,14 @@ To enable autocomplete, tooltips, and real-time schema validation in IDEs (like 
 
 For lesson YAML files:
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/lesson.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/lesson.schema.json
 curriculum:
   code: s1_sec_math
 ```
 
 For sidecar `presentation.yaml` files:
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/presentation.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/presentation.schema.json
 slides:
   - id: slide_01
     advance: manual
@@ -800,125 +815,51 @@ slides:
 
 ---
 
-## Roadmap
+## Project Status & Roadmap
 
-### - [x] v0.1 — Core Schema and SVG Renderer
-- Formal JSON Schema for all element types
-- Placement model: all three layers, including `difficulty`
-- Actions vocabulary: initial set including step-by-step transformation actions
-- Progression model: named patterns and pedagogy flags
-- Built-in SVG reference renderer
-- Secondary Mathematics examples
+### Project Status
+* **Current Stable**: `v0.7.x`
+* **Current Focus**: `v0.8` — Interactive Curriculum Workspace & Explorer
+* **Long-term Vision**: `v1.0` — Curriculum Compiler Pipeline
 
-### - [x] v0.2 — Curriculum Knowledge Model
-- Relationships between elements within a lesson
-- Curriculum metadata block (`code`, `topic`)
-- Lesson-level pedagogical validation (chronological sequence, progression coverage, concepts coherence, anchor density limits)
-- Learning outcomes mapping
-- Prerequisite and remediation relationships
-- Assessment objectives
-- Curriculum graph validation
+---
 
-### - [x] v0.3 — EduVis-Presentation
-- Interactive presentation mode (v0.3.0 player)
-- Companion `presentation` schema layered cleanly over Core
-- Reveal sequencing, highlight/zoom annotations, and viewport commands
-- Narration timing hooks
+### Looking Ahead (Roadmap)
 
-### - [x] v0.4 — Assessment and Validation Engine
-- Canonical action validation model
-- Step-by-step solution representation
-- Rule-based answer checking (client-side, no LLM inference)
-- Symbolic equivalence checking
-- Misconception detection rules
-- Assessment event schema
-- Canonical assessment objective vocabulary (`procedural_fluency`, `conceptual_understanding`, `application`, `reasoning`)
-- Mastery model and Assessment objective mapping
-- **Assessment Evidence Bridge (Static Mapping)**: Static metadata framework mapping assessment events (e.g. `objective: procedural_fluency`) to the concepts, skills, or misconceptions they produce evidence for.
+#### v0.8 — Tooling, Interactive Visualizations, and Multi-Lens Explorer (Current)
+* **Interactive Curriculum Graph Explorer**: Transition the Live Editor's static Mermaid diagram into an interactive graph canvas (e.g. force-directed layout).
+* **Workspace of Projections (Tabbed Interfaces)**: Live views for Lesson preview, Curriculum maps, Assessment coverage checks, and Learner mastery gap heatmaps.
+* **Local Dependency Inspector** ✅: `eduvis graph` CLI — inspect concepts, query prerequisites/dependents, find prerequisite paths between concepts.
+* **Mastery Projection CLI** ✅: `eduvis mastery project` — overlay learner state onto the curriculum graph to surface mastery status and prerequisite gaps.
+* **Study Plan CLI** ✅: `eduvis study-plan` — generate time-bounded study plans in four modes (`lesson`, `revision`, `exam_prep`, `crash_course`).
+* **Bidirectional Visual Editing (Long-Term)**: Interactive drag-and-drop graph editing updating YAML schemas.
 
-### - [x] v0.5 — Curriculum Graph and Knowledge Engine
-- **Static Curriculum Graph Representation**:
-  - Explicit taxonomy mapping: Concepts, Skills, and Misconceptions
-  - Concept Dependency Maps: Prerequisite (`from` / `to`) and support relationships
-  - **Knowledge Importance Model**: Weighting concepts, skills, and misconceptions by exam relevance (`exam_weight`), graph centrality (`centrality_weight`), and remediation weight (`remediation_weight`)
-- **Curriculum Analytics**:
-  - Concept centrality analysis (identifying key bottleneck concepts)
-  - Outcome coverage analysis
-  - Dependency gap detection
-  - Curriculum completeness validation
-- **Curriculum Traversal APIs** to query relationships programmatically
+#### v0.9 — AI Generation, Reasoning-Driven Scaffolding, and Schema Migration (Upcoming)
+* **Graph-Driven Lesson Generation**: Automated EduVis lesson specs generated directly from graph path schemas rather than unstructured text prompts.
+* **Reasoning-Path Scaffolding**: Target the `reasoning_path` sequence to structure step-by-step visual explanations, animations, and targeted hints.
+* **Migration CLI & Upgrades**: `eduvis migrate` tooling to cleanly rewrite schemas across versions.
 
-### - [x] v0.6 — Assessment Reasoning, Pedagogical Intent, and Diagnostic Evidencing
-- **Diagnostic Assessment & Evidence Modeling**:
-  - Standardized diagnostic metadata fields inside MCQ, short-answer, and structured-response elements.
-  - Weighted concept mapping (`assesses: {concept_id: weight}`) for multi-concept questions.
-  - Static diagnostic reliability metadata (`evidence_strength: high | medium | low`) placed directly on the assessment elements to represent their inherent diagnostic weight.
-  - Multi-dimensional cognitive challenge profiling (replacing flat difficulty with `cognitive_skills` e.g., recall/apply/reason and `challenge_factors` e.g., multi-step/unfamiliar context).
-  - Explicit step-by-step rubrics linking criteria to expected evidence targets, marks, and specific misconceptions.
-  - Declarative marking policies supporting partial credit and Error Carry Forward (ECF) dependencies.
-- **Assessment Reasoning & Multi-part Problems**:
-  - `structured_response` element type for multi-part structured questions.
-  - Validation of part-level dependencies (`depends_on`) to enable Error Carry Forward (ECF) marking.
-  - Precedence constraints to prevent circular or forward-referencing dependencies.
-  - `reasoning_path` sequence (e.g., `represent` -> `formulate` -> `transform` -> `solve` -> `verify`) to map the expected cognitive/thinking path assessed, distinct from the rubric's marking criteria.
-- **Pedagogical Intent Modeling (Reduced Scope)**:
-  - `pedagogical_intent` configuration block inside placement specifications to guide lesson generation and adaptivity (e.g., `intent: confidence_building`).
-  - `scaffolding_level` configuration to specify content support depth (e.g., `high`, `medium`, `low`).
-  - *Note: Presentation-level details (such as narrative tone/theme) are cleanly deferred to the presentation/renderer layers.*
-- **Decoupled Learner State**:
-  - Decoupled dynamic runtime telemetry models (`learner_state` / mastery logs) from static content definitions to maintain a pure core schema definition layer.
+#### v1.0 — Curriculum Compiler Pipeline (Upcoming)
+* **Pedagogical Intermediate Representation (IR)**: Establish EduVis as the canonical IR and validation boundary sitting between generation back-ends and delivery front-ends.
+* **Interchangeable Compiler Agent Contracts**: Define static schema files as the strict interfaces between specialized, decoupled compiler agents:
+  * **Curriculum Planner**: Translates standard syllabus documents into a Concept/Skill/Misconception dependency graph (`curriculum.yaml`).
+  * **Lesson Planner**: Generates progressive lesson steps and selects scaffolding depth.
+  * **Assessment Assembler**: Blueprints exam specifications and selects questions aligning to skills (`assessment_paper.yaml`).
+  * **Presentation Compiler**: Compiles educational meaning with viewport pans, timings, and narration sidecars (`presentation.yaml`).
+  * **QA & Validation Engine**: Executes structural and pedagogical rulesets dynamically to check compiler integrity.
 
-### - [x] v0.7 — Learner State, Mastery, and Assessment Orchestration
-- **EduVis-Assessment wrapper package**:
-  - `assessment_paper.schema.json` container mapping exam/quiz structures (sections, question lists, calculator guidelines).
-  - `paper_blueprint.schema.json` mapping concept and cognitive skill targets to exam mark allocations.
-  - `generate_blueprint()` — automated blueprint generation from the Curriculum Graph (blended exam_weight + centrality_weight).
-  - `validate_paper_coverage()` — paper coverage validation and blueprint analytics comparing actual exam papers against target blueprints.
-  - `assemble_paper()` — automated exam/paper assembly using graph-scored element selection against blueprint targets.
-- **Dynamic Learner State Representation**:
-  - `learner_state.json` runtime sidecar (+ `LearnerState` Python class) mapping dynamically onto the static `curriculum.yaml` graph nodes.
-  - Granular, session-transient mastery tracking for all three levels: Concepts, Skills, and Misconceptions.
-  - Strict demarcation between **Static Content Specs** (YAML) and **Dynamic Runtime State** (JSON).
-- **Stateless Transition Engine (Runtime)**:
-  - `apply_telemetry_event()` — pure Evidence Bridge: `Transition(current_state, event, curriculum) -> new_state`.
-  - `telemetry_event.schema.json` conformance schema; temporal mastery decay built in.
-- **Mastery Graph Projection**:
-  - `MasteryGraphView` — combines static Curriculum Graph with dynamic LearnerState for real-time mastery views with prerequisite gap detection.
-- **Revision & Knowledge Condensation Engine**:
-  - `get_top_concepts()` — weight-ranked concepts to study next (exam_weight × centrality × mastery gap).
-  - `get_top_misconceptions()` — active misconceptions ranked by remediation_weight.
-  - `generate_study_plan()` — time-bounded study plan with four modes: `lesson`, `revision`, `exam_prep`, `crash_course`.
-- **Adaptive Remediation & Paths**:
-  - `trace_prerequisite_failure_root()` — traces prerequisite dependency graph backward to the deepest unmastered root.
-  - `select_next_element()` — scores available lesson elements against learner state and picks the best next element.
-  - `generate_hint()` — derives a targeted hint from element's `misconceptions` + `solution_steps` matched to the wrong answer.
-- **Spaced Repetition (SM-2)**:
-  - `update_review_schedule()` — SM-2 algorithm: updates interval, ease_factor, and next_review_at after each review.
-  - `get_due_elements()` — returns element IDs due for review on a given date.
-  - `get_schedule_summary()` — aggregate stats: total tracked, due today, overdue, upcoming, average ease.
+---
 
-### - [ ] v0.8 — Tooling, Interactive Visualizations, and Multi-Lens Explorer (Upcoming)
-- **Interactive Curriculum Graph Explorer**:
-  - Transition the Live Editor's static Mermaid diagram into an interactive graph canvas (e.g., force-directed layout using Cytoscape.js or D3.js).
-  - **Local Dependency Inspector**: Implement a slide-out/inspector panel to detail prerequisites, successors, associated skills, and misconceptions when clicking a node.
-- **Workspace of Projections (Tabbed Interfaces)**:
-  - *Lesson View*: Visual preview canvas and interactive presentation player.
-  - *Curriculum View*: Graph-wide dependency map with automated coverage and gap alerts.
-  - *Assessment View*: Question alignment checker mapping assessment elements to target concept and skill nodes.
-  - *Learner View*: Visual mastery/gap heatmap overlay projected on top of the curriculum graph using the dynamic `learner_state` sidecar.
-- **Bidirectional Visual Editing (Long-Term)**:
-  - Enable dragging and connecting nodes in the interactive explorer to automatically update YAML schemas in the code editor.
+### Past Milestones
 
-### - [ ] v0.9 — AI Generation, Tutoring, and Schema Migration (Upcoming)
-- **Graph-Driven Lesson Generation**: Automatically generate EduVis lesson specs directly from the Curriculum Graph (Curriculum Graph $\to$ Lesson Generator $\to$ EduVis Lesson) rather than simple text prompting.
-- Tutoring workflows and visual asset generation.
-- **Migration CLI & Upgrades**: Introduction of migration tooling framework and automated schema upgrade paths (`eduvis migrate`) to upgrade schemas between versions.
-
-### - [ ] v1.0 — Autonomous Curriculum Factory (Upcoming)
-- Agent-based curriculum generation
-- Curriculum review workflows
-- Standards mapping and multi-framework support
-- Curriculum QA and Syllabus generation
+* **v0.1 — Core Schema**: Formal JSON schemas, three-layer placement model, initial actions/progression schemas, and reference SVG renderer.
+* **v0.2 — Curriculum Knowledge**: Inter-element relationships, curriculum metadata blocks, chronological and density validation, and learning outcome maps.
+* **v0.3 — EduVis-Presentation**: Viewport reveal sequences, companion presentation sidecar schema, zoom/highlight annotations, and audio timing hooks.
+* **v0.4 — Assessment & Validation**: Symbolic correctness and answer checking, misconception detection, assessment objectives, and static evidence mappings.
+* **v0.5 — Curriculum Graph**: Taxonomy node classifications, importance weighting models, centrality analytics, and traversal query APIs.
+* **v0.6 — Diagnostic Reasoning & Pedagogical Intent**: Decoupled learner state schemas, cognitive challenge profiles, step-by-step diagnostic rubrics, and the `reasoning_path` structure.
+* **v0.7 — Learner State & Assessment Orchestration**: Dynamic state JSON telemetry engines, exam blueprint generation, auto-assembly algorithms, revision planners, spaced-repetition schedules, and adaptive remediation paths.
+* **v0.8 — Interactive Curriculum Workspace**: CLI curriculum graph explorer (`graph inspect/prereqs/dependents/path`), mastery projection command (`mastery project`), study plan generator (`study-plan`) with four adaptive modes, and sample learner state showcase file.
 
 ---
 
@@ -926,7 +867,7 @@ slides:
 
 To keep the EduVis ecosystem stable for downstream renderers and player platforms, we adhere to the following governance frameworks:
 
-* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.7.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.7"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
+* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.8.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.8"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
 * **Schema Stability Lifecycle**: All schema fields are categorized under one of four lifecycle tiers:
   * **Experimental**: Active beta iteration. Fields may change or be removed at any minor version.
   * **Stable**: Production-ready. Backwards compatibility is guaranteed.
@@ -984,7 +925,7 @@ eduvis/ (repository root)
 │   │       ├── renderers_base.py ← generic element renderers
 │   │       └── renderers_math/   ← mathematics element renderers
 │   │
-│   └── schemas/              ← pre-generated JSON Schema files packaged with the library
+│   └── schemas/              ← pre-generated JSON Schema files packaged with the library (also for IDE validation)
 │       ├── lesson.schema.json
 │       ├── placement.schema.json
 │       ├── actions.schema.json
@@ -995,26 +936,20 @@ eduvis/ (repository root)
 │       ├── assessment_paper.schema.json
 │       └── paper_blueprint.schema.json
 │
-├── docs/                     ← Documentation and showcase files
-│   ├── llm_system_prompt.md  ← generated vocabulary reference for LLMs
-│   └── showcase/
-│       ├── lessons/               ← complete teaching flows (one pattern per file)
-│       │   └── negative-numbers-confidence-ladder-lesson.yaml
-│       ├── features/              ← one feature family per file
-│       │   ├── adaptive-remediation-branching-lesson.yaml
-│       │   ├── visual-elements-catalog-lesson.yaml
-│       │   └── assessment-schemas-lesson.yaml
-│       └── reference/             ← reference catalogs
-│           ├── exhaustive-element-catalog.yaml
-│           └── mixed-content-card.yaml
-
+├── docs/                     ← Documentation files
+│   └── llm_system_prompt.md  ← generated vocabulary reference for LLMs
 │
-├── schemas/                  ← pre-generated JSON Schema files at the repository root
-│   ├── placement.schema.json
-│   ├── actions.schema.json
-│   ├── relationships.schema.json
-│   ├── progression.schema.json
-│   └── lesson.schema.json
+├── showcase/                 ← Live editor and showcase files
+│   ├── lessons/               ← complete teaching flows (one pattern per file)
+│   │   └── negative-numbers-confidence-ladder-lesson.yaml
+│   ├── features/              ← one feature family per file
+│   │   ├── adaptive-remediation-branching-lesson.yaml
+│   │   ├── visual-elements-catalog-lesson.yaml
+│   │   └── assessment-schemas-lesson.yaml
+│   └── reference/             ← reference catalogs
+│       ├── exhaustive-element-catalog.yaml
+│       └── mixed-content-card.yaml
+
 │
 └── tests/                    ← Test suite
     ├── test_validate.py      ← validator smoke tests

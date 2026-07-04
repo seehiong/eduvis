@@ -17,7 +17,7 @@ from eduvis.core.engine import check_answer
 # Path to the actual negative numbers lesson spec
 LESSON_FILE = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
-    "docs", "showcase", "lessons", "negative-numbers-confidence-ladder-lesson.yaml"
+    "showcase", "lessons", "negative-numbers-confidence-ladder-lesson.yaml"
 )
 
 

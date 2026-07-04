@@ -1,12 +1,13 @@
 """Tests for the EduVis Learner State representation and validation."""
 
+from eduvis.core.constants import SCHEMA_VERSION
 from eduvis.core.learner_state import LearnerState, validate_learner_state
 
 
 def test_learner_state_basic_instantiation():
     state = LearnerState(learner_id="student_123")
     assert state.learner_id == "student_123"
-    assert state.schema_version == "0.7"
+    assert state.schema_version == SCHEMA_VERSION
     assert not state.concepts
     assert not state.skills
     assert not state.misconceptions
@@ -15,7 +16,7 @@ def test_learner_state_basic_instantiation():
 
 def test_learner_state_to_and_from_dict():
     data = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "student_abc",
         "last_updated": "2026-06-27T00:00:00Z",
         "concepts": {

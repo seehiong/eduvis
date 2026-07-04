@@ -184,8 +184,10 @@ def _verify_concept_unrelated_pairs(
                 unrelated_pairs.append((c1, c2))
 
     if unrelated_pairs:
+        pairs_str = ", ".join(f"({c1}, {c2})" for c1, c2 in sorted(unrelated_pairs))
         warnings.append(
-            "WARN: [coherence:concept] Multiple concept groups detected with no relationships connecting them."
+            f"WARN: [coherence:concept] Multiple concept groups detected with no relationships connecting them. "
+            f"Unrelated pairs: {pairs_str}"
         )
 
 

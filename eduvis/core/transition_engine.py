@@ -67,13 +67,16 @@ def _handle_misconception_update(
 
     # Apply misconception penalty to assessed concepts
     penalty = engine_config["misconception_penalty"]
+    lr = engine_config["learning_rate"]
     for concept in assessed_concepts:
         weight = assesses.get(concept, 1.0)
         if concept in new_state.concepts:
             c_state = new_state.concepts[concept]
             c_state.mastery = max(0.0, c_state.mastery - penalty * weight)
+            prior_conf = c_state.confidence if c_state.confidence is not None else 0.5
+            c_state.confidence = max(0.0, prior_conf - lr * weight * prior_conf)
         else:
-            new_state.concepts[concept] = ConceptState(mastery=0.0)
+            new_state.concepts[concept] = ConceptState(mastery=0.0, confidence=0.0)
 
 
 def _handle_correct_attempt(
@@ -84,27 +87,29 @@ def _handle_correct_attempt(
     *,
     curriculum: CurriculumGraph | None,
     engine_config: dict[str, Any],
+    partial_credit_ratio: float = 1.0,
 ) -> None:
-    lr = engine_config["learning_rate"]
-    # Set triggered misconceptions for these concepts to remediated
-    for m_code, m_state in list(new_state.misconceptions.items()):
-        if m_state.state == "active":
-            # Check if misconception is linked to assessed concepts
-            is_linked = False
-            if curriculum and m_code in curriculum.misconceptions:
+    lr = engine_config["learning_rate"] * max(0.0, min(1.0, partial_credit_ratio))
+    # Set triggered misconceptions for these concepts to remediated (only on full credit)
+    if partial_credit_ratio >= 1.0:
+        for m_code, m_state in list(new_state.misconceptions.items()):
+            if m_state.state != "active" or not curriculum:
+                continue
+            if m_code in curriculum.misconceptions:
                 if curriculum.misconceptions[m_code].concept in assessed_concepts:
-                    is_linked = True
-            if is_linked:
-                m_state.state = "remediated"
+                    m_state.state = "remediated"
 
-    # Increment concept mastery
+    # Increment concept mastery and confidence
     for concept in assessed_concepts:
         weight = assesses.get(concept, 1.0)
         if concept in new_state.concepts:
             c_state = new_state.concepts[concept]
             c_state.mastery = min(1.0, c_state.mastery + lr * weight * (1.0 - c_state.mastery))
+            # Confidence rises toward partial_credit_ratio each correct/partial attempt
+            prior_conf = c_state.confidence if c_state.confidence is not None else 0.5
+            c_state.confidence = min(1.0, prior_conf + lr * weight * (partial_credit_ratio - prior_conf))
         else:
-            new_state.concepts[concept] = ConceptState(mastery=lr * weight)
+            new_state.concepts[concept] = ConceptState(mastery=lr * weight, confidence=lr * weight * partial_credit_ratio)
 
     # Increment skill mastery
     for skill in assesses_skills:
@@ -135,8 +140,11 @@ def _handle_incorrect_attempt(
         if concept in new_state.concepts:
             c_state = new_state.concepts[concept]
             c_state.mastery = max(0.0, c_state.mastery - penalty * weight)
+            # Confidence drops toward 0 on incorrect attempt
+            prior_conf = c_state.confidence if c_state.confidence is not None else 0.5
+            c_state.confidence = max(0.0, prior_conf - lr * weight * prior_conf)
         else:
-            new_state.concepts[concept] = ConceptState(mastery=0.0)
+            new_state.concepts[concept] = ConceptState(mastery=0.0, confidence=0.0)
 
     for skill in assesses_skills:
         weight = assesses_skills.get(skill, 1.0)
@@ -157,24 +165,75 @@ def _apply_assessment_attempt(
     misconception = payload.get("misconception_detected")
     assesses = payload.get("assesses") or {}
     assesses_skills = payload.get("assesses_skills") or {}
+    # partial_credit_ratio: 0.0–1.0 score fraction from evaluate_steps(); defaults to binary
+    partial_credit_ratio: float = float(payload.get("partial_credit_ratio", 1.0 if is_correct else 0.0))
+    partial_credit_ratio = max(0.0, min(1.0, partial_credit_ratio))
+    # attempt_number: diminishing returns — 2nd attempt earns half credit, 3rd a third, etc.
+    attempt_number: int = max(1, int(payload.get("attempt_number", 1)))
+    attempt_scale = 1.0 / attempt_number
 
     assessed_concepts = list(assesses.keys())
 
+    # Scale engine learning rate by attempt position for this event only
+    scaled_config = dict(engine_config)
+    scaled_config["learning_rate"] = engine_config["learning_rate"] * attempt_scale
+
     _handle_misconception_update(
         new_state, misconception, assessed_concepts, assesses,
-        curriculum=curriculum, engine_config=engine_config
+        curriculum=curriculum, engine_config=scaled_config
     )
 
-    if is_correct:
+    if partial_credit_ratio > 0.0:
+        # Treat any non-zero score as a (potentially partial) correct attempt
         _handle_correct_attempt(
             new_state, assessed_concepts, assesses, assesses_skills,
-            curriculum=curriculum, engine_config=engine_config
+            curriculum=curriculum, engine_config=scaled_config,
+            partial_credit_ratio=partial_credit_ratio,
         )
     else:
         _handle_incorrect_attempt(
             new_state, misconception, assessed_concepts, assesses,
-            assesses_skills=assesses_skills, engine_config=engine_config
+            assesses_skills=assesses_skills, engine_config=scaled_config
         )
+
+
+def _apply_structured_response_attempt(
+    new_state: LearnerState,
+    payload: dict[str, Any],
+    curriculum: CurriculumGraph | None,
+    engine_config: dict[str, Any],
+) -> None:
+    """Process a structured_response_attempt event with per-part concept granularity.
+
+    Payload shape:
+      attempt_number: int (optional, default 1)
+      part_results: list of {
+        part_id: str,
+        assesses: {concept: weight},
+        assesses_skills: {skill: weight},
+        is_correct: bool,
+        partial_credit_ratio: float (optional),
+        misconception_detected: str | None (optional),
+      }
+    """
+    attempt_number = max(1, int(payload.get("attempt_number", 1)))
+    attempt_scale = 1.0 / attempt_number
+    scaled_config = dict(engine_config)
+    scaled_config["learning_rate"] = engine_config["learning_rate"] * attempt_scale
+
+    part_results = payload.get("part_results") or []
+    for part in part_results:
+        if not isinstance(part, dict):
+            continue
+        part_payload = {
+            "is_correct": part.get("is_correct", False),
+            "misconception_detected": part.get("misconception_detected"),
+            "assesses": part.get("assesses") or {},
+            "assesses_skills": part.get("assesses_skills") or {},
+            "partial_credit_ratio": part.get("partial_credit_ratio"),
+            "attempt_number": 1,  # attempt scale already applied above
+        }
+        _apply_assessment_attempt(new_state, part_payload, curriculum, scaled_config)
 
 
 def apply_telemetry_event(
@@ -225,5 +284,7 @@ def apply_telemetry_event(
 
     if event_type == "assessment_attempt":
         _apply_assessment_attempt(new_state, payload, curriculum, engine_config)
+    elif event_type == "structured_response_attempt":
+        _apply_structured_response_attempt(new_state, payload, curriculum, engine_config)
 
     return new_state

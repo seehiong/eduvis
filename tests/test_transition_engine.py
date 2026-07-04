@@ -5,6 +5,7 @@ from eduvis.core.learner_state import LearnerState, ConceptState
 from eduvis.core.curriculum import CurriculumGraph, ConceptNode, MisconceptionNode
 from eduvis.core.transition_engine import apply_telemetry_event
 from eduvis.core.mastery_projection import MasteryGraphView
+from eduvis.core.constants import SCHEMA_VERSION
 
 
 def _setup_curriculum() -> CurriculumGraph:
@@ -23,7 +24,7 @@ def test_transition_correct_attempt():
     state.concepts["concept_a"] = ConceptState(mastery=0.5)
     # Build standard state dict
     state_dict = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "learner_1",
         "concepts": {
             "concept_a": {"mastery": 0.5}
@@ -54,7 +55,7 @@ def test_transition_correct_attempt():
 def test_transition_incorrect_attempt_with_misconception():
     curr = _setup_curriculum()
     state_dict = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "learner_2",
         "concepts": {
             "concept_a": {"mastery": 0.5}
@@ -89,7 +90,7 @@ def test_transition_incorrect_attempt_with_misconception():
 def test_transition_remediation_on_correct():
     curr = _setup_curriculum()
     state_dict = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "learner_3",
         "concepts": {
             "concept_a": {"mastery": 0.3}
@@ -121,7 +122,7 @@ def test_transition_remediation_on_correct():
 
 def test_temporal_decay():
     state_dict = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "learner_4",
         "last_updated": "2026-06-27T00:00:00Z",
         "concepts": {
@@ -154,7 +155,7 @@ def test_mastery_graph_projection():
 
     # State where concept_a (prereq) is weak (mastery = 0.5, under default threshold of 0.8)
     state_dict = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "learner_5",
         "concepts": {
             "concept_a": {"mastery": 0.5},
@@ -180,7 +181,7 @@ def test_mastery_graph_projection():
 
     # State with prereq mastered
     state_dict_ok = {
-        "schema_version": "0.7",
+        "schema_version": SCHEMA_VERSION,
         "learner_id": "learner_5",
         "concepts": {
             "concept_a": {"mastery": 0.9},

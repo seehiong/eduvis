@@ -22,7 +22,17 @@ _PACKAGE_ROOT = Path(__file__).resolve().parent.parent   # project root
 if str(_PACKAGE_ROOT) not in sys.path:
     sys.path.insert(0, str(_PACKAGE_ROOT))
 
-from eduvis.core import validate_lesson, format_prompt_docs, get_all_schemas, validate_curriculum  # noqa: E402
+from eduvis.core import (  # noqa: E402
+    validate_lesson,
+    format_prompt_docs,
+    get_all_schemas,
+    validate_curriculum,
+    CurriculumGraph,
+    LearnerState,
+    MasteryGraphView,
+    generate_study_plan,
+    VALID_REVISION_MODES,
+)
 from eduvis.core.schemas.placement import VALID_MEMORY_ROLES, VALID_PHASES, VALID_DIFFICULTY  # noqa: E402
 
 # ── EduVis SVG renderer ──────────────────────────────────────────────────────
@@ -30,7 +40,7 @@ from eduvis.core.schemas.placement import VALID_MEMORY_ROLES, VALID_PHASES, VALI
 # ── Constants ─────────────────────────────────────────────────────────────────
 _EDUVIS_META = frozenset({"id", "placement", "actions", "relationships"})
 
-# Layout zone mapping: EduVis layout_zone → svg_spec zone key.
+# Layout zone mapping: EduVis layout_zone ->svg_spec zone key.
 _ZONE_MAP = {
     "center": "center",
     "left":   "left",
@@ -47,7 +57,7 @@ _LAYOUT_FOR_ZONE = {
     "bottom": "visual + full-width",
 }
 
-# Phase → header background color + badge label.
+# Phase ->header background color + badge label.
 # Colors are dark enough for white title text.
 _PHASE_STYLE: dict[str, dict] = {
     "hook":                 {"color": "#BF360C", "label": "HOOK"},
@@ -67,7 +77,7 @@ _DIFFICULTY_STYLE: dict[str, dict] = {
     "challenge": {"color": "#B71C1C", "label": "CHALLENGE"},
 }
 
-# Memory role → accent color for the divider line and dot.
+# Memory role ->accent color for the divider line and dot.
 _ROLE_COLOR: dict[str, str] = {
     "anchor":           "#FFD700",
     "example":          "#00BCD4",
@@ -230,8 +240,8 @@ def _update_presentation_svg(
     """
     Auto-write SVG data into the sidecar presentation.yaml for the matching slide.
 
-    embed_mode='ref'    → sets svg_ref to svg_rel_path, removes svg_inline.
-    embed_mode='inline' → sets svg_inline to svg_text,  removes svg_ref.
+    embed_mode='ref'    ->sets svg_ref to svg_rel_path, removes svg_inline.
+    embed_mode='inline' ->sets svg_inline to svg_text,  removes svg_ref.
 
     Only updates slides that already have a matching 'id' entry in the sidecar.
     If no matching slide entry exists, the file is left unchanged.
@@ -485,3 +495,235 @@ def render(lesson_file: str, output: str, posting_group: str, skip_validation: b
     )
     if skipped:
         click.secho(f"       {skipped} element(s) skipped due to render errors.", fg="yellow")
+
+
+# ── Shared loaders ────────────────────────────────────────────────────────────
+
+
+def _load_curriculum_graph(curriculum_file: str) -> CurriculumGraph:
+    """Load a CurriculumGraph from a YAML file, raising ClickException on error."""
+    try:
+        return CurriculumGraph.load_from_yaml(curriculum_file)
+    except FileNotFoundError as exc:
+        raise click.ClickException(str(exc)) from exc
+    except yaml.YAMLError as exc:
+        raise click.ClickException(f"YAML parse error in curriculum: {exc}") from exc
+
+
+def _load_learner_state(state_file: str) -> LearnerState:
+    """Load a LearnerState from a JSON or YAML file."""
+    path = Path(state_file)
+    with open(path, encoding="utf-8") as f:
+        try:
+            data = json.load(f) if path.suffix == ".json" else yaml.safe_load(f)
+        except Exception as exc:
+            raise click.ClickException(f"Parse error in state file: {exc}") from exc
+    if not isinstance(data, dict):
+        raise click.ClickException("Learner state file must be a mapping at the top level.")
+    return LearnerState.from_dict(data)
+
+
+# ── graph command group ───────────────────────────────────────────────────────
+
+
+@cli.group()
+def graph() -> None:
+    """Inspect a curriculum graph: concepts, skills, prerequisites, paths."""
+
+
+@graph.command("inspect")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+def graph_inspect(curriculum_file: str) -> None:
+    """Show a summary of all concepts, skills, and misconceptions in a curriculum."""
+    cg = _load_curriculum_graph(curriculum_file)
+
+    click.secho(f"\nCurriculum: {curriculum_file}", bold=True)
+    click.echo(f"  Concepts:       {len(cg.concepts)}")
+    click.echo(f"  Skills:         {len(cg.skills)}")
+    click.echo(f"  Misconceptions: {len(cg.misconceptions)}")
+    click.echo(f"  Dependencies:   {len(cg.dependencies)}")
+
+    click.secho("\nConcepts (weight / centrality / prerequisites):", bold=True)
+    for code, node in cg.concepts.items():
+        prereqs = cg.get_prerequisites(code)
+        prereq_str = f"  <-{', '.join(prereqs)}" if prereqs else ""
+        click.echo(
+            f"  {code:<32}  w={node.exam_weight:.2f}  c={node.centrality_weight:.2f}{prereq_str}"
+        )
+
+    if cg.skills:
+        click.secho("\nSkills:", bold=True)
+        for code, node in cg.skills.items():
+            click.echo(f"  {code:<32}  concept={node.concept}  w={node.exam_weight:.2f}")
+
+    if cg.misconceptions:
+        click.secho("\nMisconceptions:", bold=True)
+        for code, node in cg.misconceptions.items():
+            click.echo(
+                f"  {code:<32}  concept={node.concept}  remediation_w={node.remediation_weight:.2f}"
+            )
+
+
+@graph.command("prereqs")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("concept_code")
+@click.option("--transitive", is_flag=True, default=False, help="Include all transitive prerequisites.")
+def graph_prereqs(curriculum_file: str, concept_code: str, transitive: bool) -> None:
+    """Show prerequisites for a concept."""
+    cg = _load_curriculum_graph(curriculum_file)
+    if concept_code not in cg.concepts:
+        raise click.ClickException(f"Concept '{concept_code}' not found in curriculum.")
+
+    prereqs = cg.get_prerequisites(concept_code, transitive=transitive)
+    label = "Transitive prerequisites" if transitive else "Direct prerequisites"
+    click.secho(f"\n{label} of '{concept_code}':", bold=True)
+    if not prereqs:
+        click.echo("  (none)")
+    for code in prereqs:
+        node = cg.concepts.get(code)
+        name = node.name if node else ""
+        click.echo(f"  {code:<32}  {name}")
+
+
+@graph.command("dependents")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("concept_code")
+@click.option("--transitive", is_flag=True, default=False, help="Include all transitive dependents.")
+def graph_dependents(curriculum_file: str, concept_code: str, transitive: bool) -> None:
+    """Show concepts that depend on this concept (downstream)."""
+    cg = _load_curriculum_graph(curriculum_file)
+    if concept_code not in cg.concepts:
+        raise click.ClickException(f"Concept '{concept_code}' not found in curriculum.")
+
+    dependents = cg.get_dependents(concept_code, transitive=transitive)
+    label = "Transitive dependents" if transitive else "Direct dependents"
+    click.secho(f"\n{label} of '{concept_code}':", bold=True)
+    if not dependents:
+        click.echo("  (none)")
+    for code in dependents:
+        node = cg.concepts.get(code)
+        name = node.name if node else ""
+        click.echo(f"  {code:<32}  {name}")
+
+
+@graph.command("path")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("from_concept")
+@click.argument("to_concept")
+def graph_path(curriculum_file: str, from_concept: str, to_concept: str) -> None:
+    """Find the prerequisite path between two concepts."""
+    cg = _load_curriculum_graph(curriculum_file)
+    for code in (from_concept, to_concept):
+        if code not in cg.concepts:
+            raise click.ClickException(f"Concept '{code}' not found in curriculum.")
+
+    path = cg.find_path(from_concept, to_concept)
+    click.secho(f"\nPath from '{from_concept}' ->'{to_concept}':", bold=True)
+    if not path:
+        click.echo("  No path found.")
+        return
+    for i, code in enumerate(path):
+        node = cg.concepts.get(code)
+        name = node.name if node else ""
+        indent = "  " + ("  " * i)
+        arrow = "->" if i > 0 else "  "
+        click.echo(f"{indent}{arrow}{code}  ({name})")
+
+
+# ── mastery command group ──────────────────────────────────────────────────────
+
+
+@cli.group()
+def mastery() -> None:
+    """Mastery projection: overlay learner state onto a curriculum graph."""
+
+
+@mastery.command("project")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("state_file", type=click.Path(exists=True, dir_okay=False))
+@click.option("--threshold", default=0.8, show_default=True, help="Mastery threshold (0.0–1.0).")
+def mastery_project(curriculum_file: str, state_file: str, threshold: float) -> None:
+    """Show concept mastery status overlaid on the curriculum graph."""
+    cg = _load_curriculum_graph(curriculum_file)
+    state = _load_learner_state(state_file)
+    view = MasteryGraphView(cg, state, mastery_threshold=threshold)
+
+    click.secho(f"\nMastery Projection  (threshold={threshold})", bold=True)
+    click.echo(f"  Learner: {state.learner_id}\n")
+
+    status_color = {
+        "mastered": "green",
+        "weak":     "yellow",
+        "gap":      "red",
+        "locked":   "white",
+        "unknown":  "white",
+    }
+    for code, info in view.concept_mastery.items():
+        status = view.get_concept_status(code)
+        color = status_color.get(status, "white")
+        mastery_val = f"{info.mastery:.2f}"
+        gap_note = f"  gaps: {', '.join(info.gaps)}" if info.gaps else ""
+        click.secho(
+            f"  [{status.upper():<8}]  {code:<32}  mastery={mastery_val}  {info.name}{gap_note}",
+            fg=color,
+        )
+
+    if view.prerequisite_gaps:
+        click.secho(f"\nPrerequisite gaps ({len(view.prerequisite_gaps)}):", fg="red", bold=True)
+        for gap in view.prerequisite_gaps:
+            click.echo(
+                f"  {gap['concept']} is missing prerequisite '{gap['missing_prerequisite']}'"
+                f"  (current mastery: {gap['current_mastery']:.2f})"
+            )
+    else:
+        click.secho("\nNo prerequisite gaps detected.", fg="green")
+
+
+# ── study-plan command ─────────────────────────────────────────────────────────
+
+
+@cli.command("study-plan")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("state_file", type=click.Path(exists=True, dir_okay=False))
+@click.option(
+    "--mode",
+    type=click.Choice(list(VALID_REVISION_MODES), case_sensitive=False),
+    default="revision",
+    show_default=True,
+    help="Planning strategy: lesson | revision | exam_prep | crash_course.",
+)
+@click.option("--hours", default=2.0, show_default=True, help="Total study budget in hours.")
+@click.option("--threshold", default=0.8, show_default=True, help="Mastery threshold (0.0–1.0).")
+def study_plan(curriculum_file: str, state_file: str, mode: str, hours: float, threshold: float) -> None:
+    """Generate a time-bounded study plan from curriculum and learner state."""
+    cg = _load_curriculum_graph(curriculum_file)
+    state = _load_learner_state(state_file)
+    view = MasteryGraphView(cg, state, mastery_threshold=threshold)
+    plan = generate_study_plan(view, cg, hours=hours, mode=mode)
+
+    summary = plan.summary or {}
+    click.secho(
+        f"\nStudy Plan - {plan.mode.upper()} mode  "
+        f"({plan.total_hours}h budget / {summary.get('total_estimated_minutes', 0)} min planned)",
+        bold=True,
+    )
+    click.echo(f"  Learner:  {state.learner_id}")
+    click.echo(f"  Topics:   {summary.get('concepts_covered', 0)}\n")
+
+    for i, topic in enumerate(plan.topics, 1):
+        color = "red" if topic.mastery < 0.5 else "yellow"
+        click.secho(
+            f"  {i:2d}. {topic.concept_code:<32}  mastery={topic.mastery:.2f}"
+            f"  ~{topic.estimated_minutes}min  [{topic.status}]",
+            fg=color,
+        )
+        if topic.active_misconceptions:
+            click.echo(f"       > misconceptions: {', '.join(topic.active_misconceptions)}")
+
+    remaining = summary.get("remaining") or {}
+    not_covered = remaining.get("concepts_not_covered") or []
+    if not_covered:
+        click.secho(
+            f"\n  (+{len(not_covered)} concept(s) not in time budget: {', '.join(not_covered)})",
+            fg="yellow",
+        )

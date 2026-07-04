@@ -3,7 +3,7 @@
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
 ```yaml
-schema_version: "0.7"
+schema_version: "0.8"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -253,7 +253,15 @@ required/optional fields are listed below.
                   answer (required): string  # The correct answer value (e.g. '50 deg' or 'x + 2')
                   evaluation_mode (optional): string|numeric|algebraic, default: string  # Rule to verify answer equivalence
                   solution_steps (optional): array  # Step-by-step worked solution steps shown inline on the same slide (contrast with dedicated remediation_block slides)
-                  marking_scheme (optional): array  # SEAB-style step marking rules (M and A marks)
+                  marking_scheme (optional, array):  # SEAB-style step marking rules (M and A marks)
+                    - step: string  # Unique step identifier
+                    - description (optional): string  # Step requirement description
+                    - pattern: string  # Expected answer pattern to match against student working
+                    - mark_type (optional): M|A|B  # Mark type: M=method, A=accuracy, B=bonus
+                    - weight (optional): integer  # Marks awarded for this step
+                    - depends_on (optional): string  # Step ID this step depends on for error carry forward
+                    - step_type (optional): string  # Matcher strategy selector (e.g. equation, expression)
+                    - solution_step_ref (optional): integer  # 0-based index into solution_steps array; links this marking criterion to the corresponding worked solution step
                   student_working (optional): array  # Step-by-step working input from student
                   student_answer (optional): string
                   correct_answer (optional): string

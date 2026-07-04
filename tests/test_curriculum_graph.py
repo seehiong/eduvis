@@ -17,7 +17,7 @@ from eduvis.core.curriculum import (
 # Path to negative numbers lesson spec for testing coverage with real data
 LESSON_FILE = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
-    "docs", "showcase", "lessons", "negative-numbers-confidence-ladder-lesson.yaml"
+    "showcase", "lessons", "negative-numbers-confidence-ladder-lesson.yaml"
 )
 
 
