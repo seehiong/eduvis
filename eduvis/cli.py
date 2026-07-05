@@ -527,6 +527,36 @@ def _load_learner_state(state_file: str) -> LearnerState:
 
 
 @cli.group()
+def generate() -> None:
+    """Generate lessons and materials from the curriculum graph."""
+    pass
+
+@generate.command("lesson")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("concepts", nargs=-1, required=True)
+@click.option("-o", "--output", help="Output YAML file path.")
+def generate_lesson(curriculum_file: str, concepts: tuple[str, ...], output: str | None) -> None:
+    """Generate a scaffolded lesson YAML for a list of concept codes."""
+    from eduvis.core.generator import GraphLessonGenerator
+    cg = _load_curriculum_graph(curriculum_file)
+
+    # Verify concepts
+    for c in concepts:
+        if c not in cg.concepts:
+            raise click.ClickException(f"Concept '{c}' not found in curriculum.")
+
+    generator = GraphLessonGenerator(cg)
+    yaml_str = generator.generate(list(concepts))
+
+    if output:
+        out_path = Path(output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(yaml_str, encoding="utf-8")
+        click.secho(f"Generated lesson written to {output}", fg="green")
+    else:
+        click.echo(yaml_str)
+
+@cli.group()
 def graph() -> None:
     """Inspect a curriculum graph: concepts, skills, prerequisites, paths."""
 
@@ -727,3 +757,24 @@ def study_plan(curriculum_file: str, state_file: str, mode: str, hours: float, t
             f"\n  (+{len(not_covered)} concept(s) not in time budget: {', '.join(not_covered)})",
             fg="yellow",
         )
+
+@cli.command()
+@click.argument("target_path", type=click.Path(exists=True))
+@click.option("--from-ver", default="0.8", help="Version to migrate from.")
+@click.option("--to-ver", default="0.9", help="Version to migrate to.")
+def migrate(target_path: str, from_ver: str, to_ver: str) -> None:
+    """Migrate a YAML file or directory of YAML files to a new schema version."""
+    from eduvis.core.migrate import engine
+    path = Path(target_path)
+    files = list(path.rglob("*.yaml")) if path.is_dir() else [path]
+
+    count = 0
+    for f in files:
+        original = f.read_text(encoding="utf-8")
+        migrated = engine.run(original, from_ver, to_ver)
+        if original != migrated:
+            f.write_text(migrated, encoding="utf-8")
+            click.echo(f"Migrated {f}")
+            count += 1
+
+    click.secho(f"\nMigration complete. Updated {count} file(s).", fg="green")

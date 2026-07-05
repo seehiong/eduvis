@@ -3,7 +3,7 @@
 Every lesson YAML has five top-level keys: schema_version, curriculum, lesson, progression, content.
 
 ```yaml
-schema_version: "0.8"
+schema_version: "0.9"
 
 curriculum:
   code: string            # curriculum code e.g. "SEC-math-2027"
@@ -240,7 +240,10 @@ required/optional fields are listed below.
                   cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
                   challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
                   evidence_targets (optional): array  # Skills or concepts for which success provides evidence
-                  reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                  reasoning_path (optional, array):  # Sequential milestones expected (e.g. formulate, solve)
+                    - milestone: string  # The milestone name
+                    - hint_triggers (optional): array  # Triggers for hinting
+                    - animation_hooks (optional): array  # Hooks for animations
                   evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
                   rubric (optional, object):  # Structured step criteria
                     total_marks (optional): integer
@@ -269,7 +272,10 @@ required/optional fields are listed below.
                   cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
                   challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
                   evidence_targets (optional): array  # Skills or concepts for which success provides evidence
-                  reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                  reasoning_path (optional, array):  # Sequential milestones expected (e.g. formulate, solve)
+                    - milestone: string  # The milestone name
+                    - hint_triggers (optional): array  # Triggers for hinting
+                    - animation_hooks (optional): array  # Hooks for animations
                   evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
                   rubric (optional, object):  # Structured step criteria
                     total_marks (optional): integer
@@ -334,7 +340,10 @@ required/optional fields are listed below.
                   cognitive_skills (optional): array  # Cognitive skill tags (e.g. recall, apply, reason)
                   challenge_factors (optional): array  # Factors increasing difficulty (e.g. multi_step, unfamiliar_context)
                   evidence_targets (optional): array  # Skills or concepts for which success provides evidence
-                  reasoning_path (optional): array  # Sequential milestones expected (e.g. formulate, solve)
+                  reasoning_path (optional, array):  # Sequential milestones expected (e.g. formulate, solve)
+                    - milestone: string  # The milestone name
+                    - hint_triggers (optional): array  # Triggers for hinting
+                    - animation_hooks (optional): array  # Hooks for animations
                   evidence_strength (optional): high|medium|low  # Static diagnostic reliability of this assessment item
                   rubric (optional, object):  # Structured step criteria
                     total_marks (optional): integer

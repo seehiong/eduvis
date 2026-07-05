@@ -9,6 +9,8 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
+from .constants import SCHEMA_VERSION
+
 
 class ConceptState:  # pylint: disable=too-few-public-methods
     """Represents the mastery and confidence state of a single concept."""
@@ -48,13 +50,14 @@ class MisconceptionState:  # pylint: disable=too-few-public-methods
         }
 
 
+
 class LearnerState:
     """Manages the transient learner state with validation."""
 
     def __init__(
         self,
         learner_id: str,
-        schema_version: str = "0.8",
+        schema_version: str = SCHEMA_VERSION,
         last_updated: str | None = None,
     ) -> None:
         self.learner_id = str(learner_id).strip()

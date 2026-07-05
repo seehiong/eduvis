@@ -1,4 +1,5 @@
 """EduVis Core — Global constants."""
 
-SCHEMA_VERSION = "0.8"
+PACKAGE_VERSION = "0.9.0"
+SCHEMA_VERSION = "0.9"
 DEFAULT_MASTERY_THRESHOLD = 0.8

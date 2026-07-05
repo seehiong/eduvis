@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eduvis"
-version = "0.8.0"
+dynamic = ["version"]
 description = "An open, curriculum-aware schema for educational content"
 readme = "README.md"
 license = "Apache-2.0"
@@ -24,11 +24,14 @@ classifiers = [
     "Topic :: Text Processing :: Markup",
 ]
 requires-python = ">=3.10"
+
 dependencies = [
     "click>=8.0",
     "pyyaml>=6.0",
+    "ruamel.yaml>=0.18",
     "sympy>=1.12",
 ]
+
 
 [project.optional-dependencies]
 dev = [
@@ -124,3 +127,5 @@ ignore-comments = true
 ignore-docstrings = true
 ignore-imports = true
 
+[tool.setuptools.dynamic]
+version = {attr = "eduvis.core.constants.PACKAGE_VERSION"}

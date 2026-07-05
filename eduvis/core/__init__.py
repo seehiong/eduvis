@@ -68,6 +68,8 @@ from .spaced_repetition import (
     SpacedRepetitionRecord,
 )
 from .constants import SCHEMA_VERSION, DEFAULT_MASTERY_THRESHOLD
+from .generator import GraphLessonGenerator
+from .scaffolding import ReasoningScaffoldEngine
 
 __all__ = [
     # Core schema
@@ -123,4 +125,8 @@ __all__ = [
     # Constants
     "SCHEMA_VERSION",
     "DEFAULT_MASTERY_THRESHOLD",
+    # Generator
+    "GraphLessonGenerator",
+    # Scaffolding
+    "ReasoningScaffoldEngine",
 ]

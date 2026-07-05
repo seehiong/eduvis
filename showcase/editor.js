@@ -2,7 +2,7 @@
  * EduVis Live Editor — Main UI Controller & Script Coordinator
  */
 
-const SCHEMA_VERSION = "0.8";
+window.SCHEMA_VERSION = "0.9";
 
 let selectedSlideIndex = 0;
 window.currentSlides = [];
@@ -238,7 +238,7 @@ async function onPresetChange(fileName) {
 
         if (fileName === 'custom') {
             const customContent = `# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/lesson.schema.json
-schema_version: "${SCHEMA_VERSION}"
+schema_version: "${window.SCHEMA_VERSION}"
 
 curriculum:
   code: custom-curriculum
@@ -271,7 +271,7 @@ content:
 `;
 
             const customPres = `# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/presentation.schema.json
-schema_version: "${SCHEMA_VERSION}"
+schema_version: "${window.SCHEMA_VERSION}"
 
 slides:
   - id: slide_1
@@ -279,7 +279,7 @@ slides:
 `;
 
             const customCurr = `# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/schemas/curriculum.schema.json
-schema_version: "${SCHEMA_VERSION}"
+schema_version: "${window.SCHEMA_VERSION}"
 
 concepts:
   - code: custom_concept

@@ -23,16 +23,23 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
         updateStatusCallback("Setting up Micro Pip", "Loading pip installer package...");
         await window.pyodideInstance.loadPackage("micropip");
 
-        // Dynamically detect package version from main_init.py to construct wheel filename
-        let version = "0.5.0";
+        // Dynamically detect package version and schema version from constants.py
+        let version;
         try {
-            const mainInitText = await fetch('./main_init.py').then(r => r.text());
-            const versionMatch = mainInitText.match(/__version__\s*=\s*["']([^"']+)["']/);
-            if (versionMatch) {
-                version = versionMatch[1];
+            const constantsText = await fetch('./constants.py').then(r => r.text());
+            const versionMatch = constantsText.match(/PACKAGE_VERSION\s*=\s*["']([^"']+)["']/);
+            if (!versionMatch) {
+                throw new Error("PACKAGE_VERSION not found in constants.py");
+            }
+            version = versionMatch[1];
+            
+            const schemaMatch = constantsText.match(/SCHEMA_VERSION\s*=\s*["']([^"']+)["']/);
+            if (schemaMatch) {
+                window.SCHEMA_VERSION = schemaMatch[1];
             }
         } catch (err) {
-            console.warn("Could not determine package version from main_init.py, falling back to 0.5.0", err);
+            console.error("Critical: Could not load version from constants.py", err);
+            throw err;
         }
 
         updateStatusCallback("Installing Dependencies", `Installing PyYAML, SymPy and loading local wheel (v${version})...`);

@@ -1,6 +1,7 @@
 """EduVis — educational content schema."""
 
-__version__ = "0.8.0"
+from .core.constants import PACKAGE_VERSION
+__version__ = PACKAGE_VERSION
 
 from .core import (
     ElementRegistry,

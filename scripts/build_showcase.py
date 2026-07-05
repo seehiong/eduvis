@@ -54,8 +54,18 @@ def sync_pyodide_sources() -> bool:
             continue
         shutil.copy2(src, dest)
         print(f"  OK  {src_rel} -> showcase/{dest_name}")
-    return ok
 
+    import re
+    from eduvis.core.constants import PACKAGE_VERSION
+    html_path = SHOWCASE_DIR / "editor.html"
+    if html_path.exists():
+        content = html_path.read_text(encoding="utf-8")
+        updated = re.sub(r'(\?v=)[0-9\.]+', rf'\g<1>{PACKAGE_VERSION}', content)
+        if content != updated:
+            html_path.write_text(updated, encoding="utf-8")
+            print(f"  OK  Updated version string in editor.html to {PACKAGE_VERSION}")
+
+    return ok
 
 def main() -> None:
     print("Building showcase assets...")

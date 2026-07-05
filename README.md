@@ -47,17 +47,23 @@ uv run eduvis render showcase/lessons/negative-numbers-confidence-ladder-lesson.
 uv run eduvis docs --subjects math
 uv run eduvis schema -o eduvis/schemas/
 
-# Curriculum graph inspection (v0.8)
+# Curriculum graph inspection
 uv run eduvis graph inspect showcase/reference/showcase-curriculum.yaml
 uv run eduvis graph prereqs showcase/reference/showcase-curriculum.yaml rational_numbers --transitive
 uv run eduvis graph dependents showcase/reference/showcase-curriculum.yaml integers
 uv run eduvis graph path showcase/reference/showcase-curriculum.yaml integers real_numbers
 
-# Mastery projection (v0.8)
+# Mastery projection
 uv run eduvis mastery project showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml
 
-# Study plan generation (v0.8)
+# Study plan generation
 uv run eduvis study-plan showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml --mode exam_prep --hours 2
+
+# Schema migration
+uv run eduvis migrate showcase/lessons/ --from-ver 0.8 --to-ver 0.9
+
+# Graph-driven lesson generation
+uv run eduvis generate lesson showcase/reference/showcase-curriculum.yaml integers negative_numbers -o new_lesson.yaml
 ```
 
 
@@ -818,23 +824,15 @@ slides:
 ## Project Status & Roadmap
 
 ### Project Status
-* **Current Stable**: `v0.7.x`
-* **Current Focus**: `v0.8` — Interactive Curriculum Workspace & Explorer
-* **Long-term Vision**: `v1.0` — Curriculum Compiler Pipeline
+* **Current Stable**: `v0.9.x`
+* **Current Focus**: `v1.0` — Curriculum Compiler Pipeline
+* **Long-term Vision**: Unified Pedagogical Intermediate Representation (IR) Pipeline
 
 ---
 
 ### Looking Ahead (Roadmap)
 
-#### v0.8 — Tooling, Interactive Visualizations, and Multi-Lens Explorer (Current)
-* **Interactive Curriculum Graph Explorer**: Transition the Live Editor's static Mermaid diagram into an interactive graph canvas (e.g. force-directed layout).
-* **Workspace of Projections (Tabbed Interfaces)**: Live views for Lesson preview, Curriculum maps, Assessment coverage checks, and Learner mastery gap heatmaps.
-* **Local Dependency Inspector** ✅: `eduvis graph` CLI — inspect concepts, query prerequisites/dependents, find prerequisite paths between concepts.
-* **Mastery Projection CLI** ✅: `eduvis mastery project` — overlay learner state onto the curriculum graph to surface mastery status and prerequisite gaps.
-* **Study Plan CLI** ✅: `eduvis study-plan` — generate time-bounded study plans in four modes (`lesson`, `revision`, `exam_prep`, `crash_course`).
-* **Bidirectional Visual Editing (Long-Term)**: Interactive drag-and-drop graph editing updating YAML schemas.
-
-#### v0.9 — AI Generation, Reasoning-Driven Scaffolding, and Schema Migration (Upcoming)
+#### v0.9 — AI Generation, Reasoning-Driven Scaffolding, and Schema Migration (Current)
 * **Graph-Driven Lesson Generation**: Automated EduVis lesson specs generated directly from graph path schemas rather than unstructured text prompts.
 * **Reasoning-Path Scaffolding**: Target the `reasoning_path` sequence to structure step-by-step visual explanations, animations, and targeted hints.
 * **Migration CLI & Upgrades**: `eduvis migrate` tooling to cleanly rewrite schemas across versions.
@@ -850,24 +848,11 @@ slides:
 
 ---
 
-### Past Milestones
-
-* **v0.1 — Core Schema**: Formal JSON schemas, three-layer placement model, initial actions/progression schemas, and reference SVG renderer.
-* **v0.2 — Curriculum Knowledge**: Inter-element relationships, curriculum metadata blocks, chronological and density validation, and learning outcome maps.
-* **v0.3 — EduVis-Presentation**: Viewport reveal sequences, companion presentation sidecar schema, zoom/highlight annotations, and audio timing hooks.
-* **v0.4 — Assessment & Validation**: Symbolic correctness and answer checking, misconception detection, assessment objectives, and static evidence mappings.
-* **v0.5 — Curriculum Graph**: Taxonomy node classifications, importance weighting models, centrality analytics, and traversal query APIs.
-* **v0.6 — Diagnostic Reasoning & Pedagogical Intent**: Decoupled learner state schemas, cognitive challenge profiles, step-by-step diagnostic rubrics, and the `reasoning_path` structure.
-* **v0.7 — Learner State & Assessment Orchestration**: Dynamic state JSON telemetry engines, exam blueprint generation, auto-assembly algorithms, revision planners, spaced-repetition schedules, and adaptive remediation paths.
-* **v0.8 — Interactive Curriculum Workspace**: CLI curriculum graph explorer (`graph inspect/prereqs/dependents/path`), mastery projection command (`mastery project`), study plan generator (`study-plan`) with four adaptive modes, and sample learner state showcase file.
-
----
-
 ### Governance and Quality (Parallel Track)
 
 To keep the EduVis ecosystem stable for downstream renderers and player platforms, we adhere to the following governance frameworks:
 
-* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.8.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.8"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
+* **Schema Versioning**: Starting in `v0.5.0` (currently `v0.9.0`), documents should include a top-level `schema_version` property (e.g., `schema_version: "0.9"`). The validator issues a warning if it is missing and raises an error for incompatible schema versions.
 * **Schema Stability Lifecycle**: All schema fields are categorized under one of four lifecycle tiers:
   * **Experimental**: Active beta iteration. Fields may change or be removed at any minor version.
   * **Stable**: Production-ready. Backwards compatibility is guaranteed.
@@ -875,7 +860,7 @@ To keep the EduVis ecosystem stable for downstream renderers and player platform
   * **Removed**: Excised from the parser.
 * **RFC Process**: Any change to **Stable** fields, new top-level schema blocks, or relationship modifications must go through a Request for Comments (RFC) process. Use the template in `docs/rfcs/template.md` to submit proposals.
 * **Deprecation and Aliasing Strategy**: When updating the schema, the parser will support legacy keys (with warnings) for at least one minor version before they are retired.
-* **Migration CLI**: Prior to `v1.0.0`, a migration tool (`eduvis migrate`) will be introduced to automatically rewrite legacy document schemas using comment-preserving parsers.
+* **Migration CLI**: Prior to `v1.0.0`, a migration tool (`eduvis migrate`) will automatically rewrite legacy document schemas using comment-preserving parsers. It supports both single files and recursive directory traversal (e.g., `uv run eduvis migrate showcase/`).
 * **Validation Suites**: Automated schema test suites to prevent regression.
 * **Contributor Guidelines**: Clear instructions for extending schema features and renderers.
 * **Reference Implementations**: Canonical lesson and topic specifications.

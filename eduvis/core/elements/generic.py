@@ -15,8 +15,12 @@ DIAGNOSTIC_ASSESSMENT_FIELDS = [
               items=FieldSpec("target", type="string"),
               description="Skills or concepts for which success provides evidence"),
     FieldSpec("reasoning_path", type="array", required=False,
-              items=FieldSpec("milestone", type="string"),
-              description="Sequential milestones expected (e.g. formulate, solve)"),
+              description="Sequential milestones expected (e.g. formulate, solve)",
+              items=FieldSpec("milestone_obj", type="object", properties=[
+                  FieldSpec("milestone", type="string", required=True, description="The milestone name"),
+                  FieldSpec("hint_triggers", type="array", required=False, items=FieldSpec("trigger", type="string"), description="Triggers for hinting"),
+                  FieldSpec("animation_hooks", type="array", required=False, items=FieldSpec("hook", type="string"), description="Hooks for animations")
+              ])),
     FieldSpec("evidence_strength", type="string", required=False,
               enum=["high", "medium", "low"],
               description="Static diagnostic reliability of this assessment item"),
