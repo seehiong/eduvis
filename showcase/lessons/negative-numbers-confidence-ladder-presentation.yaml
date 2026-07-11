@@ -1,4 +1,4 @@
-schema_version: '0.9'
+schema_version: '1.0'
 slides:
 - id: hook_real_world
   advance: manual

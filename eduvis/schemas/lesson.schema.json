@@ -13,7 +13,7 @@
     "schema_version": {
       "type": "string",
       "enum": [
-        "0.9"
+        "1.0"
       ],
       "description": "The version of the EduVis schema used by this document."
     },

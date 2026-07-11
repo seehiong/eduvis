@@ -760,8 +760,8 @@ def study_plan(curriculum_file: str, state_file: str, mode: str, hours: float, t
 
 @cli.command()
 @click.argument("target_path", type=click.Path(exists=True))
-@click.option("--from-ver", default="0.8", help="Version to migrate from.")
-@click.option("--to-ver", default="0.9", help="Version to migrate to.")
+@click.option("--from-ver", default="0.9", help="Version to migrate from.")
+@click.option("--to-ver", default="1.0", help="Version to migrate to.")
 def migrate(target_path: str, from_ver: str, to_ver: str) -> None:
     """Migrate a YAML file or directory of YAML files to a new schema version."""
     from eduvis.core.migrate import engine
@@ -778,3 +778,152 @@ def migrate(target_path: str, from_ver: str, to_ver: str) -> None:
             count += 1
 
     click.secho(f"\nMigration complete. Updated {count} file(s).", fg="green")
+
+
+@cli.group()
+def compile() -> None:
+    """Compile syllabus and curriculum elements into structured artifacts."""
+    pass
+
+
+@compile.command("curriculum")
+@click.argument("syllabus_file", type=click.Path(exists=True, dir_okay=False))
+@click.option("-o", "--output", default="curriculum.yaml", show_default=True, help="Output compiled curriculum YAML file.")
+def compile_curriculum(syllabus_file: str, output: str) -> None:
+    """Compile a syllabus YAML/text file into a validated curriculum.yaml graph."""
+    from eduvis.compiler import CompilationContext, CompilerPipeline, CurriculumPlanner
+    import yaml
+
+    with open(syllabus_file, "r", encoding="utf-8") as f:
+        syllabus_text = f.read()
+
+    context = CompilationContext()
+    context.syllabus_text = syllabus_text
+
+    pipeline = CompilerPipeline()
+    pipeline.add_stage(CurriculumPlanner())
+
+    pipeline.run(context)
+
+    for log in context.logs:
+        click.echo(log)
+
+    if context.errors:
+        for err in context.errors:
+            click.secho(err, fg="red")
+        sys.exit(1)
+
+    with open(output, "w", encoding="utf-8") as f:
+        yaml.dump(context.curriculum_graph.to_dict(), f, sort_keys=False)
+    click.secho(f"Successfully compiled curriculum graph to {output}", fg="green")
+
+
+@compile.command("lesson")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("concepts", nargs=-1, required=True)
+@click.option("-o", "--output", default="lesson.yaml", show_default=True, help="Output lesson YAML file.")
+def compile_lesson(curriculum_file: str, concepts: tuple[str, ...], output: str) -> None:
+    """Compile a lesson YAML spec for target concepts using a curriculum graph."""
+    from eduvis.compiler import CompilationContext, CompilerPipeline, CurriculumPlanner, LessonPlanner
+    import yaml
+
+    context = CompilationContext()
+    context.curriculum_file = curriculum_file
+
+    pipeline = CompilerPipeline()
+    pipeline.add_stage(CurriculumPlanner())
+    pipeline.add_stage(LessonPlanner(concept_codes=list(concepts)))
+
+    pipeline.run(context)
+
+    for log in context.logs:
+        click.echo(log)
+
+    if context.errors:
+        for err in context.errors:
+            click.secho(err, fg="red")
+        sys.exit(1)
+
+    if context.lessons:
+        lesson_data = next(iter(context.lessons.values()))
+        with open(output, "w", encoding="utf-8") as f:
+            yaml.dump(lesson_data, f, sort_keys=False)
+        click.secho(f"Successfully compiled lesson to {output}", fg="green")
+
+
+@compile.command("assessment")
+@click.argument("curriculum_file", type=click.Path(exists=True, dir_okay=False))
+@click.option("-m", "--marks", default=20, show_default=True, help="Total marks for the paper.")
+@click.option("-o", "--output", default="assessment_paper.yaml", show_default=True, help="Output assessment paper YAML file.")
+@click.option("--lesson-file", type=click.Path(exists=True, dir_okay=False), multiple=True, help="Optional lesson file(s) to extract available question elements pool from.")
+def compile_assessment(curriculum_file: str, marks: int, output: str, lesson_file: tuple[str, ...]) -> None:
+    """Compile a paper blueprint and assemble an assessment paper."""
+    from eduvis.compiler import CompilationContext, CompilerPipeline, CurriculumPlanner, AssessmentAssembler
+    import yaml
+
+    available_elements = []
+    for lf in lesson_file:
+        with open(lf, "r", encoding="utf-8") as f:
+            lesson_doc = yaml.safe_load(f)
+            if isinstance(lesson_doc, dict):
+                content = lesson_doc.get("content") or []
+                for item in content:
+                    if isinstance(item, dict) and item not in available_elements:
+                        available_elements.append(item)
+
+    context = CompilationContext()
+    context.curriculum_file = curriculum_file
+
+    pipeline = CompilerPipeline()
+    pipeline.add_stage(CurriculumPlanner())
+    pipeline.add_stage(AssessmentAssembler(total_marks=marks, available_elements=available_elements))
+
+    pipeline.run(context)
+
+    for log in context.logs:
+        click.echo(log)
+
+    if context.errors:
+        for err in context.errors:
+            click.secho(err, fg="red")
+        sys.exit(1)
+
+    if context.assessment_papers:
+        paper_data = next(iter(context.assessment_papers.values()))
+        with open(output, "w", encoding="utf-8") as f:
+            yaml.dump(paper_data, f, sort_keys=False)
+        click.secho(f"Successfully compiled assessment paper to {output}", fg="green")
+
+
+@compile.command("presentation")
+@click.argument("lesson_file", type=click.Path(exists=True, dir_okay=False))
+@click.option("-o", "--output", default="lesson_with_presentation.yaml", show_default=True, help="Output lesson YAML file with presentation slides.")
+def compile_presentation(lesson_file: str, output: str) -> None:
+    """Compile slide viewport timings and narration sidecars into a lesson file."""
+    from eduvis.compiler import CompilationContext, CompilerPipeline, PresentationCompiler
+    import yaml
+
+    with open(lesson_file, "r", encoding="utf-8") as f:
+        lesson_data = yaml.safe_load(f)
+
+    context = CompilationContext()
+    context.lessons["lesson"] = lesson_data
+
+    pipeline = CompilerPipeline()
+    pipeline.add_stage(PresentationCompiler())
+
+    pipeline.run(context)
+
+    for log in context.logs:
+        click.echo(log)
+
+    if context.errors:
+        for err in context.errors:
+            click.secho(err, fg="red")
+        sys.exit(1)
+
+    if "lesson" in context.lessons:
+        with open(output, "w", encoding="utf-8") as f:
+            yaml.dump(context.lessons["lesson"], f, sort_keys=False)
+        click.secho(f"Successfully compiled presentation slides into {output}", fg="green")
+

@@ -2,7 +2,7 @@
 # Sample learner state for use with showcase-curriculum.yaml
 # Try: eduvis mastery project showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml
 # Try: eduvis study-plan showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml --mode exam_prep
-schema_version: "0.9"
+schema_version: "1.0"
 learner_id: student_demo
 
 concepts:

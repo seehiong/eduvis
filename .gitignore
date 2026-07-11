@@ -11,3 +11,8 @@ output/
 # uv.lock is intentionally committed — un-negate the root *.lock rule
 !uv.lock
 
+# Node / Studio IDE ignores
+node_modules/
+studio/node_modules/
+studio/dist/
+.oxlint/

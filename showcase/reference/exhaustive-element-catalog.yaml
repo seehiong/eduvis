@@ -2,7 +2,7 @@
 # One slide per registered element type — verifies all 13 renderers.
 # Note: summary_list is an alias for text_list and is omitted.
 
-schema_version: "0.9"
+schema_version: "1.0"
 
 curriculum:
   code: SEC-math-2027
@@ -269,11 +269,9 @@ content:
     memory_role: example
   items:
   - heading: "Which is larger: -7 or -2?"
-    body: "Step 1: Plot both on a number line.\nStep 2: -2 is to the right of -7.\n\
-      Answer: -2 > -7"
+    body: "Step 1: Plot both on a number line.\nStep 2: -2 is to the right of -7.\nAnswer: -2 > -7"
   - heading: "Which is larger: -1 or -4?"
-    body: "Step 1: Plot both on a number line.\nStep 2: -1 is to the right of -4.\n\
-      Answer: -1 > -4"
+    body: "Step 1: Plot both on a number line.\nStep 2: -1 is to the right of -4.\nAnswer: -1 > -4"
 
   # 17 ── hint_list (guided_practice) ──────────────────────────────────────────
 - id: test_hint_list

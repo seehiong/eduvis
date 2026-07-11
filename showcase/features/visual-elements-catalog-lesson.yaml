@@ -6,7 +6,7 @@
 #
 # Each element appears exactly once so readers can see every available type.
 
-schema_version: "0.9"
+schema_version: "1.0"
 
 curriculum:
   code: showcase

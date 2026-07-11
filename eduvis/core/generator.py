@@ -39,6 +39,11 @@ class GraphLessonGenerator:
             "content": []
         }
 
+        # Group elements by phase to satisfy progression phase-sequence validation
+        hooks = []
+        explains = []
+        practices = []
+
         # For each concept, generate a standard sequence
         for code in concept_codes:
             node = self.curriculum.concepts.get(code)
@@ -46,7 +51,7 @@ class GraphLessonGenerator:
                 continue
 
             # Hook phase
-            doc["content"].append({
+            hooks.append({
                 "type": "fact_boxes",
                 "id": f"hook_{code}",
                 "phase": "hook",
@@ -62,7 +67,7 @@ class GraphLessonGenerator:
             })
 
             # Explain phase
-            doc["content"].append({
+            explains.append({
                 "type": "fact_boxes",
                 "id": f"explain_{code}",
                 "phase": "explain",
@@ -79,7 +84,7 @@ class GraphLessonGenerator:
             })
 
             # Guided practice
-            doc["content"].append({
+            practices.append({
                 "type": "short_answer",
                 "id": f"guided_practice_{code}",
                 "phase": "guided_practice",
@@ -99,5 +104,7 @@ class GraphLessonGenerator:
                     {"step": "1", "type": "M", "pattern": ".*", "marks": 1}
                 ]
             })
+
+        doc["content"] = hooks + explains + practices
 
         return yaml.dump(doc, sort_keys=False, default_flow_style=False, allow_unicode=True)

@@ -95,3 +95,15 @@ content:
     assert "step: '0'" in migrated
     assert "depends_on: '1'" in migrated
     assert 'step: "2"' in migrated
+
+
+def test_migration_v09_to_v10():
+    yaml_content = """schema_version: "0.9"
+slides:
+  - elements:
+      - type: short_answer
+        question: test question
+"""
+    migrated = engine.run(yaml_content, "0.9", "1.0")
+    assert 'schema_version: "1.0"' in migrated
+    assert 'question: test question' in migrated

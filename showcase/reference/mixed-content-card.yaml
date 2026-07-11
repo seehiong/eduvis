@@ -1,7 +1,7 @@
 # EduVis-Core Example: Mixed Content Card Demo
 # Replicates the decimal subtraction "Learn with an example" layout
 
-schema_version: "0.9"
+schema_version: "1.0"
 
 curriculum:
   code: SEC-math-2027
@@ -65,8 +65,7 @@ content:
     - ["", "", "?", ""]
   - type: text
     lines:
-    - "Subtract as you would subtract whole numbers. Remember to write the decimal
-      point in the answer."
+    - "Subtract as you would subtract whole numbers. Remember to write the decimal point in the answer."
   - type: math_grid
     mode: arithmetic
     rows:

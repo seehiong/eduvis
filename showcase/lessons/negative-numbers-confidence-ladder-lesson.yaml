@@ -3,7 +3,7 @@
 # Demonstrates: hook -> explore -> explain -> guided -> starter -> routine -> challenge -> recall
 # This lesson builds from concrete scenarios (temperature, money) through abstract rules
 
-schema_version: "0.9"
+schema_version: "1.0"
 
 curriculum:
   code: "SEC-math-2027"
@@ -310,8 +310,7 @@ content:
   actions:
     conceptual:
     - apply: signed-number-ordering
-  question: "The temperature in City A is -8 deg C. City B is -3 deg C. Which city
-    is colder?"
+  question: "The temperature in City A is -8 deg C. City B is -3 deg C. Which city is colder?"
   options:
     A: "City A"
     B: "City B"

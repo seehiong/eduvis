@@ -4,7 +4,7 @@
 # 2. MCQ misconception tracking & solution steps
 # 3. Unified Remediation block (Review - Remember - Solve) and relationship target constraints
 
-schema_version: "0.9"
+schema_version: "1.0"
 
 curriculum:
   code: showcase
@@ -107,8 +107,7 @@ content:
   solve:
     type: hint_list
     items:
-    - "Step 1: Write down factors of Option C (6): 1, 2, 3, 6 (four factors). Not
-      prime."
+    - "Step 1: Write down factors of Option C (6): 1, 2, 3, 6 (four factors). Not prime."
     - "Step 2: Write down factors of Option E (2): 1, 2 (exactly two factors). Prime!"
     final: "Therefore, E is the correct answer."
 
@@ -178,15 +177,13 @@ content:
     title: "Composite Numbers Rule"
     border_color: red
     lines:
-    - "A composite number is a positive integer greater than 1 that has more than
-      two factors."
+    - "A composite number is a positive integer greater than 1 that has more than two factors."
     - "Any whole number greater than 1 is either prime or composite."
   solve:
     type: hint_list
     items:
     - "Step 1: List the factors of 2. It has only 1 and 2 (Prime)."
-    - "Step 2: List the factors of 9. Factors are 1, 3, 9. Since it has more than
-      two factors, it is composite."
+    - "Step 2: List the factors of 9. Factors are 1, 3, 9. Since it has more than two factors, it is composite."
     final: "Therefore, D is the correct answer."
 
   # --- 7. MCQ FOR PRIME FACTORS ----------------------------------------------

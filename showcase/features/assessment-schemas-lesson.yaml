@@ -15,7 +15,7 @@
 #   TransitionEngine → uses relationships + telemetry to select next element
 #   MasteryProjection → projects readiness across the concept map
 
-schema_version: "0.9"
+schema_version: "1.0"
 
 curriculum:
   code: showcase
@@ -59,8 +59,7 @@ content:
   title: "Assessment Annotation Fields"
   border_color: cyan
   lines:
-  - "assessment_objective: conceptual_understanding | procedural_fluency | application
-    | reasoning"
+  - "assessment_objective: conceptual_understanding | procedural_fluency | application | reasoning"
   - "misconceptions: maps each wrong option to a named misconception code"
   - "solution_steps: ordered worked solution for post-attempt feedback"
   - "marking_scheme: M-marks (method) and A-marks (accuracy) with depends_on chains"

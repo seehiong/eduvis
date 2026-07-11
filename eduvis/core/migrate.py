@@ -270,6 +270,18 @@ def v08_to_v09_rule(data, from_version, to_version):
     data["schema_version"] = "0.9"
 
 
+def v09_to_v10_rule(data, from_version, to_version):
+    """
+    Migration rule for v0.9 to v1.0.
+    Just bumps the schema_version property.
+    """
+    if from_version != "0.9" or to_version != "1.0" or not isinstance(data, dict):
+        return
+
+    data["schema_version"] = "1.0"
+
+
 engine = MigrationEngine()
 engine.add_rule(v07_to_v08_rule)
 engine.add_rule(v08_to_v09_rule)
+engine.add_rule(v09_to_v10_rule)
