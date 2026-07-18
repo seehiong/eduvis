@@ -43,7 +43,7 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/seehiong/eduvis"
 Repository = "https://github.com/seehiong/eduvis"
-Documentation = "https://seehiong.github.io/eduvis/showcase/"
+Documentation = "https://seehiong.github.io/eduvis/"
 Issues = "https://github.com/seehiong/eduvis/issues"
 
 [project.scripts]

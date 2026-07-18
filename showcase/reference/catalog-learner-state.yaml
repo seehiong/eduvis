@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/learner_state.schema.json
+schema_version: "1.0"
+learner_id: student_catalog_demo
+
+concepts:
+  number_sense:
+    mastery: 0.95
+    confidence: 0.9
+  algebra_foundations:
+    mastery: 0.7
+    confidence: 0.75
+  geometry_shapes:
+    mastery: 0.4
+    confidence: 0.3
+  data_statistics:
+    mastery: 0.15
+    confidence: 0.0
+
+skills:
+  read_charts:
+    mastery: 0.2
+  plot_coordinates:
+    mastery: 0.5
+  solve_equation:
+    mastery: 0.7
+
+misconceptions:
+  axis_inversion:
+    state: active
+    attempts: 2
+  fraction_addition_error:
+    state: remediated
+    attempts: 1

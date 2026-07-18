@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/curriculum.schema.json
+schema_version: "1.0"
+
+concepts:
+- code: number_sense
+  name: Number Sense & Arithmetic
+  description: Whole numbers, fractions, decimals, and basic operations
+  exam_weight: 0.9
+
+- code: algebra_foundations
+  name: Algebra Foundations
+  description: Variable expressions, simplifying terms, and linear equations
+  exam_weight: 0.85
+
+- code: geometry_shapes
+  name: Geometry & Coordinate Plane
+  description: Coordinate graphs, angles, shapes, and spatial reasoning
+  exam_weight: 0.8
+
+- code: data_statistics
+  name: Data & Statistics
+  description: Data representations, tables, charts, and simple statistics
+  exam_weight: 0.75
+
+skills:
+- code: read_charts
+  name: Read Data Charts
+  concept: data_statistics
+  exam_weight: 0.7
+
+- code: plot_coordinates
+  name: Plot Coordinate Points
+  concept: geometry_shapes
+  exam_weight: 0.8
+
+- code: solve_equation
+  name: Solve Variable Equations
+  concept: algebra_foundations
+  exam_weight: 0.85
+
+misconceptions:
+- code: axis_inversion
+  name: X and Y Axis Inversion Error
+  concept: geometry_shapes
+  remediation_weight: 0.8
+
+- code: fraction_addition_error
+  name: Adding Numerators and Denominators Directly
+  concept: number_sense
+  remediation_weight: 0.9
+
+dependencies:
+- from: number_sense
+  to: algebra_foundations
+  type: prerequisite
+- from: algebra_foundations
+  to: geometry_shapes
+  type: prerequisite
+- from: geometry_shapes
+  to: data_statistics
+  type: prerequisite

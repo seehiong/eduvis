@@ -192,7 +192,30 @@ class MigrationEngine:
     def add_rule(self, func):
         self.rules.append(func)
 
-    def run(self, yaml_content: str, from_version: str, to_version: str) -> str:
+    def _determine_versions(self, data: dict, from_version: str | None, to_version: str) -> tuple[int, int]:
+        actual_from_version = from_version
+        if not actual_from_version:
+            actual_from_version = data.get("schema_version")
+            if not actual_from_version:
+                raise ValueError("schema_version key is missing in YAML content")
+            actual_from_version = str(actual_from_version)
+
+        # Strip any quotes from actual_from_version
+        actual_from_version = actual_from_version.strip('"').strip("'")
+
+        versions = ["0.7", "0.8", "0.9", "1.0"]
+        if actual_from_version not in versions or to_version not in versions:
+            raise ValueError(f"Unsupported migration path from {actual_from_version} to {to_version}")
+
+        idx_from = versions.index(actual_from_version)
+        idx_to = versions.index(to_version)
+
+        if idx_from > idx_to:
+            raise ValueError(f"Downgrade from {actual_from_version} to {to_version} is not supported")
+
+        return idx_from, idx_to
+
+    def run(self, yaml_content: str, from_version: str | None, to_version: str) -> str:
         sanitized = _sanitize_captions(yaml_content)
 
         yaml = ruamel.yaml.YAML()
@@ -203,6 +226,8 @@ class MigrationEngine:
         try:
             data = yaml.load(sanitized)
         except Exception as e:  # pylint: disable=broad-exception-caught
+            if not from_version:
+                raise ValueError(f"Error parsing YAML and from_version was not provided: {e}") from e
             print(f"Error parsing YAML: {e}", file=sys.stderr)
             # Fallback: regex bump so schema_version is never silently skipped
             bumped = re.sub(
@@ -213,10 +238,21 @@ class MigrationEngine:
             return bumped
 
         if not isinstance(data, dict):
+            if not from_version:
+                raise ValueError("YAML root is not a dictionary; schema_version cannot be determined")
             return sanitized
 
-        for rule in self.rules:
-            rule(data, from_version, to_version)
+        idx_from, idx_to = self._determine_versions(data, from_version, to_version)
+
+        if idx_from == idx_to:
+            return yaml_content
+
+        versions = ["0.7", "0.8", "0.9", "1.0"]
+        for i in range(idx_from, idx_to):
+            v_from = versions[i]
+            v_to = versions[i + 1]
+            for rule in self.rules:
+                rule(data, v_from, v_to)
 
         from io import StringIO
         buf = StringIO()

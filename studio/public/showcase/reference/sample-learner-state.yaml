@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/learner_state.schema.json
+# Sample learner state for use with showcase-curriculum.yaml
+# Try: eduvis mastery project showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml
+# Try: eduvis study-plan showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml --mode exam_prep
+schema_version: "1.0"
+learner_id: student_demo
+
+concepts:
+  integers:
+    mastery: 0.85
+    confidence: 0.9
+  negative_numbers:
+    mastery: 0.45
+    confidence: 0.5
+  rational_numbers:
+    mastery: 0.2
+  real_numbers:
+    mastery: 0.0
+
+skills:
+  order_integers:
+    mastery: 0.9
+  add_negative_numbers:
+    mastery: 0.4
+  subtract_negative_numbers:
+    mastery: 0.3
+  simplify_expressions:
+    mastery: 0.1
+
+misconceptions:
+  digit_size_magnitude_error:
+    state: active
+    attempts: 2
+  double_negative_addition_confusion:
+    state: active
+    attempts: 1
+  difference_confusion:
+    state: remediated
+    attempts: 3

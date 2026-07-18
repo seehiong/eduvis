@@ -2,9 +2,15 @@
 
 **An open, curriculum-aware framework and knowledge representation for learning experiences.**
 
-EduVis describes the **educational meaning** of learning experiences — modeling curriculum graphs, lesson progression, student actions, assessment evidence, learner state, and presentation layers. Renderers and player engines translate that meaning into interactive lessons, SVG, React, Flutter, PDF, or animated video.
+[**🚀 Try the Live EduVis Studio IDE**](https://seehiong.github.io/eduvis/)
 
-Inspired by the philosophy behind Markdown, Mermaid, and Model Context Protocol (MCP):
+EduVis describes the **educational meaning** of learning experiences — separating semantic pedagogical structure from raw presentation rendering. Inspired by the philosophy of Markdown, Mermaid, and Model Context Protocol (MCP), it aims to standardize how learning environments are modeled, compiled, and visualized.
+
+EduVis consists of two complementary projects:
+*   **EduVis Core**: The stable educational Intermediate Representation (IR), compiler pipeline, schema validator, and reference SVG renderer.
+*   **EduVis Studio**: A browser-based educational IDE built on Pyodide/WASM that acts as the primary authoring, visualization, and debugging environment for educational content designers.
+
+Inspired by the philosophy of separating meaning from rendering:
 
 > Separate meaning from rendering.
 
@@ -59,8 +65,8 @@ uv run eduvis mastery project showcase/reference/showcase-curriculum.yaml showca
 # Study plan generation
 uv run eduvis study-plan showcase/reference/showcase-curriculum.yaml showcase/reference/sample-learner-state.yaml --mode exam_prep --hours 2
 
-# Schema migration
-uv run eduvis migrate showcase/lessons/ --from-ver 0.8 --to-ver 0.9
+# Schema migration (auto-detects current version, or override with --from-ver)
+uv run eduvis migrate showcase/lessons/ --to-ver 1.0
 
 # Graph-driven lesson generation
 uv run eduvis generate lesson showcase/reference/showcase-curriculum.yaml integers negative_numbers -o new_lesson.yaml
@@ -180,6 +186,55 @@ But more importantly, EduVis describes where this element sits inside a proven t
 
 This is not a theoretical schema. The placement model, element types, and LLM prompt vocabulary have been validated in real educational pipelines and are designed for production use.
 
+The **EduVis Studio** is the primary IDE for educational design. EduVis Studio is not another YAML editor. It is a multi-projection educational IDE where text, graphs, diagnostics, and compiler views are synchronized representations of the same educational specification. Every projection is a synchronized view over the same educational specification; no projection owns the data.
+
+A single educational specification is projected instantly into six interactive views, supported by a cross-cutting inspector:
+
+```text
+             Educational Specification (Source of Truth)
+                                │
+      ┌─────────────────────────┼─────────────────────────┐
+      ▼                         ▼                         ▼
+  Curriculum View        Storyboard View        Assessment View
+  Learner Projection      Compiler View        Specification View
+                                │
+ ───────────────────────────────┼───────────────────────────────
+                                ▼
+         Universal Relationship Explorer (Cross-cutting)
+```
+
+The Studio runs entirely client-side via WebAssembly (Pyodide), providing real-time curriculum graph visualization, lesson progression storyboards, diagnostic engines, and learner mastery projections. For design specifications, refer to [docs/studio.md](docs/studio.md).
+
+### Running the Studio IDE Locally
+
+To run and test the Studio workspace on your local machine:
+
+1.  **Prepare Python WASM Assets**:
+    ```bash
+    uv run python scripts/pack_studio.py
+    ```
+2.  **Start Development Server**:
+    ```bash
+    cd studio
+    npm install
+    npm run dev
+    ```
+    Open `http://localhost:5173` in your browser.
+
+### Running the Standalone Live Editor (Static Playground)
+
+For a quick, zero-install client-side playground, you can run the standalone static Live Editor directly from the `showcase/` directory:
+
+1.  **Start the HTTP Server**:
+    ```bash
+    uv run python -m http.server 8000 --directory showcase/
+    ```
+2.  **Open the Editor**:
+    Open `http://localhost:8000/editor.html` in your browser.
+
+> [!NOTE]
+> Unlike the React-based **EduVis Studio**, the Showcase Live Editor is a lightweight single-page tool. It runs in-browser by dynamically loading Pyodide and mounting your local Python files to sync engine and rendering logic changes on the fly.
+
 ## Documentation Reference Map
 
 EduVis is fully documented in the [docs/](docs/) directory. Please refer to these resources for detailed specifications:
@@ -191,14 +246,7 @@ EduVis is fully documented in the [docs/](docs/) directory. Please refer to thes
 *   **[docs/engines.md](docs/engines.md)**: Detailed algorithms and mathematical formulas for Spaced Repetition (SM-2), Study Plan Priority Scoring, Remediation Trace Paths, and Greedy Paper Assembly.
 *   **[docs/ecosystem.md](docs/ecosystem.md)**: Ecosystem framing, comparison matrix, and out-of-scope boundaries.
 *   **[docs/llm_system_prompt.md](docs/llm_system_prompt.md)**: Structured prompt vocabulary for injecting EduVis schema rules directly into LLM prompts.
-
----
-
-## Project Status
-
-* **Current Stable**: `v1.0.0`
-* **Current Focus**: Downstream player and renderer integration, performance optimization.
-* **Long-term Vision**: Canonical Pedagogical Intermediate Representation (IR) standard.
+*   **[docs/studio.md](docs/studio.md)**: Design goals, multi-projection workspace, bidirectional editing, and local Pyodide/WASM compiler architecture for EduVis Studio.
 
 ---
 
@@ -206,116 +254,13 @@ EduVis is fully documented in the [docs/](docs/) directory. Please refer to thes
 
 ```text
 eduvis/ (repository root)
-├── pyproject.toml            ← package metadata and dependencies
-├── uv.lock                   ← pinned dependency versions
-├── LICENSE                   ← Apache 2.0 License
-├── README.md                 ← this documentation file
-├── .gitignore                ← untracked files to ignore
-│
-├── eduvis/                   ← Python package source code
-│   ├── __init__.py           ← package entrypoint & exported APIs
-│   ├── __main__.py           ← entrypoint for running directly as a script
-│   ├── cli.py                ← Click CLI commands implementation
-│   │
-│   ├── compiler/             ← EduVis-Compiler: context, stages, and compiler orchestrator
-│   │   ├── __init__.py
-│   │   ├── pipeline.py       ← CompilationContext & CompilerPipeline orchestrator
-│   │   ├── qa_engine.py      ← compiler validation gatekeeper (QA engine)
-│   │   ├── curriculum_planner.py ← compiles syllabus -> curriculum graph YAML
-│   │   ├── lesson_planner.py     ← compiles concept path -> lesson YAML
-│   │   ├── assessment_assembler.py ← blueprints and assembles test papers
-│   │   └── presentation_compiler.py ← compiles presentation sidecars inline
-│   │
-│   ├── core/                 ← EduVis-Core: schema, validation, prompt vocabulary
-│   │   ├── registry.py       ← ElementRegistry (specifications list + prompt docs)
-│   │   ├── validator.py      ← five-pillar lesson validator
-│   │   ├── prompt.py         ← format_prompt_docs() for LLM prompts
-│   │   ├── curriculum.py     ← CurriculumGraph, dependency traversal, coverage analytics
-│   │   ├── learner_state.py  ← LearnerState — concept/skill/misconception mastery
-│   │   ├── transition_engine.py ← apply_telemetry_event() — stateless SM evidence bridge
-│   │   ├── mastery_projection.py ← MasteryGraphView — curriculum graph + learner state
-│   │   ├── blueprint_engine.py  ← generate_blueprint / validate_paper_coverage / assemble_paper
-│   │   ├── revision_engine.py   ← get_top_concepts / get_top_misconceptions / generate_study_plan
-│   │   ├── remediation_engine.py ← trace_prerequisite_failure_root / select_next_element / generate_hint
-│   │   ├── spaced_repetition.py ← SM-2 scheduler: update_review_schedule / get_due_elements
-│   │   ├── elements/
-│   │   │   ├── generic.py    ← generic element field definitions
-│   │   │   └── math.py       ← mathematics element field definitions
-│   │   └── schemas/
-│   │       ├── placement.py  ← schema definitions for placement (phases, roles)
-│   │       ├── actions.py    ← schema definitions for actions
-│   │       ├── relationships.py ← schema definitions for relationships
-│   │       └── progression.py ← schema definitions for progression patterns
-│   │
-│   ├── renderers/
-│   │   └── svg/              ← Python reference renderer (SVG output)
-│   │       ├── spec_renderer.py  ← SVGSpecRenderer — YAML spec to SVG
-│   │       ├── primitives.py     ← canvas constants and drawing helpers
-│   │       ├── renderers_base.py ← generic element renderers
-│   │       └── renderers_math/   ← mathematics element renderers
-│   │
-│   └── schemas/              ← pre-generated JSON Schema files packaged with the library (also for IDE validation)
-│       ├── lesson.schema.json
-│       ├── placement.schema.json
-│       ├── actions.schema.json
-│       ├── relationships.schema.json
-│       ├── progression.schema.json
-│       ├── learner_state.schema.json
-│       ├── telemetry_event.schema.json
-│       ├── assessment_paper.schema.json
-│       └── paper_blueprint.schema.json
-│
-├── docs/                     ← Documentation files
-│   ├── philosophy.md         ← core principles and primitive test rules
-│   ├── architecture.md       ← orthogonal layers and schema definitions
-│   ├── compiler.md           ← pipeline compiler architecture and stages reference
-│   ├── five_pillars.md       ← reference specifications for the 5 pillars
-│   ├── engines.md            ← algorithm reference (SM-2, Study Plan priority, remediation)
-│   ├── ecosystem.md          ← scope framing and edtech comparison matrix
-│   └── llm_system_prompt.md  ← generated vocabulary reference for LLMs
-│
-├── showcase/                 ← Live editor and showcase files
-│   ├── lessons/               ← complete teaching flows (one pattern per file)
-│   │   └── negative-numbers-confidence-ladder-lesson.yaml
-│   ├── features/              ← one feature family per file
-│   │   ├── adaptive-remediation-branching-lesson.yaml
-│   │   ├── visual-elements-catalog-lesson.yaml
-│   │   └── assessment-schemas-lesson.yaml
-│   └── reference/             ← reference catalogs
-│       ├── exhaustive-element-catalog.yaml
-│       └── mixed-content-card.yaml
-│
-└── tests/                    ← Test suite
-    ├── test_validate.py      ← validator smoke tests
-    ├── test_schema_export.py ← JSON Schema export smoke tests
-    └── test_compiler_pipeline.py ← compiler pipeline and stages unit tests
+├── eduvis/                  ← Python package source (core models, validator, compiler, renderers)
+├── studio/                  ← EduVis Studio web application (React, TypeScript, Pyodide WASM)
+├── docs/                    ← Conceptual, architectural, and studio documentation files
+├── showcase/                ← Reference lesson files, feature catalogs, and learner state configurations
+├── scripts/                 ← Build, packaging (pack_studio), and maintenance scripts
+└── tests/                   ← Unit and integration test suite
 ```
-
-
----
-
-## Long-Term Vision
-
-```text
-Learning Intent
-       ↓
-EduVis-Core  (educational meaning — stable, renderer-agnostic)
-  Elements · Actions · Relationships · Placement · Progression
-       ↓
-EduVis-Presentation  (timing, animation — renderer-specific, layered on top)
-       ↓
-Any target: SVG · React · Flutter · PDF · YouTube · Interactive platform
-```
-
-Just as Markdown became the standard for text, EduVis aims to become the standard for educational content — where **progression, placement, and actions are as important as the element itself**.
-
----
-
-## Status
-
-Early design. Reference implementation live in Nova Tutor (Singapore Secondary Mathematics).
-
-Contributions and feedback welcome.
 
 ---
 

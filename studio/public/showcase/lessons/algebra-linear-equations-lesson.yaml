@@ -1,0 +1,94 @@
+# EduVis Showcase: Linear Equations - Lesson
+schema_version: "1.0"
+
+curriculum:
+  code: "ALG-linear-equations"
+  topic: "Linear Equations"
+  concept: "linear_equations"
+  learning_outcomes:
+  - "Identify variable terms and coefficients"
+  - "Solve basic one-step linear equations using inverse operations"
+
+lesson:
+  title: "Solving Linear Equations - Balance Scale Method"
+  concepts:
+  - "variables"
+  - "linear_equations"
+
+progression:
+  pattern: confidence_ladder
+  phases:
+  - phase: hook
+  - phase: explore
+  - phase: explain
+    purpose: conceptual_model
+  - phase: independent_practice
+    difficulty: starter
+    count: 2
+
+content:
+- id: hook_scale_balance
+  placement:
+    lesson_phase: hook
+    layout_zone: full
+  type: concept_card
+  concept: variables
+  title: "Balancing the Scale"
+  paragraphs:
+  - "Think of an equation like a balanced scale. If you add or remove weight from one side, you must do the same to the other side to keep it balanced."
+
+- id: explore_one_step
+  placement:
+    lesson_phase: explore
+    layout_zone: full
+  type: concept_card
+  concept: linear_equations
+  title: "Solving Equations by Balancing"
+  paragraphs:
+  - "To solve x + 3 = 7, we want to isolate the variable x. We do this by performing the inverse operation: subtracting 3 from both sides."
+
+- id: explain_balance_rules
+  placement:
+    lesson_phase: explain
+    layout_zone: full
+  type: concept_card
+  concept: linear_equations
+  title: "Rules of Equation Balancing"
+  paragraphs:
+  - "Whatever operation you perform on the left side of the equals sign, you must also perform on the right side."
+
+- id: practice_solve_one
+  placement:
+    lesson_phase: independent_practice
+    difficulty: starter
+    lesson_role: application
+  type: single_select_question
+  concept: solve_one_step
+  question: "Solve the equation: x + 5 = 12"
+  options:
+  - text: "x = 7"
+    is_correct: true
+  - text: "x = 17"
+    is_correct: false
+    misconception_tags:
+    - sign_inversion_error
+  - text: "x = 6"
+    is_correct: false
+
+- id: practice_solve_two
+  placement:
+    lesson_phase: independent_practice
+    difficulty: starter
+    lesson_role: application
+  type: single_select_question
+  concept: solve_one_step
+  question: "Solve the equation: 3x = 15"
+  options:
+  - text: "x = 5"
+    is_correct: true
+  - text: "x = 12"
+    is_correct: false
+    misconception_tags:
+    - variable_conjoining
+  - text: "x = 18"
+    is_correct: false

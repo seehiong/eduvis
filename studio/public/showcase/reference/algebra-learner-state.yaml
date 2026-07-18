@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/learner_state.schema.json
+schema_version: "1.0"
+learner_id: student_algebra_demo
+
+concepts:
+  variables:
+    mastery: 0.9
+    confidence: 0.95
+  linear_equations:
+    mastery: 0.75
+    confidence: 0.8
+  inequalities:
+    mastery: 0.35
+    confidence: 0.4
+  systems:
+    mastery: 0.1
+    confidence: 0.0
+
+skills:
+  eval_expr:
+    mastery: 0.95
+  solve_one_step:
+    mastery: 0.8
+  solve_two_step:
+    mastery: 0.65
+  graph_inequality:
+    mastery: 0.3
+
+misconceptions:
+  variable_conjoining:
+    state: remediated
+    attempts: 2
+  sign_inversion_error:
+    state: active
+    attempts: 3
+  inequality_flip_forget:
+    state: active
+    attempts: 1

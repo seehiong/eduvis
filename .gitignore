@@ -16,3 +16,6 @@ node_modules/
 studio/node_modules/
 studio/dist/
 .oxlint/
+
+# Python packaging extractions
+eduvis-*/

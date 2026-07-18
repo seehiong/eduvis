@@ -760,9 +760,9 @@ def study_plan(curriculum_file: str, state_file: str, mode: str, hours: float, t
 
 @cli.command()
 @click.argument("target_path", type=click.Path(exists=True))
-@click.option("--from-ver", default="0.9", help="Version to migrate from.")
+@click.option("--from-ver", default=None, help="Version to migrate from (auto-detected if omitted).")
 @click.option("--to-ver", default="1.0", help="Version to migrate to.")
-def migrate(target_path: str, from_ver: str, to_ver: str) -> None:
+def migrate(target_path: str, from_ver: str | None, to_ver: str) -> None:
     """Migrate a YAML file or directory of YAML files to a new schema version."""
     from eduvis.core.migrate import engine
     path = Path(target_path)
@@ -771,7 +771,10 @@ def migrate(target_path: str, from_ver: str, to_ver: str) -> None:
     count = 0
     for f in files:
         original = f.read_text(encoding="utf-8")
-        migrated = engine.run(original, from_ver, to_ver)
+        try:
+            migrated = engine.run(original, from_ver, to_ver)
+        except Exception as e:
+            raise click.ClickException(f"Migration failed for {f}: {e}")
         if original != migrated:
             f.write_text(migrated, encoding="utf-8")
             click.echo(f"Migrated {f}")

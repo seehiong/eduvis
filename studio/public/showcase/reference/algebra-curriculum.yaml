@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/seehiong/eduvis/main/eduvis/schemas/curriculum.schema.json
+schema_version: "1.0"
+
+concepts:
+- code: variables
+  name: Variables & Expressions
+  description: Understanding variables, coefficients, and simplifying expressions
+  exam_weight: 0.8
+
+- code: linear_equations
+  name: Linear Equations
+  description: Solving one-step and multi-step linear equations
+  exam_weight: 0.9
+
+- code: inequalities
+  name: Inequalities & Graphs
+  description: Solving and graphing linear inequalities on a number line
+  exam_weight: 0.7
+
+- code: systems
+  name: Systems of Linear Equations
+  description: Solving systems of equations using substitution and elimination
+  exam_weight: 0.95
+
+skills:
+- code: eval_expr
+  name: Evaluate Expressions
+  concept: variables
+  exam_weight: 0.75
+
+- code: solve_one_step
+  name: Solve One-Step Equations
+  concept: linear_equations
+  exam_weight: 0.8
+
+- code: solve_two_step
+  name: Solve Two-Step Equations
+  concept: linear_equations
+  exam_weight: 0.9
+
+- code: graph_inequality
+  name: Graph Inequalities
+  concept: inequalities
+  exam_weight: 0.7
+
+misconceptions:
+- code: variable_conjoining
+  name: Variable Conjoining Error (e.g. 3x treated as 3+x)
+  concept: variables
+  remediation_weight: 0.9
+
+- code: sign_inversion_error
+  name: Sign Inversion Operator Mistake
+  concept: linear_equations
+  remediation_weight: 0.85
+
+- code: inequality_flip_forget
+  name: Forget to Flip Inequality Direction on Negative Multiplier
+  concept: inequalities
+  remediation_weight: 0.95
+
+dependencies:
+- from: variables
+  to: linear_equations
+  type: prerequisite
+- from: linear_equations
+  to: inequalities
+  type: prerequisite
+- from: linear_equations
+  to: systems
+  type: prerequisite

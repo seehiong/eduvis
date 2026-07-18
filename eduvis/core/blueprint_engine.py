@@ -183,7 +183,17 @@ def _tally_paper_marks(
             paper_total += marks
 
             el = elements.get(el_id, {})
-            for concept in el.get("concepts") or []:
+            concepts = el.get("concepts") or []
+            if isinstance(concepts, str):
+                concepts = [concepts]
+            elif not isinstance(concepts, list):
+                concepts = []
+            single_concept = el.get("concept")
+            if single_concept and isinstance(single_concept, str):
+                if single_concept not in concepts:
+                    concepts = list(concepts) + [single_concept]
+
+            for concept in concepts:
                 concept_marks[concept] = concept_marks.get(concept, 0) + marks
 
             placement = el.get("placement") or {}
@@ -197,6 +207,15 @@ def _tally_paper_marks(
 # ---------------------------------------------------------------------------
 # 3. Automated exam assembly
 # ---------------------------------------------------------------------------
+
+def _filter_questions(elements: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    questions = []
+    for el in elements:
+        el_type = str(el.get("type", "")).lower()
+        if "question" in el_type or el_type in ("active_misconception", "interactive_task") or "question" in el:
+            questions.append(el)
+    return questions if questions else list(elements)
+
 
 def assemble_paper(
     blueprint: dict[str, Any],
@@ -228,8 +247,10 @@ def assemble_paper(
         elif t.get("type") == "cognitive_skill":
             cognitive_targets[str(t["code"])] = float(t.get("weight", 0))
 
+    question_elements = _filter_questions(available_elements)
+
     scored = sorted(
-        available_elements,
+        question_elements,
         key=lambda el: _score_element(el, concept_targets, cognitive_targets),
         reverse=True,
     )
@@ -267,7 +288,17 @@ def _score_element(
     cognitive_targets: dict[str, float],
 ) -> float:
     score = 0.0
-    for concept in el.get("concepts") or []:
+    concepts = el.get("concepts") or []
+    if isinstance(concepts, str):
+        concepts = [concepts]
+    elif not isinstance(concepts, list):
+        concepts = []
+    single_concept = el.get("concept")
+    if single_concept and isinstance(single_concept, str):
+        if single_concept not in concepts:
+            concepts = list(concepts) + [single_concept]
+
+    for concept in concepts:
         score += concept_targets.get(concept, 0.0)
     placement = el.get("placement") or {}
     obj = placement.get("assessment_objective")
@@ -289,7 +320,18 @@ def _group_into_sections(
     sections_map: dict[str, list[dict[str, Any]]] = {}
     for el, m in selected:
         obj = (el.get("placement") or {}).get("assessment_objective") or "general"
-        sections_map.setdefault(obj, []).append({"id": el["id"], "marks": m})
+        q_data: dict[str, Any] = {"id": el["id"], "marks": m}
+        if "type" in el:
+            q_data["type"] = el["type"]
+        if "question" in el:
+            q_data["question"] = el["question"]
+        if "options" in el:
+            q_data["options"] = el["options"]
+        if "correct_answer" in el:
+            q_data["correct_answer"] = el["correct_answer"]
+        if "paragraphs" in el:
+            q_data["paragraphs"] = el["paragraphs"]
+        sections_map.setdefault(obj, []).append(q_data)
 
     sections: list[dict[str, Any]] = []
     for key in _SECTION_ORDER:

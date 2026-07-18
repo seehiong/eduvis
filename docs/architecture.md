@@ -81,4 +81,26 @@ Syllabus / Concept Graph
   Web Lessons · Voice Tutoring · Interactive Slide Decks · Exam PDFs
 ```
 
-In this pipeline, **EduVis serves as the Pedagogical Intermediate Representation (IR)**. The core library is kept strictly stateless: it provides parsers, schemas, and validators that define the contracts between front-end generators (e.g., AI agents, authoring tools) and back-end deliverers (e.g., React renderers, PDF exporters).
+In this pipeline, **EduVis serves as the Pedagogical Intermediate Representation (IR)**. The relationship between the packages forms a coherent ecosystem inspired by compiler/IDE structures like **LLVM/Clang/LLDB** or **TypeScript/VS Code**:
+
+```text
+  ┌─────────────────────────────────────────────────────────────┐
+  │                        EduVis Studio                        │
+  │                  (Visual IDE / Orchestration)               │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │ orchestrates
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │                         EduVis Core                         │
+  │                 (Parser, Validator, & Compiler)             │
+  │                                                             │
+  │     Syllabus  ──[Planners]──► Specification (IR) ──► Render │
+  └─────────────────────────────────────────────────────────────┘
+```
+
+*   **EduVis Core (The Language & IR)**: Defines the semantic schemas and provides the stateless validation rules and parser engine. Akin to **LLVM IR** or the **TypeScript Compiler (tsc)**, it represents the standardized grammar and validation, remaining highly stable and backward-compatible.
+*   **The Planners & Assembler (The Compiler)**: Python compilation stages (Curriculum Planner, Lesson Planner, Assessment Assembler) that compile educational intentions down into concrete specifications, akin to **Clang** code generators.
+*   **EduVis Studio (The IDE)**: Sits directly on top of this stateless infrastructure. It acts as the local, browser-based authoring and analysis platform:
+    1. **State Orchestration**: It runs the Python compiler algorithms, planners, and validators locally in the browser via Pyodide/WASM.
+    2. **Visual Projections**: It transforms the educational specification dynamically into multiple interactive views (e.g. concept dependency graphs, slide storyboard progressions, and mastery overlays).
+    3. **Validation Loops**: It runs diagnostic scripts directly in client background workers, giving content authors immediate feedback on pedagogical anti-patterns (such as missing prerequisites or unbalanced lesson phases).
