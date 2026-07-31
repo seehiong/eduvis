@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { pyodideBridge, type LessonStructure } from "../pyodideBridge";
-import { load as yamlLoad, dump as yamlDump } from "js-yaml";
+import { load as yamlLoad } from "js-yaml";
 import { usePanelResizer } from "../hooks/usePanelResizer";
 
 interface LessonViewProps {
@@ -20,6 +20,47 @@ export const LessonView: React.FC<LessonViewProps> = ({ initialYaml, onChangeYam
   const [isCompiling, setIsCompiling] = useState(false);
 
   const { sidebarWidth, editorWidth, startResizing } = usePanelResizer(220);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    if (e.currentTarget) {
+      (e.currentTarget as HTMLElement).style.opacity = "0.4";
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    if (e.currentTarget) {
+      (e.currentTarget as HTMLElement).style.opacity = "1";
+    }
+    setDraggedIndex(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex || !structure?.slides) return;
+
+    const newSlides = [...structure.slides];
+    const draggedItem = newSlides[draggedIndex];
+    newSlides.splice(draggedIndex, 1);
+    newSlides.splice(targetIndex, 0, draggedItem);
+
+    const orderedIds = newSlides.map((s) => s.id);
+    try {
+      const newYaml = await pyodideBridge.reorderSlides(yamlText, orderedIds);
+      setYamlText(newYaml);
+      onChangeYaml(newYaml);
+      setSelectedSlideIndex(targetIndex);
+    } catch (err) {
+      console.error("Drag-and-drop slide reorder failed:", err);
+    }
+  };
 
   useEffect(() => {
     setYamlText(initialYaml);
@@ -80,45 +121,40 @@ export const LessonView: React.FC<LessonViewProps> = ({ initialYaml, onChangeYam
     }
   };
 
-  // Handle GUI Form edits and synchronize them back to the YAML representation
-  const handleFormChange = (path: string, value: any) => {
+  // Handle GUI Form edits and synchronize them back to the YAML representation preserving comments
+  const handleFormChange = async (path: string, value: any) => {
     try {
-      const doc = yamlLoad(yamlText) as any;
-      if (!doc || !Array.isArray(doc.content)) return;
-      const element = doc.content[selectedSlideIndex];
-      if (!element) return;
-
+      if (!activeElement) return;
+      const slideId = activeElement.id;
+      
+      const updates: any = {};
       if (path === "id") {
-        element.id = value;
+        updates["id"] = value;
       } else if (path === "phase") {
-        if (!element.placement) element.placement = {};
-        element.placement.lesson_phase = value;
+        updates["placement.lesson_phase"] = value;
       } else if (path === "weight") {
-        if (!element.placement) element.placement = {};
-        element.placement.visual_weight = value;
+        updates["placement.visual_weight"] = value;
       } else if (path === "role") {
-        if (!element.placement) element.placement = {};
-        element.placement.memory_role = value;
+        updates["placement.memory_role"] = value;
       } else if (path === "question") {
-        element.question = value;
+        updates["question"] = value;
       } else if (path === "answer") {
-        element.answer = value;
+        updates["answer"] = value;
       } else if (path === "range_min") {
-        if (!Array.isArray(element.range)) element.range = [0, 10];
-        element.range[0] = Number(value);
+        const currentMax = activeElement.range?.[1] !== undefined ? activeElement.range[1] : 10;
+        updates["range"] = [Number(value), currentMax];
       } else if (path === "range_max") {
-        if (!Array.isArray(element.range)) element.range = [0, 10];
-        element.range[1] = Number(value);
+        const currentMin = activeElement.range?.[0] !== undefined ? activeElement.range[0] : -10;
+        updates["range"] = [currentMin, Number(value)];
       }
 
-      const newYaml = yamlDump(doc, { lineWidth: -1 });
+      const newYaml = await pyodideBridge.updateSlide(yamlText, slideId, updates);
       setYamlText(newYaml);
       onChangeYaml(newYaml);
 
       // Instant preview update
-      pyodideBridge.renderSlide(newYaml, "", selectedSlideIndex).then((svg) => {
-        setSvgHtml(svg);
-      });
+      const svg = await pyodideBridge.renderSlide(newYaml, "", selectedSlideIndex);
+      setSvgHtml(svg);
     } catch (err) {
       console.error("Form synchronization failed:", err);
     }
@@ -186,6 +222,12 @@ export const LessonView: React.FC<LessonViewProps> = ({ initialYaml, onChangeYam
                 key={slide.id}
                 className={`phase-outline-item ${selectedSlideIndex === slide.index ? "active" : ""}`}
                 onClick={() => handleSelectSlide(slide.index)}
+                draggable={true}
+                onDragStart={(e) => handleDragStart(e, slide.index)}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, slide.index)}
+                style={{ cursor: "grab" }}
               >
                 <span className="phase-name">
                   {slide.index + 1}. {slide.title}

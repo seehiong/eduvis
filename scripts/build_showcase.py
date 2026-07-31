@@ -27,6 +27,7 @@ PYODIDE_SOURCE_MAP = {
     "core_init.py":     "eduvis/core/__init__.py",
     "main_init.py":     "eduvis/__init__.py",
     "constants.py":     "eduvis/core/constants.py",
+    "ast_editor.py":    "eduvis/core/ast_editor.py",
 }
 
 SHOWCASE_DIR = ROOT_DIR / "showcase"

@@ -223,14 +223,20 @@ To run and test the Studio workspace on your local machine:
 
 ### Running the Standalone Live Editor (Static Playground)
 
-For a quick, zero-install client-side playground, you can run the standalone static Live Editor directly from the `showcase/` directory:
+For a quick, zero-install client-side playground, run the HTTP server from the repository root (or navigate into `showcase/` directly):
 
-1.  **Start the HTTP Server**:
-    ```bash
-    uv run python -m http.server 8000 --directory showcase/
-    ```
-2.  **Open the Editor**:
-    Open `http://localhost:8000/editor.html` in your browser.
+**Option A: From Repository Root**
+```bash
+uv run python -m http.server 8000 --directory showcase
+```
+
+**Option B: From showcase/ Directory**
+```bash
+cd showcase
+uv run python -m http.server 8000
+```
+
+Then open `http://localhost:8000/editor.html` in your browser.
 
 > [!NOTE]
 > Unlike the React-based **EduVis Studio**, the Showcase Live Editor is a lightweight single-page tool. It runs in-browser by dynamically loading Pyodide and mounting your local Python files to sync engine and rendering logic changes on the fly.
@@ -247,6 +253,7 @@ EduVis is fully documented in the [docs/](docs/) directory. Please refer to thes
 *   **[docs/ecosystem.md](docs/ecosystem.md)**: Ecosystem framing, comparison matrix, and out-of-scope boundaries.
 *   **[docs/llm_system_prompt.md](docs/llm_system_prompt.md)**: Structured prompt vocabulary for injecting EduVis schema rules directly into LLM prompts.
 *   **[docs/studio.md](docs/studio.md)**: Design goals, multi-projection workspace, bidirectional editing, and local Pyodide/WASM compiler architecture for EduVis Studio.
+*   **[docs/roadmap.md](docs/roadmap.md)**: Project priority guidelines, version timelines (v1.2 - v1.5), and strategic extensibility planning.
 
 ---
 

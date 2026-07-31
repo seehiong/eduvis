@@ -7,7 +7,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
 } from "reactflow";
-import type { Node, Edge } from "reactflow";
+import type { Node, Edge, Connection } from "reactflow";
 import "reactflow/dist/style.css";
 import { pyodideBridge } from "../pyodideBridge";
 import { usePanelResizer } from "../hooks/usePanelResizer";
@@ -207,6 +207,48 @@ export const CurriculumView: React.FC<CurriculumViewProps> = ({ initialYaml, onC
     if (onNodeClickProp) onNodeClickProp(node.data.code);
   };
 
+  // Add a prerequisite dependency edge visually
+  const onConnect = async (params: Connection) => {
+    if (
+      params.source &&
+      params.target &&
+      params.sourceHandle === "post" &&
+      params.targetHandle === "pre"
+    ) {
+      const fromCode = params.source.replace("concept-", "");
+      const toCode = params.target.replace("concept-", "");
+      try {
+        const newYaml = await pyodideBridge.addDependency(yamlText, fromCode, toCode);
+        setYamlText(newYaml);
+        onChangeCurriculumYaml(newYaml);
+      } catch (err) {
+        console.error("Failed to add dependency visually:", err);
+      }
+    }
+  };
+
+  // Remove a prerequisite dependency edge visually (press Delete key on selected edge)
+  const onEdgesDelete = async (edgesToDelete: Edge[]) => {
+    let currentYaml = yamlText;
+    let changed = false;
+    for (const edge of edgesToDelete) {
+      if (edge.id.startsWith("edge-prereq-")) {
+        const fromCode = edge.source.replace("concept-", "");
+        const toCode = edge.target.replace("concept-", "");
+        try {
+          currentYaml = await pyodideBridge.removeDependency(currentYaml, fromCode, toCode);
+          changed = true;
+        } catch (err) {
+          console.error("Failed to remove dependency visually:", err);
+        }
+      }
+    }
+    if (changed) {
+      setYamlText(currentYaml);
+      onChangeCurriculumYaml(currentYaml);
+    }
+  };
+
   return (
     <div className="lesson-layout" style={{ display: "flex", width: "100%", height: "100%" }}>
       {/* 1. LEFT COLUMN: CURRICULUM SPECIFICATION EDITOR */}
@@ -311,6 +353,8 @@ export const CurriculumView: React.FC<CurriculumViewProps> = ({ initialYaml, onC
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             onNodeClick={onNodeClick}
+            onConnect={onConnect}
+            onEdgesDelete={onEdgesDelete}
             fitView
             attributionPosition="bottom-right"
           >

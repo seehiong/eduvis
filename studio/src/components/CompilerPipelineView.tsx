@@ -6,7 +6,7 @@ interface CompilerPipelineViewProps {
   lessonYaml: string;
 }
 
-export const CompilerPipelineView: React.FC<CompilerPipelineViewProps> = ({ curriculumYaml, lessonYaml }) => {
+export const CompilerPipelineView: React.FC<CompilerPipelineViewProps> = ({ curriculumYaml }) => {
   const [targetConcept, setTargetConcept] = useState<string>("negative_numbers");
   const [pipelineOutput, setPipelineOutput] = useState<string>("# Pipeline output will appear here...");
   const [isCompiling, setIsCompiling] = useState(false);

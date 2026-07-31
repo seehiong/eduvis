@@ -42,18 +42,18 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             throw err;
         }
 
-        updateStatusCallback("Installing Dependencies", `Installing PyYAML, SymPy and loading local wheel (v${version})...`);
+        updateStatusCallback("Installing Dependencies", `Installing PyYAML, ruamel.yaml, SymPy and loading local wheel (v${version})...`);
         const cb = new Date().getTime();
-        await window.pyodideInstance.runPythonAsync(`
-            import micropip
-            await micropip.install("pyyaml")
-            await micropip.install("sympy")
-            await micropip.install("./eduvis-${version}-py3-none-any.whl?cb=${cb}")
-        `);
+        await window.pyodideInstance.runPythonAsync(`import micropip
+await micropip.install("pyyaml")
+await micropip.install("ruamel-yaml")
+await micropip.install("sympy")
+await micropip.install("./eduvis-${version}-py3-none-any.whl?cb=${cb}")
+`);
 
         updateStatusCallback(`Syncing v${version} Engine Updates`, "Fetching local core files...");
         try {
-            const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode, constantsCode] = await Promise.all([
+            const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode, constantsCode, astEditorCode] = await Promise.all([
                 fetch(`./engine.py?cb=${cb}`).then(r => r.text()),
                 fetch(`./validator.py?cb=${cb}`).then(r => r.text()),
                 fetch(`./generic.py?cb=${cb}`).then(r => r.text()),
@@ -61,7 +61,8 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
                 fetch(`./curriculum.py?cb=${cb}`).then(r => r.text()),
                 fetch(`./core_init.py?cb=${cb}`).then(r => r.text()),
                 fetch(`./main_init.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./constants.py?cb=${cb}`).then(r => r.text())
+                fetch(`./constants.py?cb=${cb}`).then(r => r.text()),
+                fetch(`./ast_editor.py?cb=${cb}`).then(r => r.text())
             ]);
 
             const ensureDir = (path) => {
@@ -80,6 +81,7 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/elements/generic.py', genericCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/curriculum.py', curriculumCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/constants.py', constantsCode);
+            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/ast_editor.py', astEditorCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/__init__.py', coreInitCode);
             window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/__init__.py', mainInitCode);
             

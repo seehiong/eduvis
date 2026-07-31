@@ -16,11 +16,9 @@ export const App: React.FC = () => {
   const [loadingStage, setLoadingStage] = useState("Initializing IDE");
   const [loadingDetail, setLoadingDetail] = useState("Preparing layout workspace...");
   const [activeView, setActiveView] = useState<ActiveView>("curriculum");
-  const [showHelp, setShowHelp] = useState(false);
 
   const [warnings, setWarnings] = useState<string[]>([]);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
-  const [learnerData, setLearnerData] = useState<any>(null);
 
   // Core specs state
   const [curriculumYaml, setCurriculumYaml] = useState("");
@@ -516,12 +514,24 @@ misconceptions: {}`,
           )}
         </section>
 
-        {/* Global IDE Panes */}
         <InspectorPanel 
           activeNodeId={activeNodeId} 
           onClose={() => setActiveNodeId(null)}
           curriculumData={curriculumData}
           learnerData={learnerData}
+          onUpdateNode={async (nodeType, code, updates) => {
+            try {
+              const newYaml = await pyodideBridge.updateNode(curriculumYaml, nodeType, code, updates);
+              setCurriculumYaml(newYaml);
+              localStorage.setItem("eduvis_studio_curriculum_yaml", newYaml);
+              const parsed = await pyodideBridge.parseCurriculum(newYaml);
+              if (!parsed.error) {
+                setCurriculumData(parsed);
+              }
+            } catch (err) {
+              console.error("Failed to update node details:", err);
+            }
+          }}
         />
         <ProblemsPane warnings={warnings} />
 
