@@ -1025,7 +1025,7 @@ def _render_remediation_block(spec, zx, zy, zw, zh, posting_group="G1") -> tuple
     all_renderers = {**RENDERERS, **math_renderers}
     
     gap = 16
-    left_w = int(zw * 0.46)
+    left_w = int(zw * 0.44)
     right_w = zw - left_w - gap
     
     out = []
@@ -1034,54 +1034,78 @@ def _render_remediation_block(spec, zx, zy, zw, zh, posting_group="G1") -> tuple
     review = spec.get("review", {})
     q_spec = review.get("question_spec")
     
+    if not q_spec or not isinstance(q_spec, dict):
+        stud = review.get("student_answer", "")
+        corr = review.get("correct_answer", "")
+        lines = []
+        if stud:
+            lines.append(f"❌ Student Thought: {stud}")
+        if corr:
+            lines.append(f"✅ Correction: {corr}")
+        q_spec = {
+            "type": "callout_box",
+            "title": "Misconception Review",
+            "lines": lines,
+            "placement": spec.get("placement", {})
+        }
+        
+    q_type = q_spec.get("type", "")
+    q_renderer = all_renderers.get(q_type) or all_renderers.get("callout_box")
     left_h_consumed = 0
-    if q_spec and isinstance(q_spec, dict):
-        q_spec = q_spec.copy()
-        q_spec["student_answer"] = review.get("student_answer")
-        q_spec["correct_answer"] = review.get("correct_answer")
-        if "placement" not in q_spec:
-            q_spec["placement"] = spec.get("placement", {})
-            
-        q_type = q_spec.get("type", "")
-        q_renderer = all_renderers.get(q_type)
-        if q_renderer:
-            q_out, left_h_consumed = q_renderer(q_spec, zx, zy, left_w, zh, posting_group=posting_group)
-            out.extend(q_out)
+    if q_renderer:
+        q_out, left_h_consumed = q_renderer(q_spec, zx, zy, left_w, zh, posting_group=posting_group)
+        out.extend(q_out)
             
     # 2. Render Remember (right top) and Solve (right bottom) on the right:
     remember_spec = spec.get("remember", {})
+    if remember_spec and ("lines" not in remember_spec and remember_spec.get("rule")):
+        remember_spec = remember_spec.copy()
+        remember_spec["lines"] = [remember_spec.get("rule")]
+        if "title" not in remember_spec:
+            remember_spec["title"] = "Key Rule"
+            
     solve_spec = spec.get("solve", {})
-    
+    if solve_spec and ("items" not in solve_spec and (solve_spec.get("steps") or solve_spec.get("prompt"))):
+        solve_spec = solve_spec.copy()
+        prompt = solve_spec.get("prompt") or solve_spec.get("title") or "Worked Example"
+        steps = solve_spec.get("steps", [])
+        body_text = "\n".join(f"• {s}" for s in steps) if isinstance(steps, list) else str(steps)
+        solve_spec["items"] = [{
+            "heading": prompt,
+            "body": body_text
+        }]
+
     rx = zx + left_w + gap
     
-    remember_h = 0
     rem_type = remember_spec.get("type", "")
-    rem_renderer = all_renderers.get(rem_type)
+    rem_renderer = all_renderers.get(rem_type) or all_renderers.get("callout_box")
     
-    solve_h = 0
     sol_type = solve_spec.get("type", "")
-    sol_renderer = all_renderers.get(sol_type)
+    sol_renderer = all_renderers.get(sol_type) or all_renderers.get("example_panel")
+    
+    remember_h = 0
+    solve_h = 0
     
     # Dynamic height calculations
-    if rem_renderer:
+    if rem_renderer and remember_spec:
         try:
             _, rem_nat_h = rem_renderer(remember_spec, rx, zy, right_w, zh, posting_group=posting_group)
         except Exception:
             rem_nat_h = 100
         remember_h = rem_nat_h
         
-    if sol_renderer:
+    if sol_renderer and solve_spec:
         try:
             _, sol_nat_h = sol_renderer(solve_spec, rx, zy, right_w, zh, posting_group=posting_group)
         except Exception:
             sol_nat_h = 120
         solve_h = sol_nat_h
         
-    right_total_h = remember_h + gap + solve_h
+    right_total_h = remember_h + (gap if remember_h and solve_h else 0) + solve_h
     total_h = max(left_h_consumed, right_total_h)
     total_h = min(zh, total_h)
     
-    if rem_renderer:
+    if rem_renderer and remember_spec:
         rem_spec_render = remember_spec.copy()
         if "ribbon_label" not in rem_spec_render:
             rem_spec_render["ribbon_label"] = "remember"
@@ -1090,13 +1114,13 @@ def _render_remediation_block(spec, zx, zy, zw, zh, posting_group="G1") -> tuple
         rem_out, _ = rem_renderer(rem_spec_render, rx, zy, right_w, remember_h, posting_group=posting_group)
         out.extend(rem_out)
         
-    if sol_renderer:
+    if sol_renderer and solve_spec:
         sol_spec_render = solve_spec.copy()
         if "ribbon_label" not in sol_spec_render:
             sol_spec_render["ribbon_label"] = "solve"
         if "ribbon_type" not in sol_spec_render:
             sol_spec_render["ribbon_type"] = "solve"
-        sol_out, _ = sol_renderer(sol_spec_render, rx, zy + remember_h + gap, right_w, solve_h, posting_group=posting_group)
+        sol_out, _ = sol_renderer(sol_spec_render, rx, zy + (remember_h + gap if remember_h else 0), right_w, solve_h, posting_group=posting_group)
         out.extend(sol_out)
         
     return out, total_h

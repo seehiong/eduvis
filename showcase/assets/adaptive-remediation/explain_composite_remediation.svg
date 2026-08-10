@@ -11,71 +11,70 @@
   <rect x="80" y="65" width="118" height="16" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="1.2" />
   <text x="139" y="76.5" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#7f1d1d" text-anchor="middle">MISCONCEPTION FIX</text>
   <g id="u1" data-reveal-order="1" data-ref="center" data-type="remediation_block">
-  <rect x="80" y="90" width="294" height="272" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+  <rect x="80" y="90" width="281" height="272" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
   <path d="M 105 91 L 88 91 A 7 7 0 0 0 81 98 L 81 354 A 7 7 0 0 0 88 361 L 105 361 Z" fill="#ffedd5" />
   <line x1="105" y1="91" x2="105" y2="361" stroke="#fdba74" stroke-width="1" />
   <text x="93" y="226.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 93, 226.0)">SOLVE</text>
-  <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">Which of the following numbers is</text>
-  <text x="116" y="137" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">a composite number?</text>
-  <rect x="116" y="165" width="113" height="56" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5" />
-  <circle cx="135" cy="193" r="11" fill="#ef4444" />
-  <text x="135" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">A</text>
-  <text x="158" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#7f1d1d" text-anchor="start">2</text>
-  <text x="158" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#7f1d1d" text-anchor="start">(factors:</text>
-  <text x="158" y="212" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#7f1d1d" text-anchor="start">1, 2)</text>
-  <rect x="245" y="165" width="113" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
-  <circle cx="264" cy="193" r="11" fill="#f1f5f9" />
-  <text x="264" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">B</text>
-  <text x="287" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">3</text>
-  <text x="287" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">(factors:</text>
-  <text x="287" y="212" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">1, 3)</text>
-  <rect x="116" y="233" width="113" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <text x="116" y="119" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">Which of the following numbers</text>
+  <text x="116" y="137" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="start">is a composite number?</text>
+  <rect x="116" y="165" width="106" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <circle cx="135" cy="193" r="11" fill="#f1f5f9" />
+  <text x="135" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">A</text>
+  <text x="158" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">2</text>
+  <text x="158" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">(factors:</text>
+  <text x="158" y="212" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">1, 2)</text>
+  <rect x="238" y="165" width="106" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <circle cx="257" cy="193" r="11" fill="#f1f5f9" />
+  <text x="257" y="196.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">B</text>
+  <text x="280" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">3</text>
+  <text x="280" y="196" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">(factors:</text>
+  <text x="280" y="212" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">1, 3)</text>
+  <rect x="116" y="233" width="106" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
   <circle cx="135" cy="261" r="11" fill="#f1f5f9" />
   <text x="135" y="264.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">C</text>
   <text x="158" y="248" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">5</text>
   <text x="158" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">(factors:</text>
   <text x="158" y="280" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">1, 5)</text>
-  <rect x="245" y="233" width="113" height="56" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5" />
-  <circle cx="264" cy="261" r="11" fill="#22c55e" />
-  <text x="264" y="264.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">D</text>
-  <text x="287" y="248" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#14532d" text-anchor="start">9</text>
-  <text x="287" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#14532d" text-anchor="start">(factors:</text>
-  <text x="287" y="280" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#14532d" text-anchor="start">1, 3, 9)</text>
-  <rect x="116" y="301" width="113" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <rect x="238" y="233" width="106" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <circle cx="257" cy="261" r="11" fill="#f1f5f9" />
+  <text x="257" y="264.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">D</text>
+  <text x="280" y="248" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">9</text>
+  <text x="280" y="264" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">(factors:</text>
+  <text x="280" y="280" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">1, 3, 9)</text>
+  <rect x="116" y="301" width="106" height="56" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
   <circle cx="135" cy="329" r="11" fill="#f1f5f9" />
   <text x="135" y="332.5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#64748b" text-anchor="middle">E</text>
   <text x="158" y="316" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">7</text>
   <text x="158" y="332" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">(factors:</text>
   <text x="158" y="348" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">1, 7)</text>
-  <rect x="390" y="90" width="330" height="142" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
-  <path d="M 415 91 L 398 91 A 7 7 0 0 0 391 98 L 391 224 A 7 7 0 0 0 398 231 L 415 231 Z" fill="#dbeafe" />
-  <line x1="415" y1="91" x2="415" y2="231" stroke="#93c5fd" stroke-width="1" />
-  <text x="403" y="161.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#1e40af" text-anchor="middle" transform="rotate(-90, 403, 161.0)">REMEMBER</text>
-  <text x="426" y="116" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0284c7" text-anchor="start">Composite Numbers Rule</text>
-  <text x="426" y="138" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">A composite number is a positive integer</text>
-  <text x="426" y="156" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">greater than 1 that has more than two</text>
-  <text x="426" y="174" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">factors.</text>
-  <text x="426" y="192" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Any whole number greater than 1 is either</text>
-  <text x="426" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">prime or composite.</text>
-  <rect x="390" y="248" width="330" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
-  <path d="M 415 249 L 398 249 A 7 7 0 0 0 391 256 L 391 450 A 7 7 0 0 0 398 457 L 415 457 Z" fill="#ffedd5" />
-  <line x1="415" y1="249" x2="415" y2="457" stroke="#fdba74" stroke-width="1" />
-  <text x="403" y="353.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 403, 353.0)">SOLVE</text>
-  <circle cx="441" cy="279" r="11" fill="#f97316" opacity="0.15" />
-  <circle cx="441" cy="279" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
-  <text x="441" y="283" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
-  <text x="464" y="282" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: List the factors of 2. It has</text>
-  <text x="464" y="300" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">only 1 and 2 (Prime).</text>
-  <line x1="441" y1="290" x2="441" y2="312" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
-  <circle cx="441" cy="323" r="11" fill="#f97316" opacity="0.15" />
-  <circle cx="441" cy="323" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
-  <text x="441" y="327" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
-  <text x="464" y="326" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: List the factors of 9.</text>
-  <text x="464" y="344" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Factors are 1, 3, 9. Since it has</text>
-  <text x="464" y="362" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">more than two factors, it is</text>
-  <text x="464" y="380" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">composite.</text>
-  <rect x="426" y="398" width="278" height="48" rx="6" fill="#f97316" opacity="0.08" />
-  <rect x="426" y="398" width="278" height="48" rx="6" fill="none" stroke="#f97316" stroke-width="1.2" opacity="0.4" />
-  <text x="440" y="417" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="start">Therefore, D is the correct answer.</text>
+  <rect x="377" y="90" width="343" height="142" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+  <path d="M 402 91 L 385 91 A 7 7 0 0 0 378 98 L 378 224 A 7 7 0 0 0 385 231 L 402 231 Z" fill="#dbeafe" />
+  <line x1="402" y1="91" x2="402" y2="231" stroke="#93c5fd" stroke-width="1" />
+  <text x="390" y="161.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#1e40af" text-anchor="middle" transform="rotate(-90, 390, 161.0)">REMEMBER</text>
+  <text x="413" y="116" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0284c7" text-anchor="start">Composite Numbers Rule</text>
+  <text x="413" y="138" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">A composite number is a positive integer</text>
+  <text x="413" y="156" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">greater than 1 that has more than two</text>
+  <text x="413" y="174" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">factors.</text>
+  <text x="413" y="192" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Any whole number greater than 1 is either</text>
+  <text x="413" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">prime or composite.</text>
+  <rect x="377" y="248" width="343" height="192" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
+  <path d="M 402 249 L 385 249 A 7 7 0 0 0 378 256 L 378 432 A 7 7 0 0 0 385 439 L 402 439 Z" fill="#ffedd5" />
+  <line x1="402" y1="249" x2="402" y2="439" stroke="#fdba74" stroke-width="1" />
+  <text x="390" y="344.0" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#9a3412" text-anchor="middle" transform="rotate(-90, 390, 344.0)">SOLVE</text>
+  <circle cx="428" cy="279" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="428" cy="279" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="428" y="283" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">1</text>
+  <text x="451" y="282" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 1: List the factors of 2. It has</text>
+  <text x="451" y="300" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">only 1 and 2 (Prime).</text>
+  <line x1="428" y1="290" x2="428" y2="312" stroke="#f97316" stroke-width="1.2" opacity="0.3" stroke-dasharray="3 3" />
+  <circle cx="428" cy="323" r="11" fill="#f97316" opacity="0.15" />
+  <circle cx="428" cy="323" r="11" fill="none" stroke="#f97316" stroke-width="1.5" />
+  <text x="428" y="327" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">2</text>
+  <text x="451" y="326" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">Step 2: List the factors of 9. Factors</text>
+  <text x="451" y="344" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">are 1, 3, 9. Since it has more than two</text>
+  <text x="451" y="362" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="#334155" text-anchor="start">factors, it is composite.</text>
+  <rect x="413" y="380" width="291" height="48" rx="6" fill="#f97316" opacity="0.08" />
+  <rect x="413" y="380" width="291" height="48" rx="6" fill="none" stroke="#f97316" stroke-width="1.2" opacity="0.4" />
+  <text x="427" y="399" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="start">Therefore, D is the correct answer.</text>
   </g>
 </svg>

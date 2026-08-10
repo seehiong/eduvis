@@ -195,6 +195,16 @@ class CurriculumGraph:
             data = yaml.safe_load(f) or {}
         return cls.from_dict(data)
 
+    @classmethod
+    def from_yaml(cls, yaml_input: str) -> CurriculumGraph:
+        """Load curriculum graph structure from a YAML file path or YAML string."""
+        if os.path.exists(yaml_input):
+            with open(yaml_input, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        else:
+            data = yaml.safe_load(yaml_input) or {}
+        return cls.from_dict(data)
+
     def compute_centrality(self) -> None:
         """Calculate the graph centrality weight for all concepts.
 

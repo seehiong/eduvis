@@ -51,7 +51,7 @@ def main() -> None:
     print("Starting eduvis quality and maintainability checks...")
 
     # Define targets to check
-    targets = ["eduvis", "tests", "scripts"]
+    targets = ["eduvis", "agent", "tests", "scripts"]
 
     # 1. Run Ruff for style, complexity (C901), and statement counts (PLR0915)
     ruff_ok = run_tool(["uv", "run", "ruff", "check"] + targets, "Ruff (Linter, Complexity, & Function Length)")

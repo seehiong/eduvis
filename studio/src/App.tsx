@@ -19,12 +19,14 @@ export const App: React.FC = () => {
 
   const [warnings, setWarnings] = useState<string[]>([]);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Core specs state
   const [curriculumYaml, setCurriculumYaml] = useState("");
   const [curriculumData, setCurriculumData] = useState<any>(null);
   const [lessonYaml, setLessonYaml] = useState("");
   const [learnerStateYaml, setLearnerStateYaml] = useState("");
+  const [learnerData, setLearnerData] = useState<any>(null);
 
   // Selectable showcase examples
   const [selectedExample, setSelectedExample] = useState("negative-numbers");

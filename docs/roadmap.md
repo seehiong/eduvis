@@ -44,27 +44,34 @@ Define clear extension registries to avoid bloating the core codebase:
     $$\text{Specification} \longrightarrow \text{Planner} \longrightarrow \text{Intermediate Representation (IR)} \longrightarrow \text{Renderer} \longrightarrow \text{Output}$$
     Compiler plugins operate on the compiled IR rather than directly mutating source specifications.
 
+### Ⅴ. Agentic Generation Substrate ("LLM Proposes, EduVis Compiles")
+Treat EduVis as an educational compiler and agent toolchain rather than relying on unconstrained LLM text generation.
+*   **Intermediate Representation (`GenerationIntent`)**: LLMs generate structured Pydantic intents; EduVis deterministic engines execute prerequisite checking, graph traversal, and paper assembly.
+*   **Adversarial Validation & Retry Loop**: Use EduVis schema and pedagogical validators as deterministic compilation gates, returning precise error tracebacks to the agent for candidate revision.
+*   **Decoupled Architecture**: Maintain `EduVis Core` as an LLM-agnostic educational IR. Introduce `EduVis Agent` as a standalone orchestration service (LangGraph, Pydantic, FastAPI) leveraging local model inference (e.g., Ollama / Qwen3.5).
+
 ---
 
 ## 4. Version Roadmap
 
-### v1.2 — Interactive Studio & AST Round-Tripping
-*   [x] Bidirectional editing (drag-and-drop node adjustments)
-*   [x] Visual lesson authoring (reordering phases)
-*   [x] AST-preserving YAML serialization (maintaining formatting/comments during visual edits)
-*   [x] Universal inspector panel
+### v1.2 — Interactive Studio & Deployed Ecosystem (Released July 2026)
+*   [x] Bidirectional visual editing & AST-preserving YAML serialization
+*   [x] Universal inspector panel & multi-projection IDE
+*   [x] Stateless compilation pipelines (Lesson Planner, Assessment Assembler)
+*   [x] Learner mastery projection & remediation trace engines
 
-### v1.3 — Analytics & Cohort Simulation
-*   [ ] Learner cohort simulation engine
-*   [ ] Forgetting curve & decay implementation
-*   [ ] Alternate learner models (BKT, IRT support)
-*   [ ] Assessment coverage heatmaps
+### v1.3 — Agentic Generation & Educational Compiler
+*   [ ] `EduVis Agent` orchestration service (LangGraph + Pydantic IR bridge)
+*   [ ] Agentic Practice Paper Generation (Greedy paper assembler + LLM item synthesis)
+*   [ ] Educational Generation Graph with adversarial EduVis validation loop
+*   [ ] Homelab Model Ladder integration (Qwen3.5 4B/9B/27B via Ollama)
+*   [ ] Studio "Teacher's Room" UI (step-by-step plan execution & Human-in-the-loop approval)
 
-### v1.4 — Extensibility & Plugins
+### v1.4 — Analytics, Cohorts & Extensibility
+*   [ ] Learner cohort simulation engine & forgetting curve decay
 *   [ ] Projection plugin API & SDK
-*   [ ] Compiler plugin API & hooks
+*   [ ] Compiler plugin hooks & exported IR (`lesson.ir.json`)
 *   [ ] Curriculum packaging & module distribution
-*   [ ] AI planning hooks & LLM generation pipelines
 
 ---
 
@@ -73,26 +80,29 @@ Define clear extension registries to avoid bloating the core codebase:
 EduVis consists of independent but complementary layers:
 
 ```text
-        EduVis Core           ← Provides the stable, descriptive educational IR
+        EduVis Core           ← Stable, descriptive educational IR (schema, validators, graph)
              │
              ▼
-  Execution & Compiler Layer  ← Planning, analysis, validation, and IR compilation
+  Execution & Compiler Layer  ← Deterministic planning, paper assembly, mastery projection
              │
              ▼
-        EduVis Studio         ← Visual authoring, synchronization, and diagnostics
+        EduVis Agent          ← LangGraph orchestration, GenerationIntent IR, LLM tools
              │
              ▼
-  Plugins / Agents / Renderers ← Extends domain capabilities, visualizations, and integrations
+       Local Inference        ← Homelab LLM inference (Ollama, Qwen3.5 Model Ladder)
+             │
+             ▼
+        EduVis Studio         ← Pedagogical IDE, Teacher's Room, multi-projection workspace
 ```
 
 *   **Core** provides the stable, descriptive educational IR.
 *   **Execution & Compiler Layer** performs planning, scheduling, validation, prioritization, and layout compilation.
+*   **EduVis Agent** manages stateful generation workflows, structured LLM intent parsing, and feedback retry loops.
+*   **Local Inference** executes privacy-first model generation across the model ladder.
 *   **Studio** provides the projection workspace, diagnostics, and human-in-the-loop authoring.
-*   **Plugins** extend visual displays, custom renderers, and domain-specific rules.
-*   **AI Agents** consume, analyze, validate, and generate EduVis specifications through the same stable interfaces used by human authors and tools.
 
 ---
 
 ## 6. Versioning Philosophy
 
-The v1.x series focuses on stabilizing the educational intermediate representation while expanding the surrounding ecosystem. Most innovation should occur outside the Core—within Studio, compiler engines, analytics, plugins, renderers, and AI tooling. Changes to the Core schema are expected to be infrequent and driven only by demonstrated pedagogical requirements.
+The v1.x series focuses on stabilizing the educational intermediate representation while expanding the surrounding ecosystem. Most innovation should occur outside the Core—within Studio, compiler engines, agent toolchains, analytics, plugins, renderers, and AI tooling. Changes to the Core schema are expected to be infrequent and driven only by demonstrated pedagogical requirements.

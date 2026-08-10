@@ -57,7 +57,26 @@ def sync_pyodide_sources() -> bool:
         print(f"  OK  {src_rel} -> showcase/{dest_name}")
 
     import re
+    import zipfile
+    import os
     from eduvis.core.constants import PACKAGE_VERSION
+
+    source_dir = ROOT_DIR / "eduvis"
+    zip_path = SHOWCASE_DIR / "eduvis.zip"
+    print(f"  Archiving {source_dir} -> showcase/eduvis.zip...")
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(source_dir):
+            if "__pycache__" in dirs:
+                dirs.remove("__pycache__")
+            if ".pytest_cache" in dirs:
+                dirs.remove(".pytest_cache")
+            for file in files:
+                if file.endswith((".pyc", ".pyo", ".pyd")):
+                    continue
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, ROOT_DIR)
+                zipf.write(file_path, arcname)
+
     html_path = SHOWCASE_DIR / "editor.html"
     if html_path.exists():
         content = html_path.read_text(encoding="utf-8")
@@ -82,7 +101,9 @@ def main() -> None:
 
         print(f"\nRendering: {src_rel} -> {dest_rel}")
 
-        # Ensure destination directory exists
+        # Clean and recreate destination directory to prevent stale assets
+        if dest_path.exists():
+            shutil.rmtree(dest_path)
         dest_path.mkdir(parents=True, exist_ok=True)
 
         # Run render CLI command using the current python interpreter

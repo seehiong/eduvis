@@ -1,6 +1,7 @@
 .venv/
 __pycache__/
 *.pyc
+*.whl
 *.egg-info/
 dist/
 build/
@@ -19,3 +20,12 @@ studio/dist/
 
 # Python packaging extractions
 eduvis-*/
+
+# Environment variables & sensitive credentials
+.env
+.env.*
+*.env
+*.pem
+*.key
+secrets/
+

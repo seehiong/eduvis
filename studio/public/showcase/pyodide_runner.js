@@ -42,53 +42,35 @@ async function initPythonEnvironment(updateStatusCallback, onReadyCallback) {
             throw err;
         }
 
-        updateStatusCallback("Installing Dependencies", `Installing PyYAML, ruamel.yaml, SymPy and loading local wheel (v${version})...`);
+        updateStatusCallback("Installing Dependencies", "Installing PyYAML, ruamel.yaml, SymPy, Click...");
         const cb = new Date().getTime();
         await window.pyodideInstance.runPythonAsync(`import micropip
 await micropip.install("pyyaml")
 await micropip.install("ruamel-yaml")
 await micropip.install("sympy")
-await micropip.install("./eduvis-${version}-py3-none-any.whl?cb=${cb}")
+await micropip.install("click")
 `);
 
-        updateStatusCallback(`Syncing v${version} Engine Updates`, "Fetching local core files...");
+        updateStatusCallback(`Syncing v${version} Engine Updates`, "Fetching local core package bundle...");
         try {
-            const [engineCode, validatorCode, genericCode, renderersBaseCode, curriculumCode, coreInitCode, mainInitCode, constantsCode, astEditorCode] = await Promise.all([
-                fetch(`./engine.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./validator.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./generic.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./renderers_base.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./curriculum.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./core_init.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./main_init.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./constants.py?cb=${cb}`).then(r => r.text()),
-                fetch(`./ast_editor.py?cb=${cb}`).then(r => r.text())
-            ]);
+            const zipResponse = await fetch(`./eduvis.zip?cb=${cb}`);
+            if (zipResponse.ok) {
+                const zipData = await zipResponse.arrayBuffer();
+                window.pyodideInstance.FS.writeFile("/tmp/eduvis.zip", new Uint8Array(zipData));
+                window.pyodideInstance.runPython(`import zipfile
+import sys
+import os
+sys.path.append("/tmp/eduvis_pkg")
 
-            const ensureDir = (path) => {
-                const parts = path.split('/');
-                let current = '';
-                for (let i = 0; i < parts.length - 1; i++) {
-                    if (!parts[i]) continue;
-                    current += '/' + parts[i];
-                    try { window.pyodideInstance.FS.mkdir(current); } catch(e) {}
-                }
-            };
-
-            ensureDir('/lib/python3.12/site-packages/eduvis/core/engine.py');
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/engine.py', engineCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/validator.py', validatorCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/elements/generic.py', genericCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/curriculum.py', curriculumCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/constants.py', constantsCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/ast_editor.py', astEditorCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/core/__init__.py', coreInitCode);
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/__init__.py', mainInitCode);
-            
-            ensureDir('/lib/python3.12/site-packages/eduvis/renderers/svg/renderers_base.py');
-            window.pyodideInstance.FS.writeFile('/lib/python3.12/site-packages/eduvis/renderers/svg/renderers_base.py', renderersBaseCode);
+os.makedirs("/tmp/eduvis_pkg", exist_ok=True)
+with zipfile.ZipFile("/tmp/eduvis.zip", "r") as zip_ref:
+    zip_ref.extractall("/tmp/eduvis_pkg")
+`);
+            } else {
+                console.warn(`Could not fetch eduvis.zip from server.`);
+            }
         } catch (syncErr) {
-            console.warn(`Could not sync local v${version} code. Using wheel version.`, syncErr);
+            console.warn(`Could not extract local v${version} package bundle.`, syncErr);
         }
 
         updateStatusCallback("Configuring Render Engine", "Importing Python libraries...");

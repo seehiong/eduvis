@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { load as yamlLoad, dump as yamlDump } from "js-yaml";
 import { pyodideBridge } from "../pyodideBridge";
 import { usePanelResizer } from "../hooks/usePanelResizer";
 

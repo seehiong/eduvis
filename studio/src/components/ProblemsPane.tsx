@@ -5,6 +5,8 @@ interface ProblemsPaneProps {
 }
 
 export const ProblemsPane: React.FC<ProblemsPaneProps> = ({ warnings }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   if (warnings.length === 0) {
     return (
       <div style={{

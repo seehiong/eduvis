@@ -16,6 +16,18 @@ Inspired by the philosophy of separating meaning from rendering:
 
 ---
 
+## Who Is EduVis For?
+
+| If you are a... | EduVis helps you... |
+|---|---|
+| **Teacher / Educator** | Generate curriculum-aligned assessment papers, diagnostic quizzes, and structured lesson decks. |
+| **Curriculum Designer** | Model reusable concept DAGs, prerequisite networks, and pedagogical progression rules. |
+| **AI / Agent Developer** | Build educational agents that output deterministically validated IR instead of raw, unconstrained LLM text. |
+| **EdTech Company** | Integrate educational IR, spaced repetition (SM-2), study plans, and adaptive remediation into your stack. |
+| **Researcher** | Experiment with cognitive graphs, mastery decay models, and structured learning representations. |
+
+---
+
 ## Getting Started
 
 **Requirements:** Python 3.10+
@@ -23,7 +35,11 @@ Inspired by the philosophy of separating meaning from rendering:
 ### Option 1: Install from PyPI (Recommended for general use)
 
 ```bash
+# Core framework only
 pip install eduvis
+
+# With Agentic Generation substrate (v1.3 with LangGraph & FastAPI)
+pip install "eduvis[agent]"
 ```
 
 ### Option 2: Clone and run locally with uv (Recommended for development)
@@ -31,7 +47,7 @@ pip install eduvis
 ```bash
 git clone https://github.com/seehiong/eduvis
 cd eduvis
-uv sync
+uv sync --all-extras
 ```
 
 Then prefix commands with `uv run` (or use the globally installed `eduvis` if installed via PyPI/pip):
@@ -84,9 +100,35 @@ pip install -e .
 ### Run the Tests
 
 ```bash
-uv sync --extra dev
+# Sync all dev and agent test dependencies
+uv sync --all-extras
+
+# Run full test suite (including core & agent tests)
 uv run pytest tests/ -v
+
+# Or run agent tests specifically
+uv run pytest tests/test_agent.py -v
 ```
+
+### Verify the Agentic Pipeline End-to-End
+
+Use `scripts/verify_agent.py` to prove the full 3-stage agent pipeline is working against your **local Ollama instance**:
+
+```bash
+# Requires: ollama serve (in a separate terminal) with at least one model pulled
+python scripts/verify_agent.py
+```
+
+This script runs through three stages and prints a clear verdict for each:
+
+| Stage | What it does |
+|---|---|
+| **Step 0** | Checks Ollama is reachable and lists installed models |
+| **Step 1** | Fires a direct smoke-test call to the LLM (`say hello`) |
+| **Step 2** | Invokes the full LangGraph workflow — intent parsing → LLM question generation → EduVis Core blueprint validation |
+| **Step 3** | Prints a pass/fail verdict, the raw LLM response, and whether questions are real LLM output or deterministic fallback |
+
+**Success criteria**: `Status: success`, `Is Valid: True`, and `LLM-sourced questions: 10` in the output. If `Fallback questions: 10` appears instead, the LLM produced unusable JSON and the deterministic fallback fired — re-run once the model is warm in VRAM.
 
 ### Code Quality and Maintainability Checks
 
@@ -101,7 +143,7 @@ To keep the codebase maintainable and clean, we enforce code quality and maintai
 To run these checks, ensure your development dependencies are synced:
 
 ```bash
-uv sync --extra dev
+uv sync --all-extras
 ```
 
 Then run all quality checks with a single command:
@@ -114,10 +156,10 @@ Alternatively, you can run the individual tools manually:
 
 ```bash
 # Run Ruff for style, complexity, and function length
-uv run ruff check eduvis tests scripts
+uv run ruff check eduvis agent tests scripts
 
 # Run Pylint for nesting depth, module size, and duplication
-uv run pylint eduvis tests scripts
+uv run pylint eduvis agent tests scripts
 ```
 
 > [!TIP]
@@ -221,6 +263,86 @@ To run and test the Studio workspace on your local machine:
     ```
     Open `http://localhost:5173` in your browser.
 
+### Running the EduVis Agent Service (v1.3 Agentic Generation)
+
+The `agent/` package provides a stateful generation toolchain powered by LangGraph, Pydantic IR, and local model inference (Ollama / Qwen3.5), using `EduVis Core` as a deterministic validator.
+
+1.  **Start Local Ollama Model (Homelab)**:
+    Ensure Ollama is running locally with your target Qwen3.5 model:
+    ```bash
+    ollama run qwen3.5:9b
+    ```
+2.  **Start the Agent FastAPI Server**:
+    Run from the repository root directory (`eduvis/`):
+    ```bash
+    python -m agent.server
+    # Or using uv
+    uv run python -m agent.server
+    ```
+    This launches the Agent API server at `http://localhost:8000`.
+
+3.  **Verify Server Health**:
+    ```bash
+    curl http://localhost:8000/health
+    ```
+
+#### ⚡ 5-Minute Agent Walkthrough: From Prompt to Validated Spec
+
+Instead of asking an LLM to directly invent complex YAML specifications, the **EduVis Agent** separates **proposals** from **deterministic compilation**:
+
+Suppose a teacher requests:
+> *"Generate a 60-mark Secondary 1 Math practice paper on Negative Numbers with 10 questions and 20% diagnostic questions."*
+
+```text
+USER PROMPT
+   │
+   ▼
+[Step 1: Intent Interpreter]   ──►  LLM maps prompt into structured GenerationIntent IR
+   │
+   ▼
+[Step 2: Context Enricher]     ──►  EduVis Core injects prerequisite DAGs & concept rules
+   │
+   ▼
+[Step 3: Candidate Generator]   ──►  Local LLM proposes candidate question items
+   │
+   ▼
+[Step 4: EduVis Validator]     ──►  Deterministic check (Pass / Retry with Critique Feedback)
+   │
+   ▼
+[Step 5: Paper Compiler]       ──►  Compiles final validated assessment_paper specification
+```
+
+**Try It via REST API:**
+
+```bash
+curl -X POST http://localhost:8000/api/generate/paper \
+  -H "Content-Type: application/json" \
+  -d '{
+        "prompt": "Create a 60-mark Secondary 1 paper on negative numbers",
+        "curriculum_yaml": "concepts:\n  - code: negative_numbers\n    name: Negative Numbers\nskills:\n  - code: order_integers\n    concept: negative_numbers\nmisconceptions: []\ndependencies: []",
+        "target_marks": 60
+      }'
+```
+
+**Output:**
+```json
+{
+  "status": "success",
+  "intent": {
+    "subject": "mathematics",
+    "level": "Secondary 1",
+    "topic": "negative_numbers",
+    "total_marks": 60,
+    "question_count": 10,
+    "objective_distribution": { "AO1_recall": 0.4, "AO2_analysis": 0.4, "AO3_synthesis": 0.2 }
+  },
+  "candidate_questions": [...],
+  "validation_errors": []
+}
+```
+
+> 📖 *For full state-diagrams, Pydantic IR field definitions, and architecture specs, read **[docs/agentic_generation.md](docs/agentic_generation.md)**.*
+
 ### Running the Standalone Live Editor (Static Playground)
 
 For a quick, zero-install client-side playground, run the HTTP server from the repository root (or navigate into `showcase/` directly):
@@ -253,6 +375,7 @@ EduVis is fully documented in the [docs/](docs/) directory. Please refer to thes
 *   **[docs/ecosystem.md](docs/ecosystem.md)**: Ecosystem framing, comparison matrix, and out-of-scope boundaries.
 *   **[docs/llm_system_prompt.md](docs/llm_system_prompt.md)**: Structured prompt vocabulary for injecting EduVis schema rules directly into LLM prompts.
 *   **[docs/studio.md](docs/studio.md)**: Design goals, multi-projection workspace, bidirectional editing, and local Pyodide/WASM compiler architecture for EduVis Studio.
+*   **[docs/agentic_generation.md](docs/agentic_generation.md)**: Agentic generation architecture, `GenerationIntent` IR, Educational Generation Graph, and FastAPI service for EduVis v1.3.
 *   **[docs/roadmap.md](docs/roadmap.md)**: Project priority guidelines, version timelines (v1.2 - v1.5), and strategic extensibility planning.
 
 ---
@@ -262,6 +385,7 @@ EduVis is fully documented in the [docs/](docs/) directory. Please refer to thes
 ```text
 eduvis/ (repository root)
 ├── eduvis/                  ← Python package source (core models, validator, compiler, renderers)
+├── agent/                   ← EduVis Agent service (LangGraph workflows, Pydantic IR, FastAPI server)
 ├── studio/                  ← EduVis Studio web application (React, TypeScript, Pyodide WASM)
 ├── docs/                    ← Conceptual, architectural, and studio documentation files
 ├── showcase/                ← Reference lesson files, feature catalogs, and learner state configurations
